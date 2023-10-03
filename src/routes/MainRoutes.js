@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 
+
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 
@@ -15,7 +16,7 @@ const Typography = Loadable(lazy(() => import('pages/components-overview/Typogra
 const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
-
+const Table = Loadable(lazy(() => import('pages/components-overview/Table')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -54,6 +55,10 @@ const MainRoutes = {
     {
       path: 'icons/ant',
       element: <AntIcons />
+    },
+    {
+      path: 'table',
+      element: <Table/>
     }
   ]
 };
