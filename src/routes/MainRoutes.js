@@ -16,7 +16,7 @@ const Typography = Loadable(lazy(() => import('pages/components-overview/Typogra
 const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
-const Table = Loadable(lazy(() => import('pages/components-overview/Table')));
+const ComponentTest = Loadable(lazy(() => import('pages/components-overview/ComponentTest')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -58,7 +58,7 @@ const MainRoutes = {
     },
     {
       path: 'table',
-      element: <Table/>
+      element: <ComponentTest/>
     }
   ]
 };
