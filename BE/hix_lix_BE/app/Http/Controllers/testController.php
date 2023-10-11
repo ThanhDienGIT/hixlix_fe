@@ -9,7 +9,7 @@ class testController extends Controller
 {
     //
     public function test(){
-        $request = DB::table('testtable')->get();
-        return response()->json($request, 200);
+    
+        return response()->json('test', 200);
     }
 }

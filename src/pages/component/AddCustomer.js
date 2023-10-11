@@ -17,26 +17,26 @@ function AddCustomer(props) {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title" sx={{backgroundColor:'#0099ff',color:'white'}}>
-                Form thêm khách hàng
+                Thêm thông tin khách hàng
             </DialogTitle>
             <DialogContent>
-                <Box display={'flex'} flexDirection={'column'} >
-                    <TextField label="Họ và tên chủ hộ" sx={{ marginTop: 1 }} />
-                    <TextField label="Địa chỉ" multiline sx={{ marginTop: 2 }} />
-                    <TextField label="Số điện thoại" sx={{ marginTop: 2 }} />
+                <Box display={'flex'} flexDirection={'column'} width={600}>
+                    <TextField label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} />
+                    <TextField label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} />
+                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} />
                     <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} />
                     <TextField label="Khách hàng đại diện hợp đồng" sx={{ marginTop: 2 }} />
                     <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} />
                     <TextField label="Ngày sinh nhật" sx={{ marginTop: 2 }} />
                     <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel >Quận huyện</InputLabel>
+                        <InputLabel >Quận huyện (*)</InputLabel>
                         <Select
                             label='Quận huyện' >
                             <MenuItem>hello</MenuItem>
                         </Select>
                     </FormControl>
                     <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel>Xã phường</InputLabel>
+                        <InputLabel>Xã phường (*)</InputLabel>
                         <Select
                             label='Xã phường'>
                             <MenuItem>hello</MenuItem>
@@ -59,9 +59,9 @@ function AddCustomer(props) {
 
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.handleClose}>Disagree</Button>
-                <Button onClick={props.handleClose} autoFocus>
-                    Agree
+                <Button onClick={props.handleClose}variant='contained' color="secondary" >Huỷ</Button>
+                <Button onClick={props.handleClose} variant='contained'  autoFocus>
+                    Thêm
                 </Button>
             </DialogActions>
         </Dialog>

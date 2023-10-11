@@ -19,22 +19,23 @@ function LixDialog(props) {
 
 
     return (
-        <Dialog
+        <Dialog 
             open={props.open}
             onClose={props.handleClose}
+            fullScreen
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title" sx={{backgroundColor:'#0099ff',color:'white'}}>
-                Form khảo sát khách hàng {props.id}
+            <DialogTitle id="alert-dialog-title" sx={{backgroundColor:'#0099ff',color:'white',width:'900'}}>
+                Khảo sát LIX
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} >
-                    <TextField disabled label="Họ và tên chủ hộ" sx={{ marginTop: 1 }} />
-                    <TextField disabled label="Địa chỉ" multiline sx={{ marginTop: 2 }} />
-                    <TextField label="Số điện thoại" sx={{ marginTop: 2 }} />
+                    <TextField disabled label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} />
+                    <TextField disabled label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} />
+                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} />
                     <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} />
-                    <TextField label="Khách hàng đại diện hợp đồng" sx={{ marginTop: 2 }} />
+                    <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
                     <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} />
                     <TextField label="Ngày sinh nhật" sx={{ marginTop: 2 }} />
                     <FormControl sx={{ marginTop: 2 }}>
@@ -67,18 +68,19 @@ function LixDialog(props) {
                     {form.map(element => {
                         return (
                             <Card key={element} sx={{ marginTop: 2 }}>
-                                <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <CardContent sx={{ display: 'flex', width:'900', flexDirection: 'column' }}>
                                     <Typography gutterBottom variant="h5" component="div">
                                         Dịch vụ sử dụng
                                     </Typography>
                                     <FormControl fullwidth sx={{ marginTop: 1 }}>
-                                        <InputLabel>Loại dịch vụ</InputLabel>
-                                        <Select
-                                            label='Loại dịch vụ'>
+                                        <InputLabel>FTTH</InputLabel>
+                                        <Select value='FTTH'
+                                            label='FTTH'>
                                             <MenuItem>FTTH</MenuItem>
                                             <MenuItem>MyTv</MenuItem>
                                             <MenuItem>Di động TS/TT</MenuItem>
                                         </Select>
+                                        
                                     </FormControl>
                                     <TextField label="Mức cước/tháng" sx={{ marginTop: 2 }} />
                                     <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} />
@@ -87,7 +89,7 @@ function LixDialog(props) {
                                     <FormControl fullwidth sx={{ marginTop: 2 }}>
                                         <InputLabel>Mức độ hài lòng</InputLabel>
                                         <Select
-                                            label='Mức độ hài lòng'>
+                                            label='10'>
                                             <MenuItem>1</MenuItem>
                                             <MenuItem>2</MenuItem>
                                             <MenuItem>3</MenuItem>
@@ -100,13 +102,16 @@ function LixDialog(props) {
                                             <MenuItem>10</MenuItem>
                                         </Select>
                                     </FormControl>
-                                    <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                        <InputLabel>Nhà cung cấp</InputLabel>
+                                    <FormControl  sx={{ marginTop: 2 }}>
+                                        <InputLabel>VNPT</InputLabel>
                                         <Select
-                                            label='Loại dịch vụ'>s
-                                            <MenuItem>Vnpt</MenuItem>
-                                            <MenuItem>Viettel</MenuItem>
-                                            <MenuItem>FPT</MenuItem>
+                                            label='Loại dịch vụ'
+                                            value='VNPT'
+                                         >   
+                                       
+                                        <MenuItem>VNPT</MenuItem>
+                                        <MenuItem>Viettel</MenuItem>
+                                        <MenuItem>FPT</MenuItem>
                                         </Select>
                                     </FormControl>
                                     <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} />
@@ -119,12 +124,15 @@ function LixDialog(props) {
                 <Button onClick={addForm}>Thêm dịch vụ</Button>
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.handleClose}>Disagree</Button>
+                <Button onClick={props.handleClose}>Huỷ</Button>
                 <Button onClick={props.handleClose} autoFocus>
-                    Agree
+                    Đồng ý
                 </Button>
             </DialogActions>
         </Dialog>
+
+
+
     )
 }
 
