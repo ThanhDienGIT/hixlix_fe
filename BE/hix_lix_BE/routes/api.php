@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\danhsachkhachhang;
 use App\Http\Controllers\Lix;
 use App\Http\Controllers\testController;
 use Illuminate\Http\Request;
@@ -22,7 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::get('/test', [testController::class, 'test']);
-
+//khach hang
+Route::get('/get_danhsachkhachhang', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
 //Lix
 Route::get('/get_lix', [Lix::class, 'get_lix']);
 
