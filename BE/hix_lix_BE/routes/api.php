@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Lix;
 use App\Http\Controllers\testController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,3 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::get('/test', [testController::class, 'test']);
+
+//Lix
+Route::get('/get_lix', [Lix::class, 'get_lix']);
+
+
