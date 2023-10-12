@@ -27,11 +27,11 @@ class nhanvien extends Model
 
     public function donvihanhchinh()
     {
-        return $this->belongsTo(donvihanhchinh::class, 'id_dvhc', 'id_dvhc');
+        return $this->belongsTo(donvihanhchinh::class, 'ID_DVHC', 'ID_DVHC');
     }
 
     public function phieukhaosats()
     {
-        return $this->hasMany(donvihanhchinh::class, 'id_nv', 'id_nv');
+        return $this->hasMany(donvihanhchinh::class, 'ID_NV', 'ID_NV');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\danhsachkhachhang;
 use App\Http\Controllers\Lix;
 use App\Http\Controllers\testController;
@@ -27,5 +28,16 @@ Route::get('/test', [testController::class, 'test']);
 Route::get('/get_danhsachkhachhang', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
 //Lix
 Route::get('/get_lix', [Lix::class, 'get_lix']);
+
+Route::post('/add_lix', [Lix::class, 'add_lix']);
+Route::put('/update_lix', [Lix::class, 'update_lix']);
+Route::post('/delete_lix', [Lix::class, 'delete_lix']);
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+});
 
 

@@ -19,6 +19,6 @@ class loaidichvu extends Model
 
     public function dichvus()
     {
-        return $this->hasMany(dichvu::class, 'id_ldv', 'id_ldv');
+        return $this->hasMany(dichvu::class, 'ID_LDV', 'ID_LDV');
     }
 }
