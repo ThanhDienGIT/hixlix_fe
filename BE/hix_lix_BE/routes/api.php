@@ -24,8 +24,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/test', [testController::class, 'test']);
 //khach hang
-Route::get('/get_danhsachkhachhang', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
+Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
+Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
+
 //Lix
+
 Route::get('/get_lix', [Lix::class, 'get_lix']);
 
 

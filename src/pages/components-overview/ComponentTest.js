@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ComponentSkeleton from './ComponentSkeleton'
 import MainCard from 'components/MainCard'
-import { Box, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
+import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
 import LixDialog from 'pages/component/LixDialog'
 import AddCustomer from 'pages/component/AddCustomer'
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,12 +10,12 @@ import DiaLogSuccess from 'pages/component/DiaLogSuccess'
 import DiaLogError from 'pages/component/DiaLogError'
 import AddIcon from '@mui/icons-material/Add';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import { useTheme } from '@mui/material/styles';
-import PropTypes from 'prop-types';
+import instance from '../../axios/instance'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import DetailCustomer from 'pages/component/DetailCustomer'
+import SearchIcon from '@mui/icons-material/Search';
+import SaveIcon from '@mui/icons-material/Save';
 function ComponentTest() {
 
     const [data, setData] = useState([])
@@ -24,22 +24,8 @@ function ComponentTest() {
     const [dialogCustomer, setDialogCustomer] = useState(false)
     const [dialogSuccess, setDialogSuccess] = useState(false)
     const [dialogError, setDialogError] = useState(false)
+    const [dialogDetail, setDialogDetail] = useState(false)
     const [idKhachHang, setIDKhachHang] = useState(0)
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
 
     const openDialogError = (id) => {
         setDialogError(true)
@@ -48,6 +34,16 @@ function ComponentTest() {
 
     const closeDialogError = () => {
         setDialogError(false)
+        setIDKhachHang(0)
+    }
+
+    const openDialogDetail = (id) => {
+        setDialogDetail(true)
+        setIDKhachHang(id)
+    }
+
+    const closeDialogDetail = () => {
+        setDialogDetail(false)
         setIDKhachHang(0)
     }
 
@@ -79,225 +75,128 @@ function ComponentTest() {
         setIdKhaoSat(0)
     }
 
-    function TablePaginationActions(props) {
-        const theme = useTheme();
-        const { count, page, rowsPerPage, onPageChange } = props;
-
-        const handleFirstPageButtonClick = (event) => {
-            onPageChange(event, 0);
-        };
-
-        const handleBackButtonClick = (event) => {
-            onPageChange(event, page - 1);
-        };
-
-        const handleNextButtonClick = (event) => {
-            onPageChange(event, page + 1);
-        };
-
-        const handleLastPageButtonClick = (event) => {
-            onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-        };
-
-        return (
-            <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-                <IconButton
-                    onClick={handleFirstPageButtonClick}
-                    disabled={page === 0}
-                    aria-label="first page"
-                >
-                    {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-                </IconButton>
-                <IconButton
-                    onClick={handleBackButtonClick}
-                    disabled={page === 0}
-                    aria-label="previous page"
-                >
-                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                </IconButton>
-                <IconButton
-                    onClick={handleNextButtonClick}
-                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                    aria-label="next page"
-                >
-                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                </IconButton>
-                <IconButton
-                    onClick={handleLastPageButtonClick}
-                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                    aria-label="last page"
-                >
-                    {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-                </IconButton>
-            </Box>
-        );
+    const [maxPage, setMaxPage] = useState(0)
+    const listPage = [5, 10, 15, 25, 50]
+    const [rowPage, setRowPage] = useState(5)
+    const [page, setPage] = useState(1)
+    const nextPage = () => {
+        if (page < maxPage) {
+            setPage(page + 1);
+        }
     }
 
-    TablePaginationActions.propTypes = {
-        count: PropTypes.number.isRequired,
-        onPageChange: PropTypes.func.isRequired,
-        page: PropTypes.number.isRequired,
-        rowsPerPage: PropTypes.number.isRequired,
-    };
+    const revertPage = () => {
+        if (page > 1) {
+            setPage(page - 1)
+        }
+    }
+
+    const changeRowPage = (ele) => {
+        setRowPage(ele.target.value)
+    }
+
+    const CallAPI = () => {
+        instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+            setMaxPage(res.data.last_page)
+            setData(res.data.data)
+            console.log(res.data)
+        }).catch(err => console.log(err))
+    }
 
     useEffect(() => {
-        setData([{
-            stt: 1,
-            tenchuho: 'Nguyễn Văn A',
-            diachi: ' KV 1 P7 TP Vị Thanh',
-            sonhankhau: '0966631453',
-            nguoihopdong: 'Nguyễn Văn A',
-            trangthai: 'Chưa khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: '0969333912',
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Đã khảo sát'
-        },
-        ])
-    }, [])
+        CallAPI()
+    }, [page, rowPage])
     console.log(data)
 
     return (
         <ComponentSkeleton>
             <MainCard title="DANH SÁCH KHÁCH HÀNG">
                 <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
-                    <TextField label='Tìm kiếm...' size="small" />
-                    <Button size="small" sx={{ display: 'flex', marginTop: 1 }} variant="contained" onClick={openDialogCustomer}>
-                        <AddIcon />
-                        <Typography sx={{ marginLeft: 1 }}>Khách hàng</Typography>
-                    </Button>
+                    <Box display={'flex'} flexWrap={'wrap'}>
+
+                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
+                            <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>
+                            <Select
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                label="Trạng thái khảo sát"
+                                value={0}
+                            >
+                                <MenuItem value={0}>
+                                    Tất cả
+                                </MenuItem>
+                                <MenuItem value={10}>Khách hàng đã khảo sát</MenuItem>
+                                <MenuItem value={20}>Khách hàng chưa khảo sát</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1.5 }} size="small">
+                            <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
+                            <Select
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                label="Chất lượng dịch vụ"
+                                value={0}
+                            >
+                                <MenuItem value={0}>
+                                    Tất cả
+                                </MenuItem>
+                                <MenuItem value={10}>Dịch vụ có vấn đề chất lượng</MenuItem>
+                                <MenuItem value={20}>Dịch vụ có khả năng phát triển thuê bao</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <TextField label='Tìm kiếm...' size="small" sx={{ marginRight: 2, marginTop: 1.5 ,width: 220}} />
+                        <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                    </Box>
+                    <Box display={'flex'} marginTop={1}>
+                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={openDialogCustomer}>
+                            <SaveIcon />
+                            <Typography >Excel</Typography>
+                        </Button>
+                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} variant="contained" onClick={openDialogCustomer}>
+                            <AddIcon />
+                            <Typography >Khách hàng</Typography>
+                        </Button>
+                    </Box>
+
                 </Box>
                 <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead sx={{ backgroundColor: '#0099ff' }}>
+                    <Table size='small'>
+                        <TableHead sx={{ backgroundColor: '#0099ff' }} >
                             <TableRow>
                                 <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Địa chỉ </TableCell>
+                                <TableCell sx={{ color: 'white' }}> Số điện thoại </TableCell>
                                 <TableCell sx={{ color: 'white' }}> Trạng thái </TableCell>
                                 <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {(rowsPerPage > 0 ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : data).map(ele => {
+                            {data.map((ele, index) => {
                                 return (
-                                    <TableRow key={ele.stt}>
+                                    <TableRow key={index}>
                                         <TableCell>
-                                            {ele.tenchuho}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {ele.diachi}
+                                            {ele.TEN_KH}
                                         </TableCell>
                                         <TableCell>
-                                            {ele.trangthai}
+                                            {ele.SODIENTHOAI_KH}
+                                        </TableCell>
+                                        <TableCell>
+                                            {ele.TRANGTHAI_KH === 1 ? "Chưa khảo sát" : "Đã khảo sát"}
                                         </TableCell>
                                         <TableCell>
                                             {ele.trangthai !== '' ? <>
                                                 <Tooltip title="Chi tiết khách hàng">
-                                                    <IconButton>
+                                                    <IconButton onClick={() => { openDialogDetail(ele.ID_KH) }}>
                                                         <RemoveRedEyeIcon color={'primary'} />
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title="Cập nhật phiếu LIX">
                                                     <IconButton>
-                                                        <EditIcon color='warning' onClick={() => { openDialog(ele.stt) }} />
+                                                        <EditIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title="Xóa khảo sát">
                                                     <IconButton>
-                                                        <DeleteIcon color='error' onClick={() => { openDialogError(ele.stt) }} />
+                                                        <DeleteIcon color='error' onClick={() => { openDialogError(ele.ID_KH) }} />
                                                     </IconButton>
                                                 </Tooltip>
                                                 {/* <Button sx={{width:20,margin:1}} variant='contained' color='warning'>Sửa</Button>  */}
@@ -308,31 +207,37 @@ function ComponentTest() {
                                     </TableRow>
                                 )
                             })}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                    <TableCell colSpan={4} />
-                                </TableRow>
-                            )}
+
                         </TableBody>
                     </Table>
-
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                        colSpan={3}
-                        count={data.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        SelectProps={{
-                            inputProps: {
-                                'aria-label': 'rows per page',
-                            },
-                            native: true,
-                        }}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        ActionsComponent={TablePaginationActions}
-                    />
-
+                    <Box display="flex" alignItems={'center'} justifyContent={'flex-end'} marginRight={2} padding={2}>
+                        <FormControl sx={{ width: 80 }}>
+                            <InputLabel id="demo-simple-select-label">Số dòng</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                label={'Số dòng'}
+                                value={rowPage}
+                                onChange={(e) => { changeRowPage(e) }}
+                            >
+                                {listPage.length > 0 && listPage.map(ele => (
+                                    <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Tooltip title={'Chuyển về trang trước'} sx={{ marginRight: 1 }}>
+                            <IconButton onClick={revertPage}>
+                                <KeyboardArrowLeftIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Typography>{page * rowPage - rowPage + 1 + " - " + page * rowPage}</Typography>
+                        <Tooltip title={'Chuyển tới trang sau'} sx={{ marginLeft: 1 }}>
+                            <IconButton onClick={nextPage}>
+                                <KeyboardArrowRightIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Typography>{'Tổng trang: ' + maxPage}</Typography>
+                    </Box>
                 </TableContainer>
             </MainCard>
             <LixDialog
@@ -352,6 +257,11 @@ function ComponentTest() {
                 handleClose={closeDialogError}
                 idKhachHang={idKhachHang}
                 content={"Xác nhận xóa khách hàng này ?"}
+            />
+            <DetailCustomer
+                open={dialogDetail}
+                handleClose={closeDialogDetail}
+                idkhachhang={idKhachHang}
             />
 
         </ComponentSkeleton>

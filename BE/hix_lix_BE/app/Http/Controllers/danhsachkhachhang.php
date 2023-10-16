@@ -7,32 +7,28 @@ use Illuminate\Http\Request;
 
 class danhsachkhachhang extends Controller
 {
-    public function get_danhsachkhachhang(Request $request)
+    public function get_danhsachkhachhang($count)
     {
 
-
         // $user=auth()->user();
-
-        $id_nv = $request->id_nv;
+        $id_nv = 1;
 
         if ($id_nv) {
             try {
-
-                $DSKH = khachhang::where('id_nv', $id_nv)->get();
-
+                $DSKH = khachhang::where('id_nv', $id_nv)->paginate($count);
                 if ($DSKH->isEmpty()) {
                     return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
                 }
-                $DSKH_data = [];
+                // $DSKH_data = [];
 
-                foreach ($DSKH as $_DSKH) {
-                    $dskh_item = [
-                        'id_nv' => $id_nv,
-                        'danhsachkhachhang' => $_DSKH,
-                    ];
-                    $DSKH_data[] = $dskh_item;
-                }
-                return response()->json($DSKH_data, 200);
+                // foreach ($DSKH as $_DSKH) {
+                //     $dskh_item = [
+                //         'id_nv' => $id_nv,
+                //         'danhsachkhachhang' => $_DSKH,
+                //     ];
+                //     $DSKH_data[] = $dskh_item;
+                // }
+                return response()->json($DSKH, 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
             }
@@ -40,6 +36,17 @@ class danhsachkhachhang extends Controller
             return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
         }
     }
+
+    public function getKHByID($id){
+        $kh = khachhang::where('id_kh',$id)->first();
+        if($kh!==null ){
+            return response()->json($kh, 200);
+        }else{
+            return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
+        }
+
+    }
+
 
     // public function get_CV_BC_HangNgay()
     // {

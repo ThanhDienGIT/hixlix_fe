@@ -5,9 +5,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, Card, CardContent, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from '../../../node_modules/@mui/material/index';
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 function LixDialog(props) {
-
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const [form, setForm] = useState([
         { form: 1 }
     ])
@@ -22,7 +24,7 @@ function LixDialog(props) {
         <Dialog
             open={props.open}
             onClose={props.handleClose}
-            fullScreen
+            fullScreen={fullScreen}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
