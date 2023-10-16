@@ -1,146 +1,61 @@
-// import React, { useEffect, useState } from 'react'
-// import ComponentSkeleton from './ComponentSkeleton'
-// import MainCard from 'components/MainCard'
-// import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '../../../node_modules/@mui/material/index'
-// import LixDialog from 'pages/component/LixDialog'
-// import AddCustomer from 'pages/component/AddCustomer'
-// function ComponentTest() {
-
-//     const [data, setData] = useState([])
-//     const [dialog, setDiaLog] = useState(false)
-//     const [idKhaoSat, setIdKhaoSat] = useState(0)
-//     const [dialogCustomer, setDialogCustomer] = useState(false)
-
-//     const openDialogCustomer = () => {
-//         setDialogCustomer(true)
-//     }
-
-//     const closeDialogCustomer = () => {
-//         setDialogCustomer(false)
-//     }
-
-//     const openDialog = (id) => {
-//         setDiaLog(true)
-//         setIdKhaoSat(id)
-//     }
-
-//     const closeDialog = () => {
-//         setDiaLog(false)
-//         setIdKhaoSat(0)
-//     }
-
-//     useEffect(() => {
-//         setData([{
-//             stt: 1,
-//             tenchuho: 'Nguyễn Văn A',
-//             diachi: ' phường 7 TP Vị Thanh Hậu giang',
-//             sonhankhau: 1,
-//             nguoihopdong: 'Nguyễn Văn A',
-//             trangthai: 'Đã khảo sát'
-//         },
-//         {
-//             stt: 2,
-//             tenchuho: 'Nguyễn Văn B',
-//             diachi: ' phường 5 TP Vị Thanh Hậu giang',
-//             sonhankhau: 1,
-//             nguoihopdong: 'Nguyễn Văn B',
-//             trangthai: 'Chưa khảo sát'
-//         },
-//         {
-//             stt: 3,
-//             tenchuho: 'Nguyễn Thị C',
-//             diachi: ' phường 4 TP Vị Thanh Hậu giang',
-//             sonhankhau: 1,
-//             nguoihopdong: 'Nguyễn Văn C',
-//             trangthai: 'Đang khắc phục'
-//         },])
-//     }, [])
-
-//     return (
-//         <ComponentSkeleton>
-//             <MainCard title="DANH SÁCH KHÁCH HÀNG">
-//                 <Box display={'flex'} sx={{alignItems:'center',marginBottom:1}} justifyContent={'space-between'}>
-//                 <TextField label='Tìm kiếm...'/>
-//                 <Button sx={{  marginLeft: 1 }} variant="outlined"  onClick={openDialogCustomer}>Thêm khách hàng</Button>
-//                 </Box>
-               
-//                 <TableContainer component={Paper}>
-//                     <Table>
-//                         <TableHead sx={{backgroundColor:'#0099ff'}}>
-//                             <TableRow>
-//                                 <TableCell sx={{color:'white'}}> STT </TableCell>
-//                                 <TableCell sx={{color:'white'}}> Tên chủ hộ </TableCell>
-//                                 <TableCell sx={{color:'white'}}> Địa chỉ </TableCell>
-                    
-                                
-//                                 <TableCell sx={{color:'white'}}> Trạng thái </TableCell>
-//                                 <TableCell sx={{color:'white'}}> Thao tác </TableCell>
-//                             </TableRow>
-//                         </TableHead>
-//                         <TableBody>
-//                             {data.length > 0 ? data.map(ele => {
-//                                 return (
-//                                     <TableRow key={ele.stt}>
-//                                         <TableCell>
-//                                             {ele.stt}
-//                                         </TableCell>
-//                                         <TableCell>
-//                                             {ele.tenchuho}
-//                                         </TableCell>
-//                                         <TableCell>
-//                                             {ele.diachi}
-//                                         </TableCell>
-                            
-                            
-//                                         <TableCell>
-//                                             {ele.trangthai}
-//                                         </TableCell>
-//                                         <TableCell>
-//                                             {ele.trangthai === 'Chưa khảo sát' ? <>
-//                                              <Button sx={{width:20,margin:1}} variant='contained' color='warning' onClick={() => { openDialog(ele.stt) }}>Sửa</Button> 
-//                                              <Button sx={{width:20,margin:1}} variant='contained' color='error' onClick={() => { openDialog(ele.stt) }}>Xoá</Button> 
-//                                              <Button sx={{width:20,margin:1}} variant='contained' color='success' onClick={() => { openDialog(ele.stt) }}>Lix</Button> 
-//                                              </>
-//                                              : ""}
-//                                         </TableCell>
-//                                     </TableRow>
-//                                 )
-//                             }) : ""}
-
-//                         </TableBody>
-//                     </Table>
-//                 </TableContainer>
-//                 <LixDialog
-//                     open={dialog}
-//                     handleClose={closeDialog}
-//                     id={idKhaoSat}
-//                 />
-//                 <AddCustomer
-//                     open={dialogCustomer}
-//                     handleClose={closeDialogCustomer}
-//                 />
-//             </MainCard>
-//         </ComponentSkeleton>
-//     )
-// }
-
-// export default ComponentTest
-
-
-
 import React, { useEffect, useState } from 'react'
 import ComponentSkeleton from './ComponentSkeleton'
 import MainCard from 'components/MainCard'
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '../../../node_modules/@mui/material/index'
+import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
 import LixDialog from 'pages/component/LixDialog'
 import AddCustomer from 'pages/component/AddCustomer'
-
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DiaLogSuccess from 'pages/component/DiaLogSuccess'
+import DiaLogError from 'pages/component/DiaLogError'
+import AddIcon from '@mui/icons-material/Add';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import instance from '../../axios/instance'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import DetailCustomer from 'pages/component/DetailCustomer'
+import SearchIcon from '@mui/icons-material/Search';
+import SaveIcon from '@mui/icons-material/Save';
 function ComponentTest() {
 
     const [data, setData] = useState([])
     const [dialog, setDiaLog] = useState(false)
     const [idKhaoSat, setIdKhaoSat] = useState(0)
     const [dialogCustomer, setDialogCustomer] = useState(false)
+    const [dialogSuccess, setDialogSuccess] = useState(false)
+    const [dialogError, setDialogError] = useState(false)
+    const [dialogDetail, setDialogDetail] = useState(false)
+    const [idKhachHang, setIDKhachHang] = useState(0)
+
+    const openDialogError = (id) => {
+        setDialogError(true)
+        setIDKhachHang(id)
+    }
+
+    const closeDialogError = () => {
+        setDialogError(false)
+        setIDKhachHang(0)
+    }
+
+    const openDialogDetail = (id) => {
+        setDialogDetail(true)
+        setIDKhachHang(id)
+    }
+
+    const closeDialogDetail = () => {
+        setDialogDetail(false)
+        setIDKhachHang(0)
+    }
+
+    // const openDialogSuccess = (id) => {
+    //     setDialogSuccess(true)
+    //     setIDKhachHang(id)
+    // }
+
+    const closeDialogSuccess = () => {
+        setDialogSuccess(false)
+        setIDKhachHang(0)
+    }
 
     const openDialogCustomer = () => {
         setDialogCustomer(true)
@@ -160,91 +75,195 @@ function ComponentTest() {
         setIdKhaoSat(0)
     }
 
+    const [maxPage, setMaxPage] = useState(0)
+    const listPage = [5, 10, 15, 25, 50]
+    const [rowPage, setRowPage] = useState(5)
+    const [page, setPage] = useState(1)
+    const nextPage = () => {
+        if (page < maxPage) {
+            setPage(page + 1);
+        }
+    }
+
+    const revertPage = () => {
+        if (page > 1) {
+            setPage(page - 1)
+        }
+    }
+
+    const changeRowPage = (ele) => {
+        setRowPage(ele.target.value)
+    }
+
+    const CallAPI = () => {
+        instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+            setMaxPage(res.data.last_page)
+            setData(res.data.data)
+            console.log(res.data)
+        }).catch(err => console.log(err))
+    }
+
     useEffect(() => {
-        setData([{
-            stt: 1,
-            tenchuho: 'LIX001',
-            diachi: ' 10/10/2023',
-            sonhankhau: 1,
-            nguoihopdong: 'Nguyễn Văn A',
-            trangthai: 'Nguyễn Văn A'
-        },
-        {
-            stt: 2,
-            tenchuho: 'LIX001',
-            diachi: ' 09/10/2023',
-            sonhankhau: 1,
-            nguoihopdong: 'Nguyễn Văn B',
-            trangthai: 'Nguyễn Văn A'
-        },
-        ])
-    }, [])
+        CallAPI()
+    }, [page, rowPage])
+    console.log(data)
 
     return (
         <ComponentSkeleton>
-            <MainCard title="DANH SÁCH PHIẾU KHẢO SÁT">
-                KH: NGUYỄN VĂN B
-                <Box display={'flex'} sx={{alignItems:'center',marginBottom:1}} justifyContent={'space-between'}>
-                <TextField label='Tìm kiếm...'/>
-                <Button sx={{  marginLeft: 1 }} variant="contained"  onClick={openDialogCustomer}>Thêm</Button>
+            <MainCard title="DANH SÁCH KHÁCH HÀNG">
+                <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
+                    <Box display={'flex'} flexWrap={'wrap'}>
+
+                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
+                            <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>
+                            <Select
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                label="Trạng thái khảo sát"
+                                value={0}
+                            >
+                                <MenuItem value={0}>
+                                    Tất cả
+                                </MenuItem>
+                                <MenuItem value={10}>Khách hàng đã khảo sát</MenuItem>
+                                <MenuItem value={20}>Khách hàng chưa khảo sát</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1.5 }} size="small">
+                            <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
+                            <Select
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                label="Chất lượng dịch vụ"
+                                value={0}
+                            >
+                                <MenuItem value={0}>
+                                    Tất cả
+                                </MenuItem>
+                                <MenuItem value={10}>Dịch vụ có vấn đề chất lượng</MenuItem>
+                                <MenuItem value={20}>Dịch vụ có khả năng phát triển thuê bao</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <TextField label='Tìm kiếm...' size="small" sx={{ marginRight: 2, marginTop: 1.5 ,width: 220}} />
+                        <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                    </Box>
+                    <Box display={'flex'} marginTop={1}>
+                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={openDialogCustomer}>
+                            <SaveIcon />
+                            <Typography >Excel</Typography>
+                        </Button>
+                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} variant="contained" onClick={openDialogCustomer}>
+                            <AddIcon />
+                            <Typography >Khách hàng</Typography>
+                        </Button>
+                    </Box>
+
                 </Box>
-               
                 <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead sx={{backgroundColor:'#0099ff'}}>
+                    <Table size='small'>
+                        <TableHead sx={{ backgroundColor: '#0099ff' }} >
                             <TableRow>
-                                <TableCell sx={{color:'white'}}> STT </TableCell>
-                                <TableCell sx={{color:'white'}}> Mã phiếu khảo sát </TableCell>
-                                <TableCell sx={{color:'white'}}> Ngày thu thập </TableCell>
-                    
-                                
-                                <TableCell sx={{color:'white'}}> Người thu thập </TableCell>
-                                <TableCell sx={{color:'white'}}> Thao tác </TableCell>
+                                <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell>
+                                <TableCell sx={{ color: 'white' }}> Số điện thoại </TableCell>
+                                <TableCell sx={{ color: 'white' }}> Trạng thái </TableCell>
+                                <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {data.length > 0 ? data.map(ele => {
+                            {data.map((ele, index) => {
                                 return (
-                                    <TableRow key={ele.stt}>
+                                    <TableRow key={index}>
                                         <TableCell>
-                                            {ele.stt}
+                                            {ele.TEN_KH}
                                         </TableCell>
                                         <TableCell>
-                                            {ele.tenchuho}
+                                            {ele.SODIENTHOAI_KH}
                                         </TableCell>
                                         <TableCell>
-                                            {ele.diachi}
-                                        </TableCell>
-                            
-                            
-                                        <TableCell>
-                                            {ele.trangthai}
+                                            {ele.TRANGTHAI_KH === 1 ? "Chưa khảo sát" : "Đã khảo sát"}
                                         </TableCell>
                                         <TableCell>
                                             {ele.trangthai !== '' ? <>
-                                             <Button sx={{width:20,margin:1}} variant='contained' color='warning' onClick={() => { openDialog(ele.stt) }}>Sửa</Button> 
-                                             <Button sx={{width:20,margin:1}} variant='contained' color='error' onClick={() => { openDialog(ele.stt) }}>Xoá</Button> 
-                                              
-                                             </>
-                                             : ""}
+                                                <Tooltip title="Chi tiết khách hàng">
+                                                    <IconButton onClick={() => { openDialogDetail(ele.ID_KH) }}>
+                                                        <RemoveRedEyeIcon color={'primary'} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Cập nhật phiếu LIX">
+                                                    <IconButton>
+                                                        <EditIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Xóa khảo sát">
+                                                    <IconButton>
+                                                        <DeleteIcon color='error' onClick={() => { openDialogError(ele.ID_KH) }} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                {/* <Button sx={{width:20,margin:1}} variant='contained' color='warning'>Sửa</Button>  */}
+                                                {/* <Button sx={{ width: 20, margin: 1 }} variant='contained' color='error' onClick={() => { openDialog(ele.stt) }}>Xoá</Button> */}
+                                            </>
+                                                : ""}
                                         </TableCell>
                                     </TableRow>
                                 )
-                            }) : ""}
+                            })}
 
                         </TableBody>
                     </Table>
+                    <Box display="flex" alignItems={'center'} justifyContent={'flex-end'} marginRight={2} padding={2}>
+                        <FormControl sx={{ width: 80 }}>
+                            <InputLabel id="demo-simple-select-label">Số dòng</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                label={'Số dòng'}
+                                value={rowPage}
+                                onChange={(e) => { changeRowPage(e) }}
+                            >
+                                {listPage.length > 0 && listPage.map(ele => (
+                                    <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Tooltip title={'Chuyển về trang trước'} sx={{ marginRight: 1 }}>
+                            <IconButton onClick={revertPage}>
+                                <KeyboardArrowLeftIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Typography>{page * rowPage - rowPage + 1 + " - " + page * rowPage}</Typography>
+                        <Tooltip title={'Chuyển tới trang sau'} sx={{ marginLeft: 1 }}>
+                            <IconButton onClick={nextPage}>
+                                <KeyboardArrowRightIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Typography>{'Tổng trang: ' + maxPage}</Typography>
+                    </Box>
                 </TableContainer>
-                <LixDialog
-                    open={dialog}
-                    handleClose={closeDialog}
-                    id={idKhaoSat}
-                />
-                <AddCustomer
-                    open={dialogCustomer}
-                    handleClose={closeDialogCustomer}
-                />
             </MainCard>
+            <LixDialog
+                open={dialog}
+                handleClose={closeDialog}
+                id={idKhaoSat}
+            />
+            <AddCustomer
+                open={dialogCustomer}
+                handleClose={closeDialogCustomer}
+            />
+            <DiaLogSuccess
+                open={dialogSuccess}
+                handleClose={closeDialogSuccess} />
+            <DiaLogError
+                open={dialogError}
+                handleClose={closeDialogError}
+                idKhachHang={idKhachHang}
+                content={"Xác nhận xóa khách hàng này ?"}
+            />
+            <DetailCustomer
+                open={dialogDetail}
+                handleClose={closeDialogDetail}
+                idkhachhang={idKhachHang}
+            />
+
         </ComponentSkeleton>
     )
 }

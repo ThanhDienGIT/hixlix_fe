@@ -5,9 +5,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, Card, CardContent, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from '../../../node_modules/@mui/material/index';
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 function LixDialog(props) {
-
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const [form, setForm] = useState([
         { form: 1 }
     ])
@@ -19,14 +21,14 @@ function LixDialog(props) {
 
 
     return (
-        <Dialog 
+        <Dialog
             open={props.open}
             onClose={props.handleClose}
-            fullScreen
+            fullScreen={fullScreen}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title" sx={{backgroundColor:'#0099ff',color:'white',width:'900'}}>
+            <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white', width: '900' }}>
                 Khảo sát LIX
             </DialogTitle>
             <DialogContent>
@@ -34,6 +36,7 @@ function LixDialog(props) {
                     <TextField disabled label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} />
                     <TextField disabled label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} />
                     <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} />
+                    <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
                     <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} />
                     <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
                     <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} />
@@ -68,53 +71,74 @@ function LixDialog(props) {
                     {form.map(element => {
                         return (
                             <Card key={element} sx={{ marginTop: 2 }}>
-                                <CardContent sx={{ display: 'flex', width:'900', flexDirection: 'column' }}>
+                                <CardContent sx={{ display: 'flex', width: '900', flexDirection: 'column' }}>
                                     <Typography gutterBottom variant="h5" component="div">
                                         Dịch vụ sử dụng
                                     </Typography>
                                     <FormControl fullwidth sx={{ marginTop: 1 }}>
-                                        <InputLabel>FTTH</InputLabel>
-                                        <Select value='FTTH'
-                                            label='FTTH'>
-                                            <MenuItem>FTTH</MenuItem>
+                                        <InputLabel>Dịch vụ</InputLabel>
+                                        <Select
+                                            value='1'
+                                            label='Dịch vụ'>
+                                            <MenuItem value='1'>FTTH</MenuItem>
                                             <MenuItem>MyTv</MenuItem>
                                             <MenuItem>Di động TS/TT</MenuItem>
                                         </Select>
-                                        
+                                    </FormControl>
+                                    <FormControl sx={{ marginTop: 2 }}>
+                                        <InputLabel>Nhà cung cấp</InputLabel>
+                                        <Select
+                                            value={2}
+                                            label='Loại dịch vụ'
+                                        >
+                                            <MenuItem value={2}>VNPT</MenuItem>
+                                            <MenuItem>Viettel</MenuItem>
+                                            <MenuItem>FPT</MenuItem>
+                                        </Select>
                                     </FormControl>
                                     <TextField label="Mức cước/tháng" sx={{ marginTop: 2 }} />
                                     <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} />
-                                    <TextField label="Ngày bắt đầu đặt cọc" sx={{ marginTop: 2 }} />
-                                    <TextField label="Ngày kết thúc đặt cọc" sx={{ marginTop: 2 }} />
+                                    
+                                        <TextField label={'Ngày bắt đầu đặt cọc'} type="date" value={'2023-10-09'} sx={{ marginTop: 2 }} />
+                                        <TextField label={'Ngày kết thúc đặt cọc'} type="date"value={'2023-12-09'}  sx={{ marginTop: 2 }} />
+                                 
                                     <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                        <InputLabel>Mức độ hài lòng</InputLabel>
-                                        <Select
-                                            label='10'>
-                                            <MenuItem>1</MenuItem>
-                                            <MenuItem>2</MenuItem>
-                                            <MenuItem>3</MenuItem>
-                                            <MenuItem>4</MenuItem>
-                                            <MenuItem>5</MenuItem>
-                                            <MenuItem>6</MenuItem>
-                                            <MenuItem>7</MenuItem>
-                                            <MenuItem>8</MenuItem>
-                                            <MenuItem>9</MenuItem>
-                                            <MenuItem>10</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl  sx={{ marginTop: 2 }}>
-                                        <InputLabel>VNPT</InputLabel>
-                                        <Select
-                                            label='Loại dịch vụ'
-                                            value='VNPT'
-                                         >   
-                                       
-                                        <MenuItem>VNPT</MenuItem>
-                                        <MenuItem>Viettel</MenuItem>
-                                        <MenuItem>FPT</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                    <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} />
+                                            <InputLabel>Đánh giá chất lượng dịch vụ</InputLabel>
+                                            <Select
+                                                value={8}
+                                                label='10'>
+                                                <MenuItem>1</MenuItem>
+                                                <MenuItem>2</MenuItem>
+                                                <MenuItem>3</MenuItem>
+                                                <MenuItem>4</MenuItem>
+                                                <MenuItem>5</MenuItem>
+                                                <MenuItem>6</MenuItem>
+                                                <MenuItem>7</MenuItem>
+                                                <MenuItem value={8}>8</MenuItem>
+                                                <MenuItem>9</MenuItem>
+                                                <MenuItem value={10}>10</MenuItem>
+                                            </Select>
+                                        </FormControl>
+
+                                        <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                            <InputLabel>Đánh giá cảm nhận về chất lượng DV </InputLabel>
+                                            <Select
+                                                value={8}
+                                                label='10'>
+                                                <MenuItem>1</MenuItem>
+                                                <MenuItem>2</MenuItem>
+                                                <MenuItem>3</MenuItem>
+                                                <MenuItem>4</MenuItem>
+                                                <MenuItem>5</MenuItem>
+                                                <MenuItem>6</MenuItem>
+                                                <MenuItem>7</MenuItem>
+                                                <MenuItem value={8}>8</MenuItem>
+                                                <MenuItem>9</MenuItem>
+                                                <MenuItem value={10}>10</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} />
+
                                 </CardContent>
                             </Card>
                         )
