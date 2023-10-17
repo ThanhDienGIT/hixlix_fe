@@ -36,14 +36,6 @@ Route::post('/add_lix', [Lix::class, 'add_lix']);
 Route::put('/update_lix', [Lix::class, 'update_lix']);
 Route::post('/delete_lix', [Lix::class, 'delete_lix']);
 
-Route::controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('register', 'register');
-    Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-});
-
-
 //dichvu
 Route::get('/dichvu', [Lix::class, 'dichvu']);
 
