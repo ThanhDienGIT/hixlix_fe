@@ -37,12 +37,12 @@ class khachhang extends Model
 
     public function donvihanhchinh()
     {
-        return $this->belongsTo(NhanVien::class, 'nv_id', 'nv_id');
+        return $this->belongsTo(NhanVien::class, 'NV_ID', 'NV_ID');
     }
 
     public function phieukhaosat()
     {
-        return $this->hasOne(phieukhaosat::class, 'id_kh', 'id_kh');
+        return $this->hasOne(phieukhaosat::class, 'ID_KH', 'ID_KH');
     }
 
  

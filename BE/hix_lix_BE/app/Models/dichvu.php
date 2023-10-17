@@ -22,11 +22,11 @@ class dichvu extends Model
 
     public function chitietkhaosats()
     {
-        return $this->hasMany(chi_tiet_phieu_khao_sat_lix::class, 'id_dv', 'id_dv');
+        return $this->hasMany(chi_tiet_phieu_khao_sat_lix::class, 'ID_DV', 'ID_DV');
     }
 
     public function loaidichvu()
     {
-        return $this->belongsTo(loaidichvu::class, 'id_ldv', 'id_ldv');
+        return $this->belongsTo(loaidichvu::class, 'ID_LDV', 'ID_LDV');
     }
 }

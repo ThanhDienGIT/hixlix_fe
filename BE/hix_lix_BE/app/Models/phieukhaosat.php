@@ -21,14 +21,14 @@ class phieukhaosat extends Model
 
     public function chitietpks()
     {
-        return $this->hasMany(chi_tiet_phieu_khao_sat_lix::class, 'id_ctpks', 'id_ctpks');
+        return $this->hasMany(chi_tiet_phieu_khao_sat_lix::class, 'ID_PKS', 'ID_PKS');
     }
     public function nhanviens()
     {
-        return $this->hasMany(nhanvien::class, 'id_nv', 'id_nv');
+        return $this->belongsTo(nhanvien::class, 'ID_NV', 'ID_NV');
     }
     public function khachhangs()
     {
-        return $this->belongsTo(nhanvien::class, 'id_kh', 'id_kh');
+        return $this->hasOne(khachhang::class, 'ID_KH', 'ID_KH');
     }
 }

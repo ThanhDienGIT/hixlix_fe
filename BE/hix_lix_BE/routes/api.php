@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\danhsachkhachhang;
 use App\Http\Controllers\Lix;
 use App\Http\Controllers\testController;
@@ -31,6 +32,9 @@ Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
 //Lix
 Route::get('/get_lix', [Lix::class, 'get_lix']);
 
+Route::post('/add_lix', [Lix::class, 'add_lix']);
+Route::put('/update_lix', [Lix::class, 'update_lix']);
+Route::post('/delete_lix', [Lix::class, 'delete_lix']);
 
 //dichvu
 Route::get('/dichvu', [Lix::class, 'dichvu']);

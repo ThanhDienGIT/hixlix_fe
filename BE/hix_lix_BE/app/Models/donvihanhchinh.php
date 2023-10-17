@@ -22,12 +22,12 @@ class donvihanhchinh extends Model
 
     public function khachhangs()
     {
-        return $this->hasMany(khachhang::class, 'id_dvhc', 'id_dvhc');
+        return $this->hasMany(khachhang::class, 'ID_DVHC', 'ID_DVHC');
     }
 
     public function nhanviens()
     {
-        return $this->hasMany(nhanvien::class, 'id_dvhc', 'id_dvhc');
+        return $this->hasMany(nhanvien::class, 'ID_DVHC', 'ID_DVHC');
     }
 
 }

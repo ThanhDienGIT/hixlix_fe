@@ -38,11 +38,11 @@ class chi_tiet_phieu_khao_sat_lix extends Model
 
     public function phieukhaosat()
     {
-        return $this->belongsTo(phieukhaosat::class, 'id_pks', 'id_pks');
+        return $this->belongsTo(phieukhaosat::class, 'ID_PKS', 'ID_PKS');
     }
 
-    public function khachhang()
-    {
-        return $this->belongsTo(phieukhaosat::class, 'id_pks', 'id_pks');
-    }
+    // public function khachhang()
+    // {
+    //     return $this->belongsTo(phieukhaosat::class, 'id_pks', 'id_pks');
+    // }
 }
