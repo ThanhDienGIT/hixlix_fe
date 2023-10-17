@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Axios from '../../../axios/instance';
+
 
 // material-ui
 import {
@@ -31,6 +31,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import instance from '../../../axios/instance';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -64,13 +65,14 @@ const AuthLogin = () => {
 
 
   const handleLogin = async () => {
+    console.log('handle')
     // Gửi yêu cầu đăng nhập với username và password đến API của Laravel
     const objectSend = {
       username: username,
       password: password
     }
     setLoading(true)
-    const response = await Axios.post('login', objectSend);
+    const response = await instance.post('login', objectSend);
 
     if (response.status === 200) {
       // Đăng nhập thành công, lưu token vào localStorage hoặc sử dụng một cơ chế lưu trữ khác
