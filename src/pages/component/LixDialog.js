@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,9 +7,39 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Box, Card, CardContent, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+
 function LixDialog(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+    const [customer, setCustomer] = useState({
+        ID_KH: 0,
+        ID_NV: 0,
+        ID_DVHC: 0,
+        TEN_KH: '',
+        DIACHI_KH: '',
+        SODIENTHOAI_KH: '',
+        CCCD_KH: '',
+        SONHANKHAU_KH: 0,
+        NGAYSINH_KH: '',
+        NGHENGHIEP_KH: '',
+        MAHUYEN_KH: 0,
+        MAXA_KH: 0,
+        BAOHONG_KH: false,
+        THOIGIANLAPDAT_KH: '',
+        THOIGIANNGUNG_KH: '',
+        FILENAME_KH: '',
+        NGAYTAO_KH: '',
+        NGUOITAO_KH: 0,
+        GHICHU_KH: '',
+        TRANGTHAI_KH: 0
+    })
+
+    const getInfoCustomer = () => {
+        //Callapi
+        setCustomer('halo')
+    }
+
     const [form, setForm] = useState([
         { form: 1 }
     ])
@@ -19,6 +49,10 @@ function LixDialog(props) {
     }
 
 
+    useEffect(()=>{
+        getInfoCustomer(props.idCustomer)
+
+    },[props.idCustomer])
 
     return (
         <Dialog
@@ -33,10 +67,10 @@ function LixDialog(props) {
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} >
-                    <TextField disabled label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} />
-                    <TextField disabled label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} />
-                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} />
-                    <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
+                    <TextField disabled label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} />
+                    <TextField disabled label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} value={customer.DIACHI_KH} />
+                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} />
+                    <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} />
                     <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} />
                     <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
                     <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} />
@@ -45,14 +79,23 @@ function LixDialog(props) {
                         <InputLabel >Quận huyện</InputLabel>
                         <Select
                             label='Quận huyện' >
-                            <MenuItem>hello</MenuItem>
+                            {props.wards && props.wards.filter(x => x.ID_CHA_DVHC === null).map(ele => {
+                                return (
+                                    <MenuItem key={ele.ID_DVHC} value={ele.ID_DVHC}>{ele.TEN_DVHC}</MenuItem>
+                                )
+                            })}
                         </Select>
                     </FormControl>
                     <FormControl sx={{ marginTop: 2 }}>
                         <InputLabel>Xã phường</InputLabel>
                         <Select
                             label='Xã phường'>
-                            <MenuItem>hello</MenuItem>
+
+                            {props.wards && props.wards.filter(x => x.ID_CHA_DVHC !== null).map(ele => {
+                                return (
+                                    <MenuItem key={ele.ID_DVHC} value={ele.ID_DVHC}>{ele.TEN_DVHC}</MenuItem>
+                                )
+                            })}
                         </Select>
                     </FormControl>
                     <TextField label="Địa chỉ cụ thể" sx={{ marginTop: 2 }} />
@@ -79,10 +122,14 @@ function LixDialog(props) {
                                         <InputLabel>Dịch vụ</InputLabel>
                                         <Select
                                             value='1'
-                                            label='Dịch vụ'>
-                                            <MenuItem value='1'>FTTH</MenuItem>
-                                            <MenuItem>MyTv</MenuItem>
-                                            <MenuItem>Di động TS/TT</MenuItem>
+                                            label='Dịch vụ'
+                                        >
+                                            <MenuItem value={0}>Chọn dịch vụ</MenuItem>
+                                            {props.serviceList && props.serviceList.map(ele => {
+                                                return (
+                                                    <MenuItem key={ele.ID_DV} value={ele.ID_DV}>{ele.TEN_DV}</MenuItem>
+                                                )
+                                            })}
                                         </Select>
                                     </FormControl>
                                     <FormControl sx={{ marginTop: 2 }}>
@@ -91,53 +138,47 @@ function LixDialog(props) {
                                             value={2}
                                             label='Loại dịch vụ'
                                         >
-                                            <MenuItem value={2}>VNPT</MenuItem>
-                                            <MenuItem>Viettel</MenuItem>
-                                            <MenuItem>FPT</MenuItem>
+                                            <MenuItem value={0}>Chọn nhà cung cấp</MenuItem>
+                                            {props.provider && props.provider.map(ele => {
+                                                return (
+                                                    <MenuItem key={ele.ID_NHACUNGCAP} value={ele.ID_NHACUNGCAP}>{ele.TEN_NHACUNGCAP}</MenuItem>
+                                                )
+                                            })}
+
                                         </Select>
                                     </FormControl>
                                     <TextField label="Mức cước/tháng" sx={{ marginTop: 2 }} />
                                     <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} />
-                                    
-                                        <TextField label={'Ngày bắt đầu đặt cọc'} type="date" value={'2023-10-09'} sx={{ marginTop: 2 }} />
-                                        <TextField label={'Ngày kết thúc đặt cọc'} type="date"value={'2023-12-09'}  sx={{ marginTop: 2 }} />
-                                 
-                                    <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                            <InputLabel>Đánh giá chất lượng dịch vụ</InputLabel>
-                                            <Select
-                                                value={8}
-                                                label='10'>
-                                                <MenuItem>1</MenuItem>
-                                                <MenuItem>2</MenuItem>
-                                                <MenuItem>3</MenuItem>
-                                                <MenuItem>4</MenuItem>
-                                                <MenuItem>5</MenuItem>
-                                                <MenuItem>6</MenuItem>
-                                                <MenuItem>7</MenuItem>
-                                                <MenuItem value={8}>8</MenuItem>
-                                                <MenuItem>9</MenuItem>
-                                                <MenuItem value={10}>10</MenuItem>
-                                            </Select>
-                                        </FormControl>
 
-                                        <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                            <InputLabel>Đánh giá cảm nhận về chất lượng DV </InputLabel>
-                                            <Select
-                                                value={8}
-                                                label='10'>
-                                                <MenuItem>1</MenuItem>
-                                                <MenuItem>2</MenuItem>
-                                                <MenuItem>3</MenuItem>
-                                                <MenuItem>4</MenuItem>
-                                                <MenuItem>5</MenuItem>
-                                                <MenuItem>6</MenuItem>
-                                                <MenuItem>7</MenuItem>
-                                                <MenuItem value={8}>8</MenuItem>
-                                                <MenuItem>9</MenuItem>
-                                                <MenuItem value={10}>10</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                        <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} />
+                                    <TextField label={'Ngày bắt đầu đặt cọc'} type="date" value={'2023-10-09'} sx={{ marginTop: 2 }} />
+                                    <TextField label={'Ngày kết thúc đặt cọc'} type="date" value={'2023-12-09'} sx={{ marginTop: 2 }} />
+
+                                    <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                        <InputLabel>Đánh giá chất lượng dịch vụ</InputLabel>
+                                        <Select
+                                            value={8}
+                                            label='10'>
+
+                                            {props.servicePointList && props.servicePointList.map(ele => {
+                                                return (
+                                                    <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                                )
+                                            })}
+                                        </Select>
+                                    </FormControl>
+                                    <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                        <InputLabel>Đánh giá cảm nhận về chất lượng dịch vụ </InputLabel>
+                                        <Select
+                                            value={8}
+                                            label='10'>
+                                            {props.servicePointList && props.servicePointList.map(ele => {
+                                                return (
+                                                    <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                                )
+                                            })}
+                                        </Select>
+                                    </FormControl>
+                                    <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} />
 
                                 </CardContent>
                             </Card>

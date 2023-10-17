@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -28,6 +28,7 @@ import SettingTab from './SettingTab';
 // assets
 import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import jwt_decode from 'jwt-decode';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -52,6 +53,8 @@ function a11yProps(index) {
 }
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
+
+
 
 const Profile = () => {
   const theme = useTheme();
@@ -80,6 +83,14 @@ const Profile = () => {
   };
 
   const iconBackColorOpen = 'grey.300';
+
+  useEffect(() => {
+    const userString = localStorage.getItem('access_token');
+    const user = jwt_decode(userString);
+
+    console.log(user)
+  }, [])
+
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>

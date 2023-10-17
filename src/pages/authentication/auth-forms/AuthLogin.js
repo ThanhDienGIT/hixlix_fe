@@ -1,21 +1,21 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Axios from '../../../axios/instance';
 
 // material-ui
 import {
   Button,
-  Checkbox,
-  Divider,
-  FormControlLabel,
+  // Checkbox,
+  // FormControlLabel,
   FormHelperText,
   Grid,
-  Link,
+  // Link,
   IconButton,
   InputAdornment,
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography
+  // Typography
 } from '@mui/material';
 
 // third party
@@ -23,16 +23,34 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project import
-import FirebaseSocial from './FirebaseSocial';
+// import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const AuthLogin = () => {
-  const [checked, setChecked] = React.useState(false);
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  // const [checked, setChecked] = React.useState(false);
+  const [loading, setLoading] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
+  // const [message, setMessage] = React.useState('')
+
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    if(localStorage.getItem('access_token') && localStorage.getItem('access_token') !== null){
+      navigate('/')
+    }
+  }, [])
 
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => {
@@ -42,6 +60,44 @@ const AuthLogin = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+
+
+  const handleLogin = async () => {
+    // Gửi yêu cầu đăng nhập với username và password đến API của Laravel
+    const objectSend = {
+      username: username,
+      password: password
+    }
+    setLoading(true)
+    const response = await Axios.post('login', objectSend);
+
+    if (response.status === 200) {
+      // Đăng nhập thành công, lưu token vào localStorage hoặc sử dụng một cơ chế lưu trữ khác
+      localStorage.setItem('access_token', response.data.access_token);
+      // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
+      setLoading(false)
+      setOpen(true)
+      // setMessage(data.message)
+      navigate('/')
+    } else {
+      setLoading(false)
+    }
+  }
+
+  const handleChangeUsername = (e) => {
+    const {value } = e.target;
+    setUsername(value)
+  };
+
+  const handleChangePassword = (e) => {
+    const {value } = e.target;
+    setPassword(value)
+  };
+
+  const handleClose = () => {
+    setOpen(false)
+  }
 
   return (
     <>
@@ -55,7 +111,7 @@ const AuthLogin = () => {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+        onSubmit={async ({ setErrors, setStatus, setSubmitting }) => {
           try {
             setStatus({ success: false });
             setSubmitting(false);
@@ -66,20 +122,19 @@ const AuthLogin = () => {
           }
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
+        {({ errors, handleBlur, isSubmitting, touched }) => (
+          <form noValidate onSubmit={handleLogin}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                  <InputLabel htmlFor="email-login">Tên đăng nhập</InputLabel>
                   <OutlinedInput
                     id="email-login"
                     type="email"
-                    value={values.email}
                     name="email"
                     onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Enter email address"
+                    onChange={handleChangeUsername}
+                    placeholder="Nhập tên tài khoản"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />
@@ -92,16 +147,15 @@ const AuthLogin = () => {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-login">Password</InputLabel>
+                  <InputLabel htmlFor="password-login">Mật khẩu</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
                     id="-password-login"
                     type={showPassword ? 'text' : 'password'}
-                    value={values.password}
                     name="password"
                     onBlur={handleBlur}
-                    onChange={handleChange}
+                    onChange={handleChangePassword}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
@@ -115,7 +169,7 @@ const AuthLogin = () => {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
+                    placeholder="Nhập mật khẩu"
                   />
                   {touched.password && errors.password && (
                     <FormHelperText error id="standard-weight-helper-text-password-login">
@@ -125,7 +179,7 @@ const AuthLogin = () => {
                 </Stack>
               </Grid>
 
-              <Grid item xs={12} sx={{ mt: -1 }}>
+              {/* <Grid item xs={12} sx={{ mt: -1 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
                   <FormControlLabel
                     control={
@@ -143,7 +197,7 @@ const AuthLogin = () => {
                     Forgot Password?
                   </Link>
                 </Stack>
-              </Grid>
+              </Grid> */}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
@@ -151,23 +205,28 @@ const AuthLogin = () => {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Login
+                  <Button onClick={handleLogin} disableElevation disabled={isSubmitting} fullWidth size="large" type="button" variant="contained" color="primary">
+                    {loading == false ? 'Đăng nhập' :  <CircularProgress color="inherit"/>}
                   </Button>
                 </AnimateButton>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Divider>
                   <Typography variant="caption"> Login with</Typography>
                 </Divider>
               </Grid>
               <Grid item xs={12}>
                 <FirebaseSocial />
-              </Grid>
+              </Grid> */}
             </Grid>
           </form>
         )}
       </Formik>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          This is a success message!
+        </Alert>
+      </Snackbar>
     </>
   );
 };

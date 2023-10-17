@@ -24,12 +24,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::get('/test', [testController::class, 'test']);
+Route::post('/login', [testController::class, 'SignIn']);
 //khach hang
 Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
 Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
 
 //Lix
-
 Route::get('/get_lix', [Lix::class, 'get_lix']);
 
 Route::post('/add_lix', [Lix::class, 'add_lix']);
@@ -42,5 +42,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
 });
+
+
+//dichvu
+Route::get('/dichvu', [Lix::class, 'dichvu']);
 
 
