@@ -4,7 +4,6 @@ import MainCard from 'components/MainCard'
 import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
 import LixDialog from 'pages/component/LixDialog'
 import AddCustomer from 'pages/component/AddCustomer'
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DiaLogSuccess from 'pages/component/DiaLogSuccess'
 import DiaLogError from 'pages/component/DiaLogError'
@@ -16,6 +15,8 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DetailCustomer from 'pages/component/DetailCustomer'
 import SearchIcon from '@mui/icons-material/Search';
 import SaveIcon from '@mui/icons-material/Save';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+
 function ComponentTest() {
 
     const [data, setData] = useState([])
@@ -26,7 +27,17 @@ function ComponentTest() {
     const [dialogError, setDialogError] = useState(false)
     const [dialogDetail, setDialogDetail] = useState(false)
     const [idKhachHang, setIDKhachHang] = useState(0)
+    const [defaultService, setDefaultService] = useState([])
+    const [provider, setProvider] = useState([])
+    const [wards,setWards] = useState([])
+    const servicePointList = [0,1,2,3,4,5,6,7,8,9,10]
+    const callAPIServiceList = () => {
+        instance.get('dichvu')
+            .then(res => setDefaultService(res.data))
+            .catch(err => console.log(err))
+    }
 
+    console.log(defaultService)
     const openDialogError = (id) => {
         setDialogError(true)
         setIDKhachHang(id)
@@ -106,7 +117,44 @@ function ComponentTest() {
     useEffect(() => {
         CallAPI()
     }, [page, rowPage])
-    console.log(data)
+
+
+    useEffect(() => {
+        callAPIServiceList()
+        setProvider([
+            {
+                ID_NHACUNGCAP: 1,
+                TEN_NHACUNGCAP: "Viettel",
+            },
+            {
+                ID_NHACUNGCAP: 2,
+                TEN_NHACUNGCAP: "VNPT",
+            },
+            {
+                ID_NHACUNGCAP: 3,
+                TEN_NHACUNGCAP: "FPT",
+            },
+        ])
+        setWards([
+            {
+             ID_DVHC:1,
+             TEN_DVHC:'Vị thanh',
+             ID_CHA_DVHC: null,
+            },
+            {
+             ID_DVHC:2,
+             TEN_DVHC:'Phường 7',
+             ID_CHA_DVHC: 1,
+            },
+            {
+             ID_DVHC:3,
+             TEN_DVHC:'Phường 5',
+             ID_CHA_DVHC: 1,
+            },
+         ])
+    }, [])
+
+ 
 
     return (
         <ComponentSkeleton>
@@ -144,13 +192,13 @@ function ComponentTest() {
                                 <MenuItem value={20}>Dịch vụ có khả năng phát triển thuê bao</MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField label='Tìm kiếm...' size="small" sx={{ marginRight: 2, marginTop: 1.5 ,width: 220}} />
+                        <TextField label='Tìm kiếm...' size="small" sx={{ marginRight: 2, marginTop: 1.5, width: 220 }} />
                         <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
                     <Box display={'flex'} marginTop={1}>
                         <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={openDialogCustomer}>
                             <SaveIcon />
-                            <Typography >Excel</Typography>
+                            <Typography >Xuất excel</Typography>
                         </Button>
                         <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
@@ -191,7 +239,7 @@ function ComponentTest() {
                                                 </Tooltip>
                                                 <Tooltip title="Cập nhật phiếu LIX">
                                                     <IconButton>
-                                                        <EditIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
+                                                        <EditNoteIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title="Xóa khảo sát">
@@ -244,10 +292,15 @@ function ComponentTest() {
                 open={dialog}
                 handleClose={closeDialog}
                 id={idKhaoSat}
+                serviceList={defaultService}
+                provider={provider}
+                wards={wards}
+                servicePointList={servicePointList}
             />
             <AddCustomer
                 open={dialogCustomer}
                 handleClose={closeDialogCustomer}
+                wards={wards}
             />
             <DiaLogSuccess
                 open={dialogSuccess}

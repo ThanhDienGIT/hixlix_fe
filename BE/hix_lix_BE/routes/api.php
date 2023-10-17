@@ -28,7 +28,10 @@ Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_dan
 Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
 
 //Lix
-
 Route::get('/get_lix', [Lix::class, 'get_lix']);
+
+
+//dichvu
+Route::get('/dichvu', [Lix::class, 'dichvu']);
 
 
