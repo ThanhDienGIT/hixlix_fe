@@ -21,7 +21,7 @@ class nhanvien extends Model implements JWTSubject
         'email_nv',
         'chucvu_nv',
         'taikhoan_nv',
-        // 'matkhau_nv',
+        'matkhau_nv',
         'trangthai_nv',
         'is_deleted',
     ];

@@ -15,7 +15,7 @@ class Lix extends Controller
     {
 
 
-        // $user=auth()->user();
+        $user=auth()->user();
 
         $id_nv = $request->id_nv;
 
