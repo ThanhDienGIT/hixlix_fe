@@ -7,6 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Box, Card, CardContent, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { format } from 'date-fns';
 
 function LixDialog(props) {
     const theme = useTheme();
@@ -16,28 +17,47 @@ function LixDialog(props) {
         ID_KH: 0,
         ID_NV: 0,
         ID_DVHC: 0,
-        TEN_KH: '',
-        DIACHI_KH: '',
-        SODIENTHOAI_KH: '',
-        CCCD_KH: '',
-        SONHANKHAU_KH: 0,
-        NGAYSINH_KH: '',
-        NGHENGHIEP_KH: '',
+        TEN_KH: "Nguyễn Văn Hùng Anh",
+        DIACHI_KH: "",
+        SODIENTHOAI_KH: "",
+        CCCD_KH: "",
+        SONHANKHAU_KH: "",
+        NGAYSINH_KH: "",
+        NGHENGHIEP_KH: "",
         MAHUYEN_KH: 0,
         MAXA_KH: 0,
         BAOHONG_KH: false,
-        THOIGIANLAPDAT_KH: '',
-        THOIGIANNGUNG_KH: '',
-        FILENAME_KH: '',
-        NGAYTAO_KH: '',
+        THOIGIANLAPDAT_KH: "",
+        THOIGIANNGUNG_KH: "",
+        FILENAME_KH: "",
+        NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
         NGUOITAO_KH: 0,
-        GHICHU_KH: '',
-        TRANGTHAI_KH: 0
+        GHICHU_KH: "",
     })
 
     const getInfoCustomer = () => {
         //Callapi
-        setCustomer('halo')
+        setCustomer({
+            ID_KH: 0,
+            ID_NV: 0,
+            ID_DVHC: 0,
+            TEN_KH: "",
+            DIACHI_KH: "",
+            SODIENTHOAI_KH: "",
+            CCCD_KH: "",
+            SONHANKHAU_KH: "",
+            NGAYSINH_KH: "",
+            NGHENGHIEP_KH: "",
+            MAHUYEN_KH: 0,
+            MAXA_KH: 0,
+            BAOHONG_KH: false,
+            THOIGIANLAPDAT_KH: "",
+            THOIGIANNGUNG_KH: "",
+            FILENAME_KH: "",
+            NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
+            NGUOITAO_KH: 0,
+            GHICHU_KH: "",
+        })
     }
 
     const [form, setForm] = useState([
@@ -49,10 +69,9 @@ function LixDialog(props) {
     }
 
 
-    useEffect(()=>{
+    useEffect(() => {
         getInfoCustomer(props.idCustomer)
-
-    },[props.idCustomer])
+    }, [props.idCustomer])
 
     return (
         <Dialog
@@ -66,19 +85,20 @@ function LixDialog(props) {
                 Khảo sát LIX
             </DialogTitle>
             <DialogContent>
-                <Box display={'flex'} flexDirection={'column'} >
-                    <TextField disabled label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} />
-                    <TextField disabled label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} value={customer.DIACHI_KH} />
-                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} />
-                    <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} />
-                    <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} />
-                    <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
-                    <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} />
-                    <TextField label="Ngày sinh nhật" sx={{ marginTop: 2 }} />
+
+                <Box display={'flex'} flexDirection={'column'} padding={1}>
+                    <TextField label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} name={'TEN_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} />
+                    <TextField label="CCCD (*)" sx={{ marginTop: 2 }} value={customer.CCCD_KH} name={'CCCD_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel >Quận huyện</InputLabel>
+                        <InputLabel >Quận huyện (*)</InputLabel>
                         <Select
-                            label='Quận huyện' >
+                            label='Quận huyện'
+                            value={customer.MAHUYEN_KH}
+                            name={'MAHUYEN_KH'}
+                            onChange={(e) => { onChangeInput(e) }}
+                        >
+                            <MenuItem value={0}>Chọn quận huyện</MenuItem>
                             {props.wards && props.wards.filter(x => x.ID_CHA_DVHC === null).map(ele => {
                                 return (
                                     <MenuItem key={ele.ID_DVHC} value={ele.ID_DVHC}>{ele.TEN_DVHC}</MenuItem>
@@ -87,10 +107,14 @@ function LixDialog(props) {
                         </Select>
                     </FormControl>
                     <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel>Xã phường</InputLabel>
+                        <InputLabel>Xã phường (*)</InputLabel>
                         <Select
-                            label='Xã phường'>
-
+                            label='Xã phường'
+                            value={customer.MAXA_KH}
+                            name={'MAXA_KH'}
+                            onChange={(e) => { onChangeInput(e) }}
+                        >
+                            <MenuItem value={0}>Chọn xã phường</MenuItem>
                             {props.wards && props.wards.filter(x => x.ID_CHA_DVHC !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.ID_DVHC} value={ele.ID_DVHC}>{ele.TEN_DVHC}</MenuItem>
@@ -98,17 +122,24 @@ function LixDialog(props) {
                             })}
                         </Select>
                     </FormControl>
-                    <TextField label="Địa chỉ cụ thể" sx={{ marginTop: 2 }} />
-                    <TextField label="Nghề nghiệp" sx={{ marginTop: 2 }} />
-                    <FormControl sx={{ marginTop: 2 }}>
+                    <TextField label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} value={customer.DIACHI_KH} name={'DIACHI_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} value={customer.SONHANKHAU_KH} name={'SONHANKHAU_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <TextField label="Ngày sinh nhật"
+                        InputLabelProps={{
+                            shrink: true,
+                        }} type={'date'} sx={{ marginTop: 2 }} value={customer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <TextField label="Nghề nghiệp" sx={{ marginTop: 2 }} value={customer.NGHENGHIEP_KH} name={'NGHENGHIEP_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <FormControl sx={{ marginTop: 2 }} >
                         <FormLabel id="demo-row-radio-buttons-group-label">Đã biết số báo hỏng</FormLabel>
                         <RadioGroup
                             row
                             aria-labelledby="demo-row-radio-buttons-group-label"
-                            name="row-radio-buttons-group"
+                            value={customer.BAOHONG_KH}
+                            name={'BAOHONG_KH'}
+                            onChange={(e) => { onChangeInput(e) }}
                         >
-                            <FormControlLabel value="1" control={<Radio />} label="Đã biết" />
-                            <FormControlLabel value="2" control={<Radio />} label="Chưa biết" />
+                            <FormControlLabel value={false} control={<Radio />} label="Chưa biết" />
+                            <FormControlLabel value={true} control={<Radio />} label="Đã biết" />
                         </RadioGroup>
                     </FormControl>
                     {form.map(element => {
@@ -149,7 +180,8 @@ function LixDialog(props) {
                                     </FormControl>
                                     <TextField label="Mức cước/tháng" sx={{ marginTop: 2 }} />
                                     <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} />
-
+                                    <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} />
+                                    <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} />
                                     <TextField label={'Ngày bắt đầu đặt cọc'} type="date" value={'2023-10-09'} sx={{ marginTop: 2 }} />
                                     <TextField label={'Ngày kết thúc đặt cọc'} type="date" value={'2023-12-09'} sx={{ marginTop: 2 }} />
 

@@ -7,6 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Box, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from '../../../node_modules/@mui/material/index';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { format } from 'date-fns';
 function AddCustomer(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -30,12 +31,11 @@ function AddCustomer(props) {
         THOIGIANLAPDAT_KH: "",
         THOIGIANNGUNG_KH: "",
         FILENAME_KH: "",
-        NGAYTAO_KH: "",
+        NGAYTAO_KH: format(new Date(),'yyyy-MM-dd'),
         NGUOITAO_KH: 0,
         GHICHU_KH: "",
     })
 
-    console.log(customer)
 
     const onChangeInput = (e) => {
         setCustomer(rev => ({
@@ -63,6 +63,7 @@ function AddCustomer(props) {
                 <Box display={'flex'} flexDirection={'column'} padding={1}>
                     <TextField label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} name={'TEN_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} />
+                    <TextField label="CCCD (*)" sx={{ marginTop: 2 }}  value={customer.CCCD_KH} name={'CCCD_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <FormControl sx={{ marginTop: 2 }}>
                         <InputLabel >Quận huyện (*)</InputLabel>
                         <Select

@@ -16,7 +16,7 @@ class testController extends Controller
 {
     //
     public function test(){
-    
+
         return response()->json('test', 200);
     }
 
@@ -32,7 +32,7 @@ class testController extends Controller
             if (!$user) {
                 return response()->json(['invalid_email_or_password'], 422);
             }
-            
+
 
             if (!password_verify($credentials['password'], $user->MATKHAU_NV)) {
                 return response()->json(['invalid_email_or_password'], 422);

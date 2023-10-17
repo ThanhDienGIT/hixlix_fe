@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState, useEffect } from 'react';
+import {  useRef, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -28,7 +28,6 @@ import SettingTab from './SettingTab';
 // assets
 import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import jwt_decode from 'jwt-decode';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -58,9 +57,10 @@ function a11yProps(index) {
 
 const Profile = () => {
   const theme = useTheme();
-
   const handleLogout = async () => {
     // logout
+    localStorage.removeItem('access_token');
+    window.location.href="/login";
   };
 
   const anchorRef = useRef(null);
@@ -84,13 +84,6 @@ const Profile = () => {
 
   const iconBackColorOpen = 'grey.300';
 
-  useEffect(() => {
-    const userString = localStorage.getItem('access_token');
-    const user = jwt_decode(userString);
-
-    console.log(user)
-  }, [])
-
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -109,7 +102,7 @@ const Profile = () => {
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">John Doe</Typography>
+          <Typography variant="subtitle1">John Cena</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -152,7 +145,7 @@ const Profile = () => {
                           <Stack direction="row" spacing={1.25} alignItems="center">
                             <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                             <Stack>
-                              <Typography variant="h6">John Doe</Typography>
+                            <Typography variant="subtitle1">John Cena</Typography>
                               <Typography variant="body2" color="textSecondary">
                                 UI/UX Designer
                               </Typography>
