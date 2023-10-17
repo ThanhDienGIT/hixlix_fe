@@ -20,10 +20,11 @@ class nhanvien extends Model
         'email_nv',
         'chucvu_nv',
         'taikhoan_nv',
-        'matkhau_nv',
+        // 'matkhau_nv',
         'trangthai_nv',
         'is_deleted',
     ];
+    protected $hidden = ['MATKHAU_NV'];
 
     public function donvihanhchinh()
     {
