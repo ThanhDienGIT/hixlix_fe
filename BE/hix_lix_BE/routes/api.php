@@ -29,6 +29,9 @@ Route::post('/login', [testController::class, 'SignIn']);
 Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
 Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
 Route::get('/dichvu', [danhsachkhachhang::class, 'getServiceList']);
+Route::put('/update_khachhang', [danhsachkhachhang::class, 'update_khachhang']);
+Route::put('/delete_khachhang', [danhsachkhachhang::class, 'delete_khachhang']);
+
 //Lix
 Route::get('/get_lix', [Lix::class, 'get_lix']);
 

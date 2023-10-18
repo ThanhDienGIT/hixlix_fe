@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\dichvu;
 use App\Models\khachhang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class danhsachkhachhang extends Controller
 {
@@ -38,17 +39,18 @@ class danhsachkhachhang extends Controller
         }
     }
 
-    public function getKHByID($id){
-        $kh = khachhang::where('id_kh',$id)->first();
-        if($kh!==null ){
+    public function getKHByID($id)
+    {
+        $kh = khachhang::where('id_kh', $id)->first();
+        if ($kh !== null) {
             return response()->json($kh, 200);
-        }else{
+        } else {
             return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
         }
-
     }
 
-    public function getServiceList(){
+    public function getServiceList()
+    {
         $result = dichvu::get();
         return response()->json($result, 200);
     }
@@ -211,4 +213,77 @@ class danhsachkhachhang extends Controller
     //         return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $e->getMessage()], 500);
     //     }
     // }
+
+
+    // tu khuc nay
+
+
+    public function update_khachhang(Request $request)
+    {
+        $id_kh = $request->id_kh;
+        $ten_kh = $request->ten_kh;
+        $sodienthoai_kh = $request->sodienthoai_kh;
+        $cccd_kh = $request->cccd_kh;
+        $mahuyen_kh = $request->mahuyen_kh;
+        $maxa_kh = $request->maxa_kh;
+        $diachi_kh = $request->diachi_kh;
+        $sonhankhau_kh = $request->sonhankhau_kh;
+        $ngaysinh_kh = $request->ngaysinh_kh;
+        $nghenghiep_kh = $request->diachi_kh;
+        $baohong_kh = $request->baohong_kh;
+        try {
+            DB::table('khach_hang')
+                ->where('id_kh', $id_kh)
+                ->update([
+                    'ten_kh' => $ten_kh,
+                    'sodienthoai_kh' => $sodienthoai_kh,
+                    'cccd_kh' => $cccd_kh,
+                    'mahuyen_kh' => $mahuyen_kh,
+                    'maxa_kh' => $maxa_kh,
+                    'diachi_kh' => $diachi_kh,
+                    'sonhankhau_kh' => $sonhankhau_kh,
+                    'ngaysinh_kh' => $ngaysinh_kh,
+                    'nghenghiep_kh' => $nghenghiep_kh,
+                    'baohong_kh' => $baohong_kh
+                ]);
+
+            return response()->json('Cập nhật thành công', 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi cập nhật khách hàng: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function delete_khachhang(Request $request)
+    {
+        $id_kh = $request->id_kh;
+        try {
+            DB::table('khach_hang')
+                ->where('id_kh', $id_kh)
+                ->update([
+                    'trangthai_kh' => 0
+                ]);
+            $soPhieu = DB::table('phieu_khao_sat')->where('id_kh', $id_kh)->count();
+            if($soPhieu != 0){
+                DB::table('phieu_khao_sat')
+                    ->where('id_kh', $id_kh)
+                    ->update([
+                        'trangthai_pks' => 0
+                    ]);
+
+                $arrayIDPKS = DB::table('phieu_khao_sat')
+                    ->where('id_kh', $id_kh)
+                    ->pluck('id_pks')
+                    ->toArray();
+
+                DB::table('chi_tiet_phieu_khao_sat_lix')
+                    ->whereIn('id_pks', $arrayIDPKS)
+                    ->update([
+                        'is_deleted' => 1
+                    ]);
+            }
+            return response()->json('Xóa thành công', 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi xóa: ' . $e->getMessage()], 500);
+        }
+    }
 }
