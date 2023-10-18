@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\dichvu;
 use App\Models\khachhang;
 use Illuminate\Http\Request;
 
@@ -45,6 +46,11 @@ class danhsachkhachhang extends Controller
             return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
         }
 
+    }
+
+    public function getServiceList(){
+        $result = dichvu::get();
+        return response()->json($result, 200);
     }
 
 

@@ -39,7 +39,6 @@ function ComponentTest() {
             .catch(err => console.log(err))
     }
 
-    console.log(defaultService)
     const openDialogError = (id) => {
         setDialogError(true)
         setIDKhachHang(id)
@@ -198,7 +197,7 @@ function ComponentTest() {
                         <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
                     <Box display={'flex'} marginTop={1}>
-                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={openDialogCustomer}>
+                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained">
                             <SaveIcon />
                             <Typography >Xuất excel</Typography>
                         </Button>
@@ -298,6 +297,7 @@ function ComponentTest() {
                 provider={provider}
                 wards={wards}
                 servicePointList={servicePointList}
+                idCustomer = {idKhaoSat}
             />
             <AddCustomer
                 open={dialogCustomer}

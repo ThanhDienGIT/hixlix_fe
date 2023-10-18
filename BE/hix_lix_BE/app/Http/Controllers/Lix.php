@@ -231,4 +231,11 @@ class Lix extends Controller
             return response()->json(['message' => 'Lỗi khi xoá khảo sát: ' . $e->getMessage()], 500);
         }
     }
+
+    public function getLix_By_IdCustomer_and_IdService($khachhang,$Service){
+
+    }
+
+
+
 }
