@@ -85,11 +85,11 @@ const Profile = () => {
   const iconBackColorOpen = 'grey.300';
 
   useEffect(() => {
-    const userString = localStorage.getItem('access_token');
-    const user = jwt_decode(userString);
 
-    console.log(user)
   }, [])
+  const userString = localStorage.getItem('access_token');
+  const user = jwt_decode(userString);
+
 
 
   return (
@@ -109,7 +109,7 @@ const Profile = () => {
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">John Doe</Typography>
+          <Typography variant="subtitle1">{user.ten_nv}</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -152,10 +152,10 @@ const Profile = () => {
                           <Stack direction="row" spacing={1.25} alignItems="center">
                             <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                             <Stack>
-                              <Typography variant="h6">John Doe</Typography>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography variant="h6">{user.ten_nv}</Typography>
+                              {/* <Typography variant="body2" color="textSecondary">
                                 UI/UX Designer
-                              </Typography>
+                              </Typography> */}
                             </Stack>
                           </Stack>
                         </Grid>

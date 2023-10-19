@@ -27,6 +27,19 @@ Route::post('/login', [testController::class, 'SignIn']);
 //khach hang
 Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
 Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
+Route::get('/getsurveybyKH/{id}', [danhsachkhachhang::class, 'getsurveybyKH']);
+Route::post('/addcustomer', [danhsachkhachhang::class, 'addcustomer']);
+Route::put('/updatecustomer', [danhsachkhachhang::class, 'updatecustomer']);
+Route::delete('/deletecustomer/{id}', [danhsachkhachhang::class, 'deletecustomer']);
+Route::post('/searchcustomer', [danhsachkhachhang::class, 'searchcustomer']);
+
+//Khach hang Excel
+Route::post('/export-excel', [danhsachkhachhang::class, 'exportExcel']);
+
+
+//DVHC
+Route::get('/getallquanhuyen', [danhsachkhachhang::class, 'getallquanhuyen']);
+Route::get('/getAllXaPhuong/{id}', [danhsachkhachhang::class, 'getAllXaPhuong']);
 
 //Lix
 Route::get('/get_lix', [Lix::class, 'get_lix']);

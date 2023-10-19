@@ -4,6 +4,7 @@ import MainCard from 'components/MainCard'
 import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
 import LixDialog from 'pages/component/LixDialog'
 import AddCustomer from 'pages/component/AddCustomer'
+import EditCustomer from 'pages/component/EditCustomer'
 import DeleteIcon from '@mui/icons-material/Delete';
 import DiaLogSuccess from 'pages/component/DiaLogSuccess'
 import DiaLogError from 'pages/component/DiaLogError'
@@ -16,6 +17,7 @@ import DetailCustomer from 'pages/component/DetailCustomer'
 import SearchIcon from '@mui/icons-material/Search';
 import SaveIcon from '@mui/icons-material/Save';
 import EditNoteIcon from '@mui/icons-material/EditNote';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 
 function ComponentTest() {
 
@@ -26,11 +28,20 @@ function ComponentTest() {
     const [dialogSuccess, setDialogSuccess] = useState(false)
     const [dialogError, setDialogError] = useState(false)
     const [dialogDetail, setDialogDetail] = useState(false)
+    const [dialogEdit, setdialogEdit] = useState(false)
     const [idKhachHang, setIDKhachHang] = useState(0)
     const [defaultService, setDefaultService] = useState([])
     const [provider, setProvider] = useState([])
-    const [wards,setWards] = useState([])
-    const servicePointList = [0,1,2,3,4,5,6,7,8,9,10]
+    const [wards, setWards] = useState([])
+    const [quanhuyen, setQuanhuyen] = useState([])
+    const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    const [statusSurvey, setStatusSurvey] = useState('');
+    const [qualityService, setQualityService] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+
+
+
+
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -63,6 +74,11 @@ function ComponentTest() {
     //     setIDKhachHang(id)
     // }
 
+    const closeDialogEdit = () => {
+        setdialogEdit(false)
+        setIDKhachHang(0)
+    }
+
     const closeDialogSuccess = () => {
         setDialogSuccess(false)
         setIDKhachHang(0)
@@ -79,6 +95,11 @@ function ComponentTest() {
     const openDialog = (id) => {
         setDiaLog(true)
         setIdKhaoSat(id)
+    }
+
+    const openDialogEditKH = (id) => {
+        setdialogEdit(true)
+        setIDKhachHang(id)
     }
 
     const closeDialog = () => {
@@ -113,6 +134,19 @@ function ComponentTest() {
             console.log(res.data)
         }).catch(err => console.log(err))
     }
+    const getAllQuanHuyen = async () => {
+        const response = await instance.get('getallquanhuyen');
+
+        if (response.status === 200) {
+            console.log(response.status)
+            setQuanhuyen(response.data.dvhc)
+
+        }
+        // else
+        // {
+        //     console.log(response)
+        // }
+    }
 
     useEffect(() => {
         CallAPI()
@@ -120,6 +154,7 @@ function ComponentTest() {
 
 
     useEffect(() => {
+        getAllQuanHuyen()
         callAPIServiceList()
         setProvider([
             {
@@ -137,24 +172,61 @@ function ComponentTest() {
         ])
         setWards([
             {
-             ID_DVHC:1,
-             TEN_DVHC:'Vị thanh',
-             ID_CHA_DVHC: null,
+                ID_DVHC: 1,
+                TEN_DVHC: 'Vị thanh',
+                ID_CHA_DVHC: null,
             },
             {
-             ID_DVHC:2,
-             TEN_DVHC:'Phường 7',
-             ID_CHA_DVHC: 1,
+                ID_DVHC: 2,
+                TEN_DVHC: 'Phường 7',
+                ID_CHA_DVHC: 1,
             },
             {
-             ID_DVHC:3,
-             TEN_DVHC:'Phường 5',
-             ID_CHA_DVHC: 1,
+                ID_DVHC: 3,
+                TEN_DVHC: 'Phường 5',
+                ID_CHA_DVHC: 1,
             },
-         ])
+        ])
     }, [])
 
- 
+
+    const handleSearch = async () => {
+        // Thực hiện tìm kiếm dựa trên các giá trị
+        console.log("Trạng thái khảo sát:", statusSurvey);
+        console.log("Chất lượng dịch vụ:", qualityService);
+        console.log("Tìm kiếm:", searchInput);
+        const objectSend = {
+            status_survey: statusSurvey,
+            quality_survey: qualityService,
+            keywords: searchInput
+        }
+        await instance.post('searchcustomer', objectSend)
+        .then((res) => {
+            console.log(res)
+            setData(res.data.dskh)
+        })
+    }
+
+    const exportDataToExcel = async () => {
+        // Gửi yêu cầu xuất Excel dựa trên filteredData (hoặc toàn bộ dữ liệu)
+        // Sử dụng Axios hoặc fetch API để gửi dữ liệu đã lọc hoặc toàn bộ dữ liệu lên máy chủ
+        // Máy chủ sẽ tạo tệp Excel từ dữ liệu này và trả về
+        await instance.post('export-excel', { export_data: data })
+          .then(response => {
+            console.log(response)
+            // Đoạn mã để xử lý tệp Excel trả về, ví dụ: mở tệp Excel trong cửa sổ mới
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'khach_hang_data.xlsx'); // Đặt tên tệp Excel
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch(error => {
+            console.error('Lỗi khi tải tệp Excel:', error);
+          });
+    };
+
 
     return (
         <ComponentSkeleton>
@@ -168,42 +240,49 @@ function ComponentTest() {
                                 labelId="demo-select-small-label"
                                 id="demo-select-small"
                                 label="Trạng thái khảo sát"
-                                value={0}
+                                value={statusSurvey}
+                                onChange={(e) => setStatusSurvey(e.target.value)}
                             >
-                                <MenuItem value={0}>
+                                <MenuItem value={5}>
                                     Tất cả
                                 </MenuItem>
-                                <MenuItem value={10}>Khách hàng đã khảo sát</MenuItem>
-                                <MenuItem value={20}>Khách hàng chưa khảo sát</MenuItem>
+                                <MenuItem value={0}>Khách hàng chưa khảo sát</MenuItem>
+                                <MenuItem value={1}>Khách hàng đã khảo sát</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1.5 }} size="small">
                             <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
                             <Select
+                                disabled={statusSurvey === 0}
                                 labelId="demo-select-small-label"
                                 id="demo-select-small"
                                 label="Chất lượng dịch vụ"
-                                value={0}
+                                value={statusSurvey === 0 ? '' : qualityService}
+                                onChange={(e) => setQualityService(e.target.value)}
                             >
-                                <MenuItem value={0}>
+                                <MenuItem value={5}>
                                     Tất cả
                                 </MenuItem>
-                                <MenuItem value={10}>Dịch vụ có vấn đề chất lượng</MenuItem>
-                                <MenuItem value={20}>Dịch vụ có khả năng phát triển thuê bao</MenuItem>
+                                <MenuItem value={0}>Chất lượng tốt</MenuItem>
+                                <MenuItem value={1}>Chất lượng kém</MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField label='Tìm kiếm...' size="small" sx={{ marginRight: 2, marginTop: 1.5, width: 220 }} />
-                        <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                        <TextField label='Tìm kiếm...' size="small"
+                            sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)} />
+                        <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
                     <Box display={'flex'} marginTop={1}>
-                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={openDialogCustomer}>
-                            <SaveIcon />
-                            <Typography >Xuất excel</Typography>
-                        </Button>
-                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} variant="contained" onClick={openDialogCustomer}>
+                        <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
                         </Button>
+                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={exportDataToExcel}>
+                            <SaveIcon />
+                            <Typography >Xuất excel</Typography>
+                        </Button>
+
                     </Box>
 
                 </Box>
@@ -228,7 +307,7 @@ function ComponentTest() {
                                             {ele.SODIENTHOAI_KH}
                                         </TableCell>
                                         <TableCell>
-                                            {ele.TRANGTHAI_KH === 1 ? "Chưa khảo sát" : "Đã khảo sát"}
+                                            {ele.TRANGTHAI_KH === 0 ? "Chưa khảo sát" : "Đã khảo sát"}
                                         </TableCell>
                                         <TableCell>
                                             {ele.trangthai !== '' ? <>
@@ -242,7 +321,12 @@ function ComponentTest() {
                                                         <EditNoteIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
                                                     </IconButton>
                                                 </Tooltip>
-                                                <Tooltip title="Xóa khảo sát">
+                                                <Tooltip title="Cập nhật Khách hàng">
+                                                    <IconButton>
+                                                        <DriveFileRenameOutlineIcon color='info' onClick={() => { openDialogEditKH(ele.ID_KH) }} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Xóa khách hàng">
                                                     <IconButton>
                                                         <DeleteIcon color='error' onClick={() => { openDialogError(ele.ID_KH) }} />
                                                     </IconButton>
@@ -300,7 +384,17 @@ function ComponentTest() {
             <AddCustomer
                 open={dialogCustomer}
                 handleClose={closeDialogCustomer}
+                district={quanhuyen}
                 wards={wards}
+                callApi={CallAPI}
+            />
+            <EditCustomer
+                open={dialogEdit}
+                handleClose={closeDialogEdit}
+                district={quanhuyen}
+                wards={wards}
+                callApi={CallAPI}
+                idkhachhang={idKhachHang}
             />
             <DiaLogSuccess
                 open={dialogSuccess}
@@ -308,7 +402,8 @@ function ComponentTest() {
             <DiaLogError
                 open={dialogError}
                 handleClose={closeDialogError}
-                idKhachHang={idKhachHang}
+                idkhachhang={idKhachHang}
+                callApi={CallAPI}
                 content={"Xác nhận xóa khách hàng này ?"}
             />
             <DetailCustomer
