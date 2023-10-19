@@ -15,6 +15,7 @@ import 'assets/third-party/apex-chart.css';
 import App from './App';
 import { store } from 'store';
 import reportWebVitals from './reportWebVitals';
+import { TokenProvider } from 'globalVar/TokenProvider';
 
 // ==============================|| MAIN - REACT DOM RENDER  ||============================== //
 
@@ -23,9 +24,11 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 root.render(
   <StrictMode>
     <ReduxProvider store={store}>
-      <BrowserRouter >
-        <App />
-      </BrowserRouter>
+      <TokenProvider>
+        <BrowserRouter >
+          <App />
+        </BrowserRouter>
+      </TokenProvider>
     </ReduxProvider>
   </StrictMode>
 );

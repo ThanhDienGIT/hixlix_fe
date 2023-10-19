@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ComponentSkeleton from './ComponentSkeleton'
 import MainCard from 'components/MainCard'
 import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
@@ -16,9 +16,11 @@ import DetailCustomer from 'pages/component/DetailCustomer'
 import SearchIcon from '@mui/icons-material/Search';
 import SaveIcon from '@mui/icons-material/Save';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-
+import { TokenContext } from '../../globalVar/TokenProvider'
 function ComponentTest() {
+    const { token } = useContext(TokenContext);
 
+    console.log(token)
     const [data, setData] = useState([])
     const [dialog, setDiaLog] = useState(false)
     const [idKhaoSat, setIdKhaoSat] = useState(0)
@@ -37,7 +39,6 @@ function ComponentTest() {
             .catch(err => console.log(err))
     }
 
-    console.log(defaultService)
     const openDialogError = (id) => {
         setDialogError(true)
         setIDKhachHang(id)
@@ -64,32 +65,32 @@ function ComponentTest() {
     // }
 
     const closeDialogSuccess = () => {
-        setDialogSuccess(false)
+        setDialogSuccess(false);
         setIDKhachHang(0)
     }
 
     const openDialogCustomer = () => {
-        setDialogCustomer(true)
+        setDialogCustomer(true);
     }
 
     const closeDialogCustomer = () => {
-        setDialogCustomer(false)
-    }
+        setDialogCustomer(false);
+    };
 
     const openDialog = (id) => {
-        setDiaLog(true)
-        setIdKhaoSat(id)
+        setDiaLog(true);
+        setIdKhaoSat(id);
     }
 
     const closeDialog = () => {
-        setDiaLog(false)
-        setIdKhaoSat(0)
+        setDiaLog(false);
+        setIdKhaoSat(0);
     }
 
-    const [maxPage, setMaxPage] = useState(0)
-    const listPage = [5, 10, 15, 25, 50]
-    const [rowPage, setRowPage] = useState(5)
-    const [page, setPage] = useState(1)
+    const [maxPage, setMaxPage] = useState(0);
+    const listPage = [5, 10, 15, 25, 50];
+    const [rowPage, setRowPage] = useState(5);
+    const [page, setPage] = useState(1);
     const nextPage = () => {
         if (page < maxPage) {
             setPage(page + 1);
@@ -108,15 +109,15 @@ function ComponentTest() {
 
     const CallAPI = () => {
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
-            setMaxPage(res.data.last_page)
-            setData(res.data.data)
-            console.log(res.data)
-        }).catch(err => console.log(err))
+            setMaxPage(res.data.last_page);
+            setData(res.data.data);
+            console.log(res.data);
+        }).catch(err => console.log(err));
     }
 
     useEffect(() => {
         CallAPI()
-    }, [page, rowPage])
+    }, [page, rowPage]);
 
 
     useEffect(() => {
@@ -152,7 +153,7 @@ function ComponentTest() {
              ID_CHA_DVHC: 1,
             },
          ])
-    }, [])
+    }, []);
 
  
 
@@ -196,7 +197,7 @@ function ComponentTest() {
                         <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
                     <Box display={'flex'} marginTop={1}>
-                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={openDialogCustomer}>
+                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained">
                             <SaveIcon />
                             <Typography >Xuất excel</Typography>
                         </Button>
@@ -296,6 +297,7 @@ function ComponentTest() {
                 provider={provider}
                 wards={wards}
                 servicePointList={servicePointList}
+                idCustomer = {idKhaoSat}
             />
             <AddCustomer
                 open={dialogCustomer}

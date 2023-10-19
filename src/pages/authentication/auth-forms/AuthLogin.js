@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -31,6 +31,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { TokenContext } from '../../../globalVar/TokenProvider';
 import instance from '../../../axios/instance';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
@@ -62,8 +63,9 @@ const AuthLogin = () => {
     event.preventDefault();
   };
 
+  const { JWTToken } = useContext(TokenContext);
 
-
+ 
   const handleLogin = async () => {
     console.log('handle')
     // Gửi yêu cầu đăng nhập với username và password đến API của Laravel
@@ -77,6 +79,7 @@ const AuthLogin = () => {
     if (response.status === 200) {
       // Đăng nhập thành công, lưu token vào localStorage hoặc sử dụng một cơ chế lưu trữ khác
       localStorage.setItem('access_token', response.data.access_token);
+      JWTToken(response.data.access_token)
       // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
       setLoading(false)
       setOpen(true)
