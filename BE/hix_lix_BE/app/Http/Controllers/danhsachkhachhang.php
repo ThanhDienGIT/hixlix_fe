@@ -18,11 +18,19 @@ use Maatwebsite\Excel\Excel as ExcelExcel;
 class danhsachkhachhang extends Controller
 {
     public function exportExcel(Request $request)
+    
     {
-        $Data = $request->export_data;
-        $response =  Excel::download(new KhachHangExport($Data), 'khach_hang_data.xlsx', ExcelExcel::XLSX);
+        // $getIDs_ = $request->getIDs;
+        $Data = $request->all();
+        $response =  Excel::download(new KhachHangExport($Data), 'khach_hang_data.xlsx', ExcelExcel::CSV);
         return $response;
+
+       
+        
     }
+
+
+
     public function searchcustomer(Request $request)
     {
         if ($request->keywords !== '') {

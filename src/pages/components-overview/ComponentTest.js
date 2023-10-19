@@ -218,7 +218,7 @@ function ComponentTest() {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'khach_hang_data.xlsx'); // Đặt tên tệp Excel
+            link.setAttribute('download', 'TTNL.xlsx'); // Đặt tên tệp Excel
             document.body.appendChild(link);
             link.click();
           })

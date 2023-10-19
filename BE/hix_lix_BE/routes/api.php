@@ -36,6 +36,8 @@ Route::post('/searchcustomer', [danhsachkhachhang::class, 'searchcustomer']);
 //Khach hang Excel
 Route::post('/export-excel', [danhsachkhachhang::class, 'exportExcel']);
 
+// Route::post('/export-excel', 'App\Http\Controllers\danhsachkhachhang@exportExcel')->name('exportExcel');
+
 
 //DVHC
 Route::get('/getallquanhuyen', [danhsachkhachhang::class, 'getallquanhuyen']);
