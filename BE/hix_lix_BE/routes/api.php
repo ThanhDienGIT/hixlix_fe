@@ -30,11 +30,13 @@ Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_dan
 Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
 
 //Lix
-Route::get('/get_lix', [Lix::class, 'get_lix']);
+Route::get('/get_lix/{count}', [Lix::class, 'get_lix']);
 
 Route::post('/add_lix', [Lix::class, 'add_lix']);
 Route::put('/update_lix', [Lix::class, 'update_lix']);
 Route::post('/delete_lix', [Lix::class, 'delete_lix']);
+
+Route::get('livesearch_lix', [Lix::class, 'livesearch_lix']);
 
 //dichvu
 Route::get('/dichvu', [Lix::class, 'dichvu']);
