@@ -235,48 +235,43 @@ class Lix extends Controller
     {
         $user = Auth::user();
         $id_nv = $user->ID_NV;
-    
+
         if ($id_nv) {
             try {
                 $searchTerm = $request->all();
-                 // Tham số tìm kiếm từ request
-    foreach ($searchTerm as $_searchTerm ) {
-        $item = isset($_searchTerm['search_content']) ? $_searchTerm['search_content'] : null;
-        $item2 = isset($_searchTerm['search_content2']) ? $_searchTerm['search_content'] : null;
-       
-    }
-                // $PKS = phieukhaosat::query()
-                //     ->with('chitietpks', 'khachhangs', 'nhanviens')
-                //     ->where('id_nv', $id_nv)
-                //     ->where(function ($query) use ($_searchTerm) {
-                //         $query->where('id_dv', 'like', "%$_searchTerm%")
-                //             ->orWhere('kh_ten', 'like', "%$_searchTerm%");
-                //         // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
-                //     })
-                //     ->get();
-
+                // Tham số tìm kiếm từ request
+                foreach ($searchTerm as $_searchTerm) {
+                    $item = isset($_searchTerm['search_content']) ? $_searchTerm['search_content'] : null;
+                    $item2 = isset($_searchTerm['search_content2']) ? $_searchTerm['search_content'] : null;
+                }
                 $PKS = DB::table('phieu_khao_sat')
-                ->join('chi_tiet_phieu_khao_sat_lix', 'phieu_khao_sat.id_pks', '=', 'chi_tiet_phieu_khao_sat_lix.id_pks')
-                ->join('khach_hang', 'phieu_khao_sat.id_kh', '=', 'khach_hang.id_kh')
-                ->join('nhan_vien', 'phieu_khao_sat.id_nv', '=', 'nhan_vien.id_nv')
-                ->where('nhan_vien.id_nv', $id_nv)
-                ->where(function ($query) use ($item) {
-                    $query
-                    ->where('chi_tiet_phieu_khao_sat_lix.id_dv', 'like', "%$item%")
-                        ->orwhere('chi_tiet_phieu_khao_sat_lix.sodienthoaikhachhangdaidien_ctpks', 'like', "%$item%")
-                        ->orwhere('chi_tiet_phieu_khao_sat_lix.accountkhachhang_ctpks', 'like', "%$item%")
-                        ->orwhere('chi_tiet_phieu_khao_sat_lix.diemhailong_ctpks', 'like', "%$item%")
-                        ->orwhere('chi_tiet_phieu_khao_sat_lix.camnhandichvu_ctpks', 'like', "%$item%")
-                        ->orwhere('chi_tiet_phieu_khao_sat_lix.camnhanphucvu_ctpks', 'like', "%$item%")
-                        ->orWhere('khach_hang.ten_kh', 'like', "%$item%");
-                    // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
-                })
-                ->paginate(5);
-    
+                    ->join('chi_tiet_phieu_khao_sat_lix', 'phieu_khao_sat.id_pks', '=', 'chi_tiet_phieu_khao_sat_lix.id_pks')
+                    ->join('khach_hang', 'phieu_khao_sat.id_kh', '=', 'khach_hang.id_kh')
+                    ->join('nhan_vien', 'phieu_khao_sat.id_nv', '=', 'nhan_vien.id_nv')
+                    ->where('nhan_vien.id_nv', $id_nv)
+                    ->where('chi_tiet_phieu_khao_sat_lix.is_deleted', '!=', 1)
+                    ->where(function ($query) use ($item) {
+                        $query
+                            ->where('chi_tiet_phieu_khao_sat_lix.id_dv', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.sodienthoaikhachhangdaidien_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.accountkhachhang_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.diemhailong_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.camnhandichvu_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.camnhanphucvu_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.camnhanphucvu_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.ngaytao_ctpks', 'like', "%$item%")
+                            ->orwhere('chi_tiet_phieu_khao_sat_lix.camnhanphucvu_ctpks', 'like', "%$item%")
+                            ->orWhere('khach_hang.ten_kh', 'like', "%$item%")
+                            ->orWhere('khach_hang.cccd_kh', 'like', "%$item%")
+                            ->orWhere('khach_hang.sodienthoai_kh', 'like', "%$item%");
+                        // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
+                    })
+                    ->paginate(5);
+
                 if ($PKS->isEmpty()) {
                     return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
                 }
-    
+
                 $PKS_data = [];
                 foreach ($PKS as $_PKS) {
                     $pks_item = [
@@ -285,7 +280,7 @@ class Lix extends Controller
                     ];
                     $PKS_data[] = $pks_item;
                 }
-    
+
                 return response()->json($PKS_data, 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -294,5 +289,4 @@ class Lix extends Controller
             return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
         }
     }
-    
 }
