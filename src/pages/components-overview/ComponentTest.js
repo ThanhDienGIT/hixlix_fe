@@ -211,18 +211,19 @@ function ComponentTest() {
 
     const exportDataToExcel = async () => {
         await instance.post('export-excel', { export_data: data })
-            .then(response => {
-                const blob = new Blob([response.data]);
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'khach_hang_data.csv');
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch(error => {
-                console.error('Lỗi khi tải tệp Excel:', error);
-            });
+          .then(response => {
+            console.log(response)
+            // Đoạn mã để xử lý tệp Excel trả về, ví dụ: mở tệp Excel trong cửa sổ mới
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'TTNL.xlsx'); // Đặt tên tệp Excel
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch(error => {
+            console.error('Lỗi khi tải tệp Excel:', error);
+          });
     };
 
 
