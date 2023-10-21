@@ -18,6 +18,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import SaveIcon from '@mui/icons-material/Save';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import Autocomplete from '@mui/material/Autocomplete';
 
 function ComponentTest() {
 
@@ -38,6 +39,7 @@ function ComponentTest() {
     const [statusSurvey, setStatusSurvey] = useState('');
     const [qualityService, setQualityService] = useState('');
     const [searchInput, setSearchInput] = useState('');
+    const [alloption, setAlloption] = useState([]);
 
 
 
@@ -131,7 +133,7 @@ function ComponentTest() {
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
-            console.log(res.data)
+            setAlloption(res.data.data)
         }).catch(err => console.log(err))
     }
     const getAllQuanHuyen = async () => {
@@ -201,31 +203,28 @@ function ComponentTest() {
             keywords: searchInput
         }
         await instance.post('searchcustomer', objectSend)
-        .then((res) => {
-            console.log(res)
-            setData(res.data.dskh)
-        })
+            .then((res) => {
+                console.log(res)
+                setData(res.data.dskh)
+            })
     }
 
     const exportDataToExcel = async () => {
-        // Gửi yêu cầu xuất Excel dựa trên filteredData (hoặc toàn bộ dữ liệu)
-        // Sử dụng Axios hoặc fetch API để gửi dữ liệu đã lọc hoặc toàn bộ dữ liệu lên máy chủ
-        // Máy chủ sẽ tạo tệp Excel từ dữ liệu này và trả về
         await instance.post('export-excel', { export_data: data })
-          .then(response => {
-            console.log(response)
-            // Đoạn mã để xử lý tệp Excel trả về, ví dụ: mở tệp Excel trong cửa sổ mới
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'khach_hang_data.xlsx'); // Đặt tên tệp Excel
-            document.body.appendChild(link);
-            link.click();
-          })
-          .catch(error => {
-            console.error('Lỗi khi tải tệp Excel:', error);
-          });
+            .then(response => {
+                const blob = new Blob([response.data]);
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'khach_hang_data.csv');
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                console.error('Lỗi khi tải tệp Excel:', error);
+            });
     };
+
 
 
     return (
@@ -267,10 +266,21 @@ function ComponentTest() {
                                 <MenuItem value={1}>Chất lượng kém</MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField label='Tìm kiếm...' size="small"
+                        {/* <TextField label='Tìm kiếm...' size="small"
                             sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
                             value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)} />
+                            onChange={(e) => setSearchInput(e.target.value)} /> */}
+                        <Autocomplete
+                            id="free-solo-demo"
+                            freeSolo
+                            options={alloption.map((option) => option.TEN_KH)}
+                            renderInput={(params) => <TextField {...params} label='Tìm kiếm...' size="small"
+                            sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onInputChange={(e, value) => setSearchInput(value)}
+                            />}
+                        />
                         <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
                     <Box display={'flex'} marginTop={1}>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportData;
 use App\Models\donvihanhchinh;
 use App\Models\khachhang;
 use App\Models\nhanvien;
@@ -19,13 +20,75 @@ class danhsachkhachhang extends Controller
 {
     public function exportExcel(Request $request)
     {
-        $Data = $request->export_data;
-        $response =  Excel::download(new KhachHangExport($Data), 'khach_hang_data.xlsx', ExcelExcel::XLSX);
+        $Data = $request->all();
+        $response =  Excel::download(new KhachHangExport($Data), 'khach_hang_data.xlsx', ExcelExcel::CSV);
         return $response;
     }
     public function searchcustomer(Request $request)
     {
         if ($request->keywords !== '') {
+            if ($request->status_survey === 5 && $request->quality_survey !== 5) {
+                $result =
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                    ->leftJoin(
+                        'chi_tiet_phieu_khao_sat_lix',
+                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
+                        '=',
+                        'phieu_khao_sat.ID_PKS'
+                    )
+                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
+                    ->where(function ($query) use ($request) {
+                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
+                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
+                    })
+                    ->get();
+
+                return response()->json(['dskh' => $result], 200);
+            }
+
+            if ($request->quality_survey === 5 && $request->status_survey !== 5) {
+                $result =
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                    ->leftJoin(
+                        'chi_tiet_phieu_khao_sat_lix',
+                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
+                        '=',
+                        'phieu_khao_sat.ID_PKS'
+                    )
+                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
+                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
+                    ->where(function ($query) use ($request) {
+                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
+                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
+                    })
+                    ->get();
+
+                return response()->json(['dskh' => $result], 200);
+            }
+
+
+
+            if ($request->status_survey === 5 || $request->quality_survey === 5) {
+                $result =
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                    ->leftJoin(
+                        'chi_tiet_phieu_khao_sat_lix',
+                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
+                        '=',
+                        'phieu_khao_sat.ID_PKS'
+                    )
+                    ->where(function ($query) use ($request) {
+                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
+                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
+                    })
+                    ->get();
+
+                return response()->json(['dskh' => $result], 200);
+            }
             if ($request->status_survey === 0) {
 
                 $result =
@@ -88,6 +151,55 @@ class danhsachkhachhang extends Controller
                 return response()->json(['dskh' => $result], 200);
             }
         } else {
+            if ($request->status_survey === 5 && $request->quality_survey !== 5) {
+                $result =
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                    ->leftJoin(
+                        'chi_tiet_phieu_khao_sat_lix',
+                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
+                        '=',
+                        'phieu_khao_sat.ID_PKS'
+                    )
+                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
+                    ->get();
+
+                return response()->json(['dskh' => $result], 200);
+            }
+
+            if ($request->quality_survey === 5 && $request->status_survey !== 5) {
+                $result =
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                    ->leftJoin(
+                        'chi_tiet_phieu_khao_sat_lix',
+                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
+                        '=',
+                        'phieu_khao_sat.ID_PKS'
+                    )
+                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
+                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
+                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
+                    ->get();
+
+                return response()->json(['dskh' => $result], 200);
+            }
+
+
+            if ($request->status_survey === 5 || $request->quality_survey === 5) {
+                $result =
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                    ->leftJoin(
+                        'chi_tiet_phieu_khao_sat_lix',
+                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
+                        '=',
+                        'phieu_khao_sat.ID_PKS'
+                    )
+                    ->get();
+
+                return response()->json(['dskh' => $result], 200);
+            }
             if ($request->status_survey === 0) {
 
                 $result =
