@@ -4,16 +4,21 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from '../../../node_modules/@mui/material/index';
+import { Box, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Select, TextField } from '../../../node_modules/@mui/material/index';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { format } from 'date-fns';
 import Axios from '../../axios/instance';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
+import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 // Create an instance of Notyf
 const notyf = new Notyf({
@@ -26,14 +31,36 @@ const notyf = new Notyf({
 });
 
 
-function AddCustomer(props) {
+function EditCustomer(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
     const [xaphuong, setXaphuong] = useState([])
     // const [form, setForm] = useState([
     //     { form: 1 }
     // ])
-    const [customer, setCustomer] = useState({
+    // const [customer, setCustomer] = useState({
+    //     ID_KH: 0,
+    //     ID_NV: 0,
+    //     ID_DVHC: 0,
+    //     TEN_KH: "",
+    //     DIACHI_KH: "",
+    //     SODIENTHOAI_KH: "",
+    //     CCCD_KH: "",
+    //     SONHANKHAU_KH: "",
+    //     NGAYSINH_KH: "",
+    //     NGHENGHIEP_KH: "",
+    //     MAHUYEN_KH: 0,
+    //     MAXA_KH: 0,
+    //     BAOHONG_KH: false,
+    //     THOIGIANLAPDAT_KH: "",
+    //     THOIGIANNGUNG_KH: "",
+    //     FILENAME_KH: "",
+    //     NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
+    //     NGUOITAO_KH: 0,
+    //     GHICHU_KH: "",
+    // })
+    const [loading, setLoading] = useState(false);
+    const [infoCustomer, setInfocustomer] = React.useState({
         ID_KH: 0,
         ID_NV: 0,
         ID_DVHC: 0,
@@ -41,23 +68,61 @@ function AddCustomer(props) {
         DIACHI_KH: "",
         SODIENTHOAI_KH: "",
         CCCD_KH: "",
-        SONHANKHAU_KH: "",
+        SONHANKHAU_KH: 0,
         NGAYSINH_KH: "",
         NGHENGHIEP_KH: "",
         MAHUYEN_KH: 0,
         MAXA_KH: 0,
-        BAOHONG_KH: false,
-        THOIGIANLAPDAT_KH: "",
-        THOIGIANNGUNG_KH: "",
-        FILENAME_KH: "",
-        NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
+        BAOHONG_KH: 0,
+        THOIGIANLAPDAT_KH: null,
+        THOIGIANNGUNG_KH: null,
+        FILENAME_KH: null,
+        NGAYTAO_KH: "",
         NGUOITAO_KH: 0,
-        GHICHU_KH: "",
+        GHICHU_KH: null,
+        TRANGTHAI_KH: 0,
+        TEN_DVHC: "",
+        CAP_DVHC: 0,
+        ID_CHA_DVHC: 0,
+        IS_DELETED: null,
+        TEN_HUYEN: "",
+        TEN_XA: ""
     })
-    const [loading, setLoading] = useState(false);
+
+    
+
+    const CallAPIByIdCustomer = async (id) => {
+        await Axios.get('getKHByID/' + id).then(res => {
+            setInfocustomer(res.data)
+        }).catch(err => console.log(err))
+    }
+
+    React.useEffect(() => {
+        if (props.idkhachhang) {
+            CallAPIByIdCustomer(props.idkhachhang)
+        }
+    }, [props.idkhachhang])
+
+
+    console.log(infoCustomer)
+
+    const getXaPhuongById = async (id) => {
+        const response = await Axios.get('getAllXaPhuong/' + id);
+        if (response.status === 200) {
+            setXaphuong(response.data.xaphuong)
+            console.log(xaphuong)
+        }
+    }
+
+    React.useEffect(() => {
+        if (infoCustomer.MAHUYEN_KH) {
+            getXaPhuongById(infoCustomer.MAHUYEN_KH)
+        }
+    }, [infoCustomer.MAHUYEN_KH])
+
 
     const onChangeInputDistrict = async (e) => {
-        setCustomer(rev => ({
+        setInfocustomer(rev => ({
             ...rev, [e.target.name]: e.target.value
         }))
         const response = await Axios.get('getAllXaPhuong/' + e.target.value);
@@ -68,52 +133,33 @@ function AddCustomer(props) {
 
     }
     const onChangeInput = (e) => {
-        setCustomer(rev => ({
+        setInfocustomer(rev => ({
             ...rev, [e.target.name]: e.target.value
         }))
     }
-    const handleAddCustomer = async () => {
+    const handleUpdateCustomer = async () => {
         const objectSend = {
-            TEN_KH: customer.TEN_KH,
-            DIACHI_KH: customer.DIACHI_KH,
-            SODIENTHOAI_KH: customer.SODIENTHOAI_KH,
-            CCCD_KH: customer.CCCD_KH,
-            SONHANKHAU_KH: customer.SONHANKHAU_KH,
-            NGAYSINH_KH: customer.NGAYSINH_KH,
-            NGHENGHIEP_KH: customer.NGHENGHIEP_KH,
-            MAHUYEN_KH: customer.MAHUYEN_KH,
-            MAXA_KH: customer.MAXA_KH,
-            BAOHONG_KH: customer.BAOHONG_KH,
-            NGAYTAO_KH: customer.NGAYTAO_KH
+            ID_KH: props.idkhachhang,
+            TEN_KH: infoCustomer.TEN_KH,
+            DIACHI_KH: infoCustomer.DIACHI_KH,
+            SODIENTHOAI_KH: infoCustomer.SODIENTHOAI_KH,
+            CCCD_KH: infoCustomer.CCCD_KH,
+            SONHANKHAU_KH: infoCustomer.SONHANKHAU_KH,
+            NGAYSINH_KH: infoCustomer.NGAYSINH_KH,
+            NGHENGHIEP_KH: infoCustomer.NGHENGHIEP_KH,
+            MAHUYEN_KH: infoCustomer.MAHUYEN_KH,
+            MAXA_KH: infoCustomer.MAXA_KH,
+            BAOHONG_KH: infoCustomer.BAOHONG_KH,
+            NGAYTAO_KH: infoCustomer.NGAYTAO_KH
         }
         setLoading(true)
-        await Axios.post('addcustomer', objectSend)
+        await Axios.put('updatecustomer/', objectSend)
             .then((res) => {
                 if (res.data.status === 'success') {
                     setLoading(false)
                     notyf.success(res.data.message)
-                    setCustomer({
-                        ID_KH: 0,
-                        ID_NV: 0,
-                        ID_DVHC: 0,
-                        TEN_KH: "",
-                        DIACHI_KH: "",
-                        SODIENTHOAI_KH: "",
-                        CCCD_KH: "",
-                        SONHANKHAU_KH: "",
-                        NGAYSINH_KH: "",
-                        NGHENGHIEP_KH: "",
-                        MAHUYEN_KH: 0,
-                        MAXA_KH: 0,
-                        BAOHONG_KH: false,
-                        THOIGIANLAPDAT_KH: "",
-                        THOIGIANNGUNG_KH: "",
-                        FILENAME_KH: "",
-                        NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
-                        NGUOITAO_KH: 0,
-                        GHICHU_KH: "",
-                    })
                     props.callApi()
+                    props.handleClose()
                 }
                 else {
                     const errorMessages = res.data.message;
@@ -122,28 +168,22 @@ function AddCustomer(props) {
                 }
             }).catch((error) => {
                 if (error.response) {
-                  // Lỗi phản hồi từ phía máy chủ
-                  const errorMessages = error.response.data.message;
-                  notyf.error(errorMessages);
-                  setLoading(false)
+                    // Lỗi phản hồi từ phía máy chủ
+                    const errorMessages = error.response.data.message;
+                    notyf.error(errorMessages);
+                    setLoading(false)
                 } else {
-                  // Lỗi khác, ví dụ: lỗi kết nối
-                  notyf.error('Có lỗi xảy ra, vui lòng thử lại sau.');
-                  setLoading(false)
+                    // Lỗi khác, ví dụ: lỗi kết nối
+                    notyf.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+                    setLoading(false)
                 }
-              });
+            });
     }
 
 
-    // const addForm = () => {
-    //     setForm(rev => [...rev, { form: form.length + 1 }])
-    // }
-
-    React.useEffect(() => {
-    }, []);
-    console.log(customer)
     return (
         <Dialog
+            TransitionComponent={Transition}
             open={props.open}
             onClose={props.handleClose}
             aria-labelledby="alert-dialog-title"
@@ -152,19 +192,21 @@ function AddCustomer(props) {
             maxWidth='xs'
             fullWidth={true}
         >
-            <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white' }}>
-                Thêm khách hàng
+            <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white', marginBottom: 2 }}>
+                Cập nhật khách hàng
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} padding={1}>
-                    <TextField label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} name={'TEN_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} name={'SODIENTHOAI_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <TextField label="CCCD (*)" sx={{ marginTop: 2 }} value={customer.CCCD_KH} name={'CCCD_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel >Quận huyện (*)</InputLabel>
+                    <Typography variant="h6">Họ và tên chủ hộ (*)</Typography>
+                    <TextField sx={{ marginTop: 1 }} value={infoCustomer.TEN_KH} name={'TEN_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Số điện thoại (*)</Typography>
+                    <TextField sx={{ marginTop: 1 }} value={infoCustomer.SODIENTHOAI_KH} name={'SODIENTHOAI_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">CCCD (*)</Typography>
+                    <TextField sx={{ marginTop: 1 }} value={infoCustomer.CCCD_KH} name={'CCCD_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Quận huyện (*)</Typography>
+                    <FormControl sx={{ marginTop: 1 }}>
                         <Select
-                            label='Quận huyện'
-                            value={customer.MAHUYEN_KH}
+                            value={infoCustomer.MAHUYEN_KH}
                             name={'MAHUYEN_KH'}
                             onChange={(e) => { onChangeInputDistrict(e) }}
                         >
@@ -176,11 +218,10 @@ function AddCustomer(props) {
                             })}
                         </Select>
                     </FormControl>
-                    <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel>Xã phường (*)</InputLabel>
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Xã phường (*)</Typography>
+                    <FormControl sx={{ marginTop: 1 }}>
                         <Select
-                            label='Xã phường'
-                            value={customer.MAXA_KH}
+                            value={infoCustomer.MAXA_KH}
                             name={'MAXA_KH'}
                             onChange={(e) => { onChangeInput(e) }}
                         >
@@ -192,24 +233,37 @@ function AddCustomer(props) {
                             })}
                         </Select>
                     </FormControl>
-                    <TextField label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} value={customer.DIACHI_KH} name={'DIACHI_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} value={customer.SONHANKHAU_KH} name={'SONHANKHAU_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <TextField label="Ngày sinh nhật"
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Địa chỉ (*)</Typography>
+                    <TextField multiline sx={{ marginTop: 1 }} value={infoCustomer.DIACHI_KH} name={'DIACHI_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Số nhân khẩu</Typography>
+                    <TextField sx={{ marginTop: 1 }} value={infoCustomer.SONHANKHAU_KH} name={'SONHANKHAU_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Ngày sinh</Typography>
+                    <TextField
                         InputLabelProps={{
                             shrink: true,
-                        }} type={'date'} sx={{ marginTop: 2 }} value={customer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <TextField label="Nghề nghiệp" sx={{ marginTop: 2 }} value={customer.NGHENGHIEP_KH} name={'NGHENGHIEP_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <FormControl sx={{ marginTop: 2 }} >
-                        <FormLabel id="demo-row-radio-buttons-group-label">Đã biết số báo hỏng</FormLabel>
+                        }} type={'date'} sx={{ marginTop: 1 }} value={infoCustomer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Nghề nghiệp</Typography>
+                    <TextField sx={{ marginTop: 1 }} value={infoCustomer.NGHENGHIEP_KH} name={'NGHENGHIEP_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Đã biết số báo hỏng</Typography>
+                    <FormControl sx={{ marginTop: 1 }} >
                         <RadioGroup
                             row
                             aria-labelledby="demo-row-radio-buttons-group-label"
-                            value={customer.BAOHONG_KH}
                             name={'BAOHONG_KH'}
                             onChange={(e) => { onChangeInput(e) }}
                         >
-                            <FormControlLabel value={false} control={<Radio />} label="Chưa biết" />
-                            <FormControlLabel value={true} control={<Radio />} label="Đã biết" />
+                            <FormControlLabel
+                                value={'false'}
+                                control={<Radio />}
+                                label="Chưa biết"
+                                checked={infoCustomer.BAOHONG_KH === 0 || infoCustomer.BAOHONG_KH === 'false'} // Kiểm tra nếu giá trị là 'false' thì check
+                            />
+                            <FormControlLabel
+                                value={'true'}
+                                control={<Radio />}
+                                label="Đã biết"
+                                checked={infoCustomer.BAOHONG_KH === 1 || infoCustomer.BAOHONG_KH === 'true'} // Kiểm tra nếu giá trị là 'true' thì check
+                            />
                         </RadioGroup>
                     </FormControl>
                 </Box>
@@ -299,10 +353,10 @@ function AddCustomer(props) {
                     loadingPosition="start"
                     startIcon={<SaveIcon />}
                     variant="contained"
-                    onClick={handleAddCustomer}
+                    onClick={handleUpdateCustomer}
                     autoFocus
                 >
-                    <span>Thêm</span>
+                    <span>Cập nhật</span>
                 </LoadingButton>
                 {/* <Button size={'small'} onClick={handleAddCustomer} color={'primary'} variant='contained' autoFocus>
                     Thêm khách hàng
@@ -314,4 +368,4 @@ function AddCustomer(props) {
     )
 }
 
-export default AddCustomer
+export default EditCustomer
