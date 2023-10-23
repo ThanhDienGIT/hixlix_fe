@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ComponentSkeleton from './ComponentSkeleton'
 import MainCard from 'components/MainCard'
 import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
@@ -17,11 +17,13 @@ import DetailCustomer from 'pages/component/DetailCustomer'
 import SearchIcon from '@mui/icons-material/Search';
 import SaveIcon from '@mui/icons-material/Save';
 import EditNoteIcon from '@mui/icons-material/EditNote';
+import { TokenContext } from '../../globalVar/TokenProvider'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import Autocomplete from '@mui/material/Autocomplete';
 
 function ComponentTest() {
-
+    const { token } = useContext(TokenContext);
+    token
     const [data, setData] = useState([])
     const [dialog, setDiaLog] = useState(false)
     const [idKhaoSat, setIdKhaoSat] = useState(0)
@@ -34,23 +36,18 @@ function ComponentTest() {
     const [defaultService, setDefaultService] = useState([])
     const [provider, setProvider] = useState([])
     const [wards, setWards] = useState([])
-    const [quanhuyen, setQuanhuyen] = useState([])
     const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     const [statusSurvey, setStatusSurvey] = useState('');
     const [qualityService, setQualityService] = useState('');
     const [searchInput, setSearchInput] = useState('');
     const [alloption, setAlloption] = useState([]);
-
-
-
-
+    const [quanhuyen,setQuanhuyen] = useState([]);
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
             .catch(err => console.log(err))
     }
 
-    console.log(defaultService)
     const openDialogError = (id) => {
         setDialogError(true)
         setIDKhachHang(id)
@@ -82,21 +79,21 @@ function ComponentTest() {
     }
 
     const closeDialogSuccess = () => {
-        setDialogSuccess(false)
+        setDialogSuccess(false);
         setIDKhachHang(0)
     }
 
     const openDialogCustomer = () => {
-        setDialogCustomer(true)
+        setDialogCustomer(true);
     }
 
     const closeDialogCustomer = () => {
-        setDialogCustomer(false)
-    }
+        setDialogCustomer(false);
+    };
 
     const openDialog = (id) => {
-        setDiaLog(true)
-        setIdKhaoSat(id)
+        setDiaLog(true);
+        setIdKhaoSat(id);
     }
 
     const openDialogEditKH = (id) => {
@@ -105,14 +102,14 @@ function ComponentTest() {
     }
 
     const closeDialog = () => {
-        setDiaLog(false)
-        setIdKhaoSat(0)
+        setDiaLog(false);
+        setIdKhaoSat(0);
     }
 
-    const [maxPage, setMaxPage] = useState(0)
-    const listPage = [5, 10, 15, 25, 50]
-    const [rowPage, setRowPage] = useState(5)
-    const [page, setPage] = useState(1)
+    const [maxPage, setMaxPage] = useState(0);
+    const listPage = [5, 10, 15, 25, 50];
+    const [rowPage, setRowPage] = useState(5);
+    const [page, setPage] = useState(1);
     const nextPage = () => {
         if (page < maxPage) {
             setPage(page + 1);
@@ -152,7 +149,7 @@ function ComponentTest() {
 
     useEffect(() => {
         CallAPI()
-    }, [page, rowPage])
+    }, [page, rowPage]);
 
 
     useEffect(() => {
@@ -189,7 +186,12 @@ function ComponentTest() {
                 ID_CHA_DVHC: 1,
             },
         ])
-    }, [])
+    }, []);
+
+
+    const screenWidth = window.innerWidth
+
+
 
 
     const handleSearch = async () => {
@@ -233,7 +235,6 @@ function ComponentTest() {
             <MainCard title="DANH SÁCH KHÁCH HÀNG">
                 <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                     <Box display={'flex'} flexWrap={'wrap'}>
-
                         <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
                             <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>
                             <Select
@@ -284,18 +285,16 @@ function ComponentTest() {
                         />
                         <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
-                    <Box display={'flex'} marginTop={1}>
-                        <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
+                    <Box display={'flex'} marginTop={1} justifyContent={'space-between'} sx={screenWidth >= 720 ? "" : {width:'100%'}}>
+                        <Button size="small" sx={{ display: 'flex' }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
                         </Button>
-                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={exportDataToExcel}>
+                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} color={'success'} variant="contained" onClick={exportDataToExcel}>
                             <SaveIcon />
                             <Typography >Xuất excel</Typography>
                         </Button>
-
                     </Box>
-
                 </Box>
                 <TableContainer component={Paper}>
                     <Table size='small'>
@@ -391,6 +390,7 @@ function ComponentTest() {
                 provider={provider}
                 wards={wards}
                 servicePointList={servicePointList}
+                idCustomer={idKhaoSat}
             />
             <AddCustomer
                 open={dialogCustomer}
