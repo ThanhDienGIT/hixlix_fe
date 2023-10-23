@@ -25,7 +25,7 @@ root.render(
   <StrictMode>
     <ReduxProvider store={store}>
       <TokenProvider>
-        <BrowserRouter >
+        <BrowserRouter basename="/free">
           <App />
         </BrowserRouter>
       </TokenProvider>

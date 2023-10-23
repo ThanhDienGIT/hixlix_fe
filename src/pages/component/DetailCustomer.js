@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { Box, Card, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '../../../node_modules/@mui/material/index';
+import { Box, Card,  Grid, IconButton,  Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '../../../node_modules/@mui/material/index';
 import instance from '../../axios/instance';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import EditIcon from '@mui/icons-material/Edit';
@@ -86,26 +86,13 @@ function DetailCustomer(props) {
                 </Card>
                 <Box component={Paper} padding={1} marginTop={1}>
                     <Typography variant='h5' >DANH SÁCH DỊCH VỤ KHẢO SÁT</Typography>
-                    <FormControl sx={{ width: 300, marginTop: 1 }} size="small">
-                        <InputLabel id="demo-select-small-label">Tìm kiếm theo chất lượng dịch vụ</InputLabel>
-                        <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            label="Tìm kiếm theo chất lượng dịch vụ"
-                        >
-                           
-                            <MenuItem value={10}>Dịch vụ có vấn đề chất lượng</MenuItem>
-                            <MenuItem value={20}>Dịch vụ có khả năng phát triển thuê bao</MenuItem>
-                        </Select>
-                    </FormControl>
+                    
                     <TableContainer component={Paper} sx={{ marginTop: 1 }}>
                         <Table size={'small'}>
                             <TableHead sx={{ backgroundColor: '#1890ff' }}>
                                 <TableRow>
                                     <TableCell sx={{ color: 'white' }}> Tên dịch vụ </TableCell>
                                     <TableCell sx={{ color: 'white' }}> Nhà cung cấp </TableCell>
-                                    <TableCell sx={{ color: 'white' }}> Ngày bắt đầu đặt cọc </TableCell>
-                                    <TableCell sx={{ color: 'white' }}> Ngày kết thúc đặt cọc </TableCell>
                                     <TableCell sx={{ color: 'white' }}> Trạng thái </TableCell>
                                     <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
                                 </TableRow>
@@ -114,8 +101,6 @@ function DetailCustomer(props) {
                                 <TableRow>
                                     <TableCell> FTTH </TableCell>
                                     <TableCell> VNPT </TableCell>
-                                    <TableCell> 09/10/2023</TableCell>
-                                    <TableCell> 01/01/2024</TableCell>
                                     <TableCell> Đã khảo sát</TableCell>
                                     <TableCell>
                                         <Tooltip title="Xem chi tiết khảo sát">
@@ -138,8 +123,7 @@ function DetailCustomer(props) {
                                 <TableRow>
                                     <TableCell> Di động TS/TT </TableCell>
                                     <TableCell> VNPT </TableCell>
-                                    <TableCell> 09/10/2023</TableCell>
-                                    <TableCell> 01/01/2024</TableCell>
+                                
                                     <TableCell> Đã khảo sát</TableCell>
                                     <TableCell>
                                         <Tooltip title="Xem chi tiết khảo sát">
@@ -162,8 +146,7 @@ function DetailCustomer(props) {
                                 <TableRow>
                                     <TableCell> MyTv </TableCell>
                                     <TableCell> VNPT </TableCell>
-                                    <TableCell> 09/10/2023</TableCell>
-                                    <TableCell> 01/01/2024</TableCell>
+                                
                                     <TableCell> Đã khảo sát</TableCell>
                                     <TableCell>
                                         <Tooltip title="Xem chi tiết khảo sát">

@@ -19,8 +19,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import { TokenContext } from '../../globalVar/TokenProvider'
 function ComponentTest() {
     const { token } = useContext(TokenContext);
-
-    console.log(token)
+    token
     const [data, setData] = useState([])
     const [dialog, setDiaLog] = useState(false)
     const [idKhaoSat, setIdKhaoSat] = useState(0)
@@ -31,8 +30,8 @@ function ComponentTest() {
     const [idKhachHang, setIDKhachHang] = useState(0)
     const [defaultService, setDefaultService] = useState([])
     const [provider, setProvider] = useState([])
-    const [wards,setWards] = useState([])
-    const servicePointList = [0,1,2,3,4,5,6,7,8,9,10]
+    const [wards, setWards] = useState([])
+    const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -111,7 +110,6 @@ function ComponentTest() {
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page);
             setData(res.data.data);
-            console.log(res.data);
         }).catch(err => console.log(err));
     }
 
@@ -138,31 +136,32 @@ function ComponentTest() {
         ])
         setWards([
             {
-             ID_DVHC:1,
-             TEN_DVHC:'Vị thanh',
-             ID_CHA_DVHC: null,
+                ID_DVHC: 1,
+                TEN_DVHC: 'Vị thanh',
+                ID_CHA_DVHC: null,
             },
             {
-             ID_DVHC:2,
-             TEN_DVHC:'Phường 7',
-             ID_CHA_DVHC: 1,
+                ID_DVHC: 2,
+                TEN_DVHC: 'Phường 7',
+                ID_CHA_DVHC: 1,
             },
             {
-             ID_DVHC:3,
-             TEN_DVHC:'Phường 5',
-             ID_CHA_DVHC: 1,
+                ID_DVHC: 3,
+                TEN_DVHC: 'Phường 5',
+                ID_CHA_DVHC: 1,
             },
-         ])
+        ])
     }, []);
 
- 
+
+    const screenWidth = window.innerWidth
+
 
     return (
         <ComponentSkeleton>
             <MainCard title="DANH SÁCH KHÁCH HÀNG">
                 <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                     <Box display={'flex'} flexWrap={'wrap'}>
-
                         <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
                             <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>
                             <Select
@@ -196,17 +195,16 @@ function ComponentTest() {
                         <TextField label='Tìm kiếm...' size="small" sx={{ marginRight: 2, marginTop: 1.5, width: 220 }} />
                         <Button sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
-                    <Box display={'flex'} marginTop={1}>
-                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained">
-                            <SaveIcon />
-                            <Typography >Xuất excel</Typography>
-                        </Button>
-                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} variant="contained" onClick={openDialogCustomer}>
+                    <Box display={'flex'} marginTop={1} justifyContent={'space-between'} sx={screenWidth >= 720 ? "" : {width:'100%'}}>
+                        <Button size="small" sx={{ display: 'flex' }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
                         </Button>
+                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} color={'success'} variant="contained">
+                            <SaveIcon />
+                            <Typography >Xuất excel</Typography>
+                        </Button>
                     </Box>
-
                 </Box>
                 <TableContainer component={Paper}>
                     <Table size='small'>
@@ -297,7 +295,7 @@ function ComponentTest() {
                 provider={provider}
                 wards={wards}
                 servicePointList={servicePointList}
-                idCustomer = {idKhaoSat}
+                idCustomer={idKhaoSat}
             />
             <AddCustomer
                 open={dialogCustomer}

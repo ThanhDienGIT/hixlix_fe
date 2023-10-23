@@ -35,6 +35,11 @@ Route::get('/get_lix', [Lix::class, 'get_lix']);
 Route::post('/add_lix', [Lix::class, 'add_lix']);
 Route::put('/update_lix', [Lix::class, 'update_lix']);
 Route::post('/delete_lix', [Lix::class, 'delete_lix']);
+Route::post('/AddEditLix', [Lix::class, 'AddEditLix']);
+Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}/{idnhanvien}', [Lix::class, 'getLix_By_IdCustomer_and_IdService']);
+Route::post('/EditLix', [Lix::class, 'EditLix']);
+
+
 
 //dichvu
 

@@ -60,7 +60,7 @@ const Profile = () => {
   const handleLogout = async () => {
     // logout
     localStorage.removeItem('access_token');
-    window.location.href="/login";
+    window.location.href="/free/login";
   };
 
   const anchorRef = useRef(null);
