@@ -9,9 +9,9 @@ class khachhang extends Model
 {
     use HasFactory;
     protected $table = 'khach_hang';
-    protected $primaryKey = 'id_kh';
+    protected $primaryKey = 'ID_KH';
     public $timestamps = false;
-   
+
 
     protected $fillable = [
         'id_nv',
@@ -45,5 +45,5 @@ class khachhang extends Model
         return $this->hasOne(phieukhaosat::class, 'id_kh', 'id_kh');
     }
 
- 
+
 }
