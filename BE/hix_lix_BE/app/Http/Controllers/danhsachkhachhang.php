@@ -492,7 +492,7 @@ class danhsachkhachhang extends Controller
     {
         $kh = khachhang::join('don_vi_hanh_chinh as dvhc_huyen', 'dvhc_huyen.ID_DVHC', '=', 'khach_hang.MAHUYEN_KH')
             ->join('don_vi_hanh_chinh as dvhc_xa', 'dvhc_xa.ID_DVHC', '=', 'khach_hang.MAXA_KH')
-            ->where('ID_KH', $id)
+            ->where('id_kh', $id)
             ->select('*', 'dvhc_huyen.TEN_DVHC as TEN_HUYEN', 'dvhc_xa.TEN_DVHC as TEN_XA')
             ->first();
 

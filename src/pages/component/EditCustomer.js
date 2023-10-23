@@ -92,7 +92,7 @@ function EditCustomer(props) {
     
 
     const CallAPIByIdCustomer = async (id) => {
-        await Axios.get('getKHByID/' + id).then(res => {
+        await Axios.get('getKH_ByID_LIX/' + id).then(res => {
             setInfocustomer(res.data)
         }).catch(err => console.log(err))
     }
