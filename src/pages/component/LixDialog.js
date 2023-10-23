@@ -113,7 +113,7 @@ function LixDialog(props) {
 
 
     const getInfoCustomer = (id) => {
-        instance.get('getKHByID/' + id).then(res => setCustomer(res.data)).catch(err => console.log(err))
+        instance.get('getKH_ByID_LIX/' + id).then(res => setCustomer(res.data)).catch(err => console.log(err))
     }
 
     useEffect(() => {

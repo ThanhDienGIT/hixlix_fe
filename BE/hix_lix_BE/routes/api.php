@@ -47,6 +47,7 @@ Route::get('/get_lix', [Lix::class, 'get_lix']);
 
 
 //dichvu
-Route::get('/dichvu', [Lix::class, 'dichvu']);
+Route::get('/dichvu', [Lix::class, 'getServiceList']);
 
 
+Route::get('/getKH_ByID_LIX/{id}', [danhsachkhachhang::class, 'getKH_ByID_LIX']);

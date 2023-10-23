@@ -504,4 +504,16 @@ class danhsachkhachhang extends Controller
     }
 
 
+    public function getKH_ByID_LIX($id)
+    {
+        $kh = khachhang::where('ID_KH', $id)->first();
+
+        if ($kh !== null) {
+            return response()->json($kh, 200);
+        } else {
+            return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
+        }
+    }
+
+
 }
