@@ -19,14 +19,14 @@ use Maatwebsite\Excel\Excel as ExcelExcel;
 class danhsachkhachhang extends Controller
 {
     public function exportExcel(Request $request)
-    
+
     {
         $Data = $request->all();
         $response =  Excel::download(new KhachHangExport($Data), 'khach_hang_data.xlsx', ExcelExcel::CSV);
         return $response;
 
-       
-        
+
+
     }
 
 
@@ -502,4 +502,6 @@ class danhsachkhachhang extends Controller
             return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
         }
     }
+
+
 }

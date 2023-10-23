@@ -9,40 +9,40 @@ class chi_tiet_phieu_khao_sat_lix extends Model
 {
     use HasFactory;
     protected $table = 'chi_tiet_phieu_khao_sat_lix';
-    protected $primaryKey = 'id_ctpks';
+    protected $primaryKey = 'ID_CTPKS';
     public $timestamps = false;
-   
+
 
     protected $fillable = [
-        'id_pks',
-        'id_dv',
-        'diachi_kh',
-        'tenkhachhangdaidien_ctpks',
-        'sodienthoaikhachhangdaidien_ctpks',
-        'accountkhachhang_ctpks',
-        'muccuoc_ctpks',
-        'hinhthucdong_ctpks',
-        'ngaybatdaudongcoc_ctpks',
-        'ngayketthucdongcoc_ctpks',
-        'nhacungcap_ctpks',
-        'diemhailong_ctpks',
-        'camnhandichvu_ctpks',
-        'camnhanphucvu_ctpks',
-        'ykienkhac',
-        'nguoitao_ctpks',
-        'ngaytao_ctpks',
-        'nguoiupdate_ctpks',
-        'ngayupdate_ctpks',
-        'is_deleted',
+        'ID_PKS',
+        'ID_DV',
+        'DIACHI_KH',
+        'TENKHACHHANGDAIDIEN_CTPKS',
+        'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS',
+        'ACCOUNTKHACHHANG_CTPKS',
+        'MUCCUOC_CTPKS',
+        'HINHTHUCDONG_CTPKS',
+        'NGAYBATDAUDONGCOC_CTPKS',
+        'NGAYKETTHUCDONGCOC_CTPKS',
+        'NHACUNGCAP_CTPKS',
+        'DIEMHAILONG_CTPKS',
+        'CAMNHANDICHVU_CTPKS',
+        'CANNHANPHUCVU_CTPKS',
+        'YKIENKHAC',
+        'NGUOITAO_CTPKS',
+        'NGAYTAO_CTPKS',
+        'NGUOIUPDATE_CTPKS',
+        'NGAYUPDATE_CTPKS',
+        'IS_DELETED',
     ];
 
     public function phieukhaosat()
     {
-        return $this->belongsTo(phieukhaosat::class, 'id_pks', 'id_pks');
+        return $this->belongsTo(phieukhaosat::class, 'ID_PKS', 'ID_PKS');
     }
 
-    public function khachhang()
-    {
-        return $this->belongsTo(phieukhaosat::class, 'id_pks', 'id_pks');
-    }
+    // public function khachhang()
+    // {
+    //     return $this->belongsTo(phieukhaosat::class, 'id_pks', 'id_pks');
+    // }
 }
