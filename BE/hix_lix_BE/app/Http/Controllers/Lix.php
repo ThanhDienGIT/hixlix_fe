@@ -12,14 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class Lix extends Controller
 {
-    public function get_lix(Request $request)
+    public function get_lix($id_kh)
     {
         $user = Auth::user();
         $id_nv = $user->ID_NV;
 
         if ($id_nv) {
             try {
-                $PKS = phieukhaosat::query()->with('chitietpks', 'khachhangs', 'nhanviens')->where('id_nv', $id_nv)->get();
+                $PKS = phieukhaosat::query()->with('chitietpks', 'khachhangs', 'nhanviens')->where('id_nv', $id_nv)
+                    ->where('id_kh', $id_kh)
+                    ->get();
                 if ($PKS->isEmpty()) {
                     return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
                 }
@@ -29,8 +31,8 @@ class Lix extends Controller
                         'id_nv' => $id_nv,
                         'pks' => $_PKS,
                     ];
-                    $PKS_data[] = $pks_item;
                 }
+                $PKS_data[] = $pks_item;
                 return response()->json($PKS_data, 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -117,13 +119,8 @@ class Lix extends Controller
 
     public function update_lix(Request $request)
     {
-
-        // Lấy thông tin người dùng đăng nhập
-        // $nhanVien = auth()->user();
-
         $user = Auth::user();
         $id_nv = $user->ID_NV;
-
         if ($id_nv) {
             try {
                 $arrayCreate = $request->all();
@@ -261,6 +258,15 @@ class Lix extends Controller
             return response()->json(['message' => 'Lỗi khi xoá khảo sát: ' . $e->getMessage()], 500);
         }
     }
+                // $PKS = phieukhaosat::query()
+                //     ->with('chitietpks', 'khachhangs', 'nhanviens')
+                //     ->where('id_nv', $id_nv)
+                //     ->where(function ($query) use ($_searchTerm) {
+                //         $query->where('id_dv', 'like', "%$_searchTerm%")
+                //             ->orWhere('kh_ten', 'like', "%$_searchTerm%");
+                //         // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
+                //     })
+                //     ->get();
 
     public function AddEditLix(Request $request)
     {

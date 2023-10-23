@@ -29,8 +29,26 @@ Route::post('/login', [testController::class, 'SignIn']);
 Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
 Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
 Route::get('/dichvu', [danhsachkhachhang::class, 'getServiceList']);
+Route::put('/update_khachhang', [danhsachkhachhang::class, 'update_khachhang']);
+Route::put('/delete_khachhang', [danhsachkhachhang::class, 'delete_khachhang']);
+Route::get('/getsurveybyKH/{id}', [danhsachkhachhang::class, 'getsurveybyKH']);
+Route::post('/addcustomer', [danhsachkhachhang::class, 'addcustomer']);
+Route::put('/updatecustomer', [danhsachkhachhang::class, 'updatecustomer']);
+Route::delete('/deletecustomer/{id}', [danhsachkhachhang::class, 'deletecustomer']);
+Route::post('/searchcustomer', [danhsachkhachhang::class, 'searchcustomer']);
+
+//Khach hang Excel
+Route::post('/export-excel', [danhsachkhachhang::class, 'exportExcel']);
+
+// Route::post('/export-excel', 'App\Http\Controllers\danhsachkhachhang@exportExcel')->name('exportExcel');
+
+
+//DVHC
+Route::get('/getallquanhuyen', [danhsachkhachhang::class, 'getallquanhuyen']);
+Route::get('/getAllXaPhuong/{id}', [danhsachkhachhang::class, 'getAllXaPhuong']);
+
 //Lix
-Route::get('/get_lix', [Lix::class, 'get_lix']);
+Route::get('/get_lix/{count}', [Lix::class, 'get_lix']);
 
 Route::post('/add_lix', [Lix::class, 'add_lix']);
 Route::put('/update_lix', [Lix::class, 'update_lix']);
@@ -40,6 +58,8 @@ Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}/{idnhanvie
 Route::post('/EditLix', [Lix::class, 'EditLix']);
 
 
+
+Route::get('livesearch_lix', [Lix::class, 'livesearch_lix']);
 
 //dichvu
 
