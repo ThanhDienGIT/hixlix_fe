@@ -41,7 +41,7 @@ function ComponentTest() {
     const [qualityService, setQualityService] = useState('');
     const [searchInput, setSearchInput] = useState('');
     const [alloption, setAlloption] = useState([]);
-    const [quanhuyen,setQuanhuyen] = useState([]);
+    const [quanhuyen, setQuanhuyen] = useState([]);
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -212,24 +212,28 @@ function ComponentTest() {
     }
 
     const exportDataToExcel = async () => {
-        await instance.post('export-excel', { export_data: data })
-          .then(response => {
-            console.log(response)
-            // Đoạn mã để xử lý tệp Excel trả về, ví dụ: mở tệp Excel trong cửa sổ mới
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'TTNL.xlsx'); // Đặt tên tệp Excel
-            document.body.appendChild(link);
-            link.click();
-          })
-          .catch(error => {
-            console.error('Lỗi khi tải tệp Excel:', error);
-          });
+        await instance.post('export-excel', { export_data: data }, { responseType: 'blob' })
+            .then(response => {
+                const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
+
+                // Tạo một URL cho blob
+                const url = window.URL.createObjectURL(blob);
+
+                // Tạo một thẻ a để tải tệp Excel
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Khach_hang_data.xlsx'); // Đặt tên tệp Excel
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                console.error('Lỗi khi tải tệp Excel:', error);
+            });
     };
 
 
-
+ 
+    
     return (
         <ComponentSkeleton>
             <MainCard title="DANH SÁCH KHÁCH HÀNG">
@@ -277,24 +281,26 @@ function ComponentTest() {
                             freeSolo
                             options={alloption.map((option) => option.TEN_KH)}
                             renderInput={(params) => <TextField {...params} label='Tìm kiếm...' size="small"
-                            sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            onInputChange={(e, value) => setSearchInput(value)}
+                                sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                onInputChange={(e, value) => setSearchInput(value)}
                             />}
                         />
                         <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
-                    <Box display={'flex'} marginTop={1} justifyContent={'space-between'} sx={screenWidth >= 720 ? "" : {width:'100%'}}>
-                        <Button size="small" sx={{ display: 'flex' }} variant="contained" onClick={openDialogCustomer}>
+                    <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
+                        <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
                         </Button>
-                        <Button size="small" sx={{ display: 'flex', marginLeft: 1 }} color={'success'} variant="contained" onClick={exportDataToExcel}>
+                        <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={exportDataToExcel}>
                             <SaveIcon />
                             <Typography >Xuất excel</Typography>
                         </Button>
+
                     </Box>
+
                 </Box>
                 <TableContainer component={Paper}>
                     <Table size='small'>
@@ -426,5 +432,7 @@ function ComponentTest() {
         </ComponentSkeleton>
     )
 }
-
 export default ComponentTest
+
+
+

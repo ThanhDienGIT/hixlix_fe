@@ -60,6 +60,8 @@ const Profile = () => {
   const theme = useTheme();
 
   const handleLogout = async () => {
+    localStorage.removeItem('access_token');
+    window.location.href = '/login'
     // logout
   };
 

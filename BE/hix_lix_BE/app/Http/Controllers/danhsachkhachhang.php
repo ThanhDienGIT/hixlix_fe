@@ -15,18 +15,65 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\KhachHangExport;
 use Maatwebsite\Excel\Excel as ExcelExcel;
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class danhsachkhachhang extends Controller
 {
     public function exportExcel(Request $request)
-
     {
-        $Data = $request->all();
-        $response =  Excel::download(new KhachHangExport($Data), 'khach_hang_data.xlsx', ExcelExcel::CSV);
-        return $response;
+        $Data = $request->export_data;
+        $templatePath = base_path('public/dskh_template.xlsx');
 
+        // Load the template Excel file
+        $spreadsheet = IOFactory::load($templatePath);
 
+        // Get the first worksheet
+        $worksheet = $spreadsheet->getActiveSheet();
 
+        // Lấy ngày tháng năm hiện tại
+        $currentDate = date('d/m/Y');  // Định dạng "dd/MM/yyyy"
+
+        // Gán giá trị vào ô B4
+        $worksheet->setCellValue('B4', 'Ngày: ' . $currentDate);
+
+        // Lấy ô B4 và định dạng nó thành "dd/MM/yyyy"
+        $cell = $worksheet->getCell('B4');
+        $style = $cell->getStyle();
+        $style->getNumberFormat()->setFormatCode('dd/mm/yyyy');
+
+        // Nếu bạn muốn sao chép giá trị và định dạng từ ô B4 sang ô C4 (nếu đã được merge)
+        $worksheet->setCellValue('C4', 'Ngày: ' . $currentDate);
+        $cell = $worksheet->getCell('C4');
+        $style = $worksheet->getStyle('B4');
+        $style->getNumberFormat()->setFormatCode('dd/mm/yyyy');
+
+        // Define a style for row 8 (or any other row you want to copy the style from)
+        $style8 = $worksheet->getStyle('8:8');
+
+        // Fill data into the worksheet, starting from row 9
+        foreach ($Data as $rowIndex => $item) {
+            $rowIndex += 8; // Start from row 9 (row 8 is for headers)
+
+            // Copy style from row 8 to the current row
+            $worksheet->duplicateStyle($style8, 'A' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'B' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'C' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'D' . $rowIndex);
+
+            $worksheet->setCellValue('A' . $rowIndex, $item['ID_KH']);
+            $worksheet->setCellValue('B' . $rowIndex, $item['TEN_KH']);
+            $worksheet->setCellValue('C' . $rowIndex, $item['SODIENTHOAI_KH']);
+            $worksheet->setCellValue('D' . $rowIndex, $item['TRANGTHAI_KH'] === 1 ? 'Đã khảo sát' : 'Chưa khảo sát');
+        }
+
+        // Create a writer to save the spreadsheet to a temporary file
+        $writer = new Xlsx($spreadsheet);
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'excel');
+        $writer->save($tempFilePath);
+
+        // Return the response to allow the client to download the Excel file
+        return new BinaryFileResponse($tempFilePath);
     }
 
 
@@ -514,6 +561,4 @@ class danhsachkhachhang extends Controller
             return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
         }
     }
-
-
 }

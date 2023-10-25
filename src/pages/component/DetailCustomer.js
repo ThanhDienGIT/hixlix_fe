@@ -23,7 +23,7 @@ function DetailCustomer(props) {
     const [loading, setLoading] = React.useState(false)
 
     const CallAPIByIdCustomer = async (id) => {
-        await instance.get('getKH_ByID_LIX/' + id).then(res => {
+        await instance.get('getKHByID/' + id).then(res => {
             setInfoCustomer(res.data)
             console.log(res.data)
         }).catch(err => console.log(err))
@@ -44,6 +44,10 @@ function DetailCustomer(props) {
             CallAPIGetSurveyOfCustomer(props.idkhachhang)
         }
     }, [props.idkhachhang])
+
+
+    console.log(infoCustomer)
+    console.log(surveycustomer)
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));

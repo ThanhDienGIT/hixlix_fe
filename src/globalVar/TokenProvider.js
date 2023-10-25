@@ -8,11 +8,17 @@ export function TokenProvider({ children }) {
         setToken(jwt_decode(ele))
     }
 
+       
+    if(window.location.pathname !== '/login'){
+        if(localStorage.getItem('access_token') === null){
+            window.location.href='/login'
+        }
+    }
+
     useEffect(() => {
         if (localStorage.getItem('access_token') !== null) {
             JWTToken(localStorage.getItem('access_token'))
         }
-
     }, [])
 
     return (
