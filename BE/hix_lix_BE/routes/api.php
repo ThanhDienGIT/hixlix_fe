@@ -5,6 +5,9 @@ use App\Http\Controllers\Lix;
 use App\Http\Controllers\testController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NhanVienController;
+use App\Http\Controllers\DichVuController;
+use App\Http\Controllers\DonViHanhChinhController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,3 +54,27 @@ Route::get('/dichvu', [Lix::class, 'getServiceList']);
 
 
 Route::get('/getKH_ByID_LIX/{id}', [danhsachkhachhang::class, 'getKH_ByID_LIX']);
+
+//nhan vien
+Route::post('/addStaff', [NhanVienController::class, 'addStaff']);
+Route::put('/updateStaff', [NhanVienController::class, 'updateStaff']);
+Route::put('/deleteStaff', [NhanVienController::class, 'deleteStaff']);
+Route::get('/getStaffById', [NhanVienController::class, 'getStaffById']);
+Route::get('/getAllStaff', [NhanVienController::class, 'getAllStaff']);
+
+// Dịch vụ
+Route::post('/themDichVu', [DichVuController::class, 'themDichVu']);
+Route::put('/capNhatDichVu', [DichVuController::class, 'capNhatDichVu']);
+Route::put('/xoaDichVu', [DichVuController::class, 'xoaDichVu']);
+Route::get('/getAllServices', [DichVuController::class, 'getAllServices']);
+Route::get('/getServiceById', [DichVuController::class, 'getServiceById']);
+
+// Đơn vị hành chính
+Route::post('/themDonViHanhChinh', [DonViHanhChinhController::class, 'themDonViHanhChinh']);
+Route::put('/capNhatDonViHanhChinh', [DonViHanhChinhController::class, 'capNhatDonViHanhChinh']);
+Route::put('/xoaDonViHanhChinh', [DonViHanhChinhController::class, 'xoaDonViHanhChinh']);
+Route::get('/getAllDonViHanhChinh', [DonViHanhChinhController::class, 'getAllDonViHanhChinh']);
+Route::get('/getDonViHanhChinhById', [DonViHanhChinhController::class, 'getDonViHanhChinhById']);
+
+
+
