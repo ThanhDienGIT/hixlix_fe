@@ -2,16 +2,34 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
-class VerifyCsrfToken extends Middleware
+
+class VerifyJWTToken
 {
     /**
-     * The URIs that should be excluded from CSRF verification.
+     * Handle an incoming request.
      *
-     * @var array<int, string>
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    protected $except = [
-        //
-    ];
+    public function handle(Request $request, Closure $next): Response
+    {
+        try {
+            $user = JWTAuth::toUser($request->input('access_token'));
+        } catch (TokenExpiredException $e) {
+            return response()->json(['error' => 'token_expired'], 401);
+        } catch (TokenInvalidException $e) {
+            return response()->json(['error' => 'token_invalid'], 401);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Token is required'], 401);
+        }
+        return $next($request);
+    }
 }

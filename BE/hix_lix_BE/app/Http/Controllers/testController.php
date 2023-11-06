@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\NhanVien;
 use App\Models\KeHoach;
 use App\Http\Controllers\Controller;
+use App\Models\khachhang;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -14,7 +15,6 @@ use Illuminate\Support\Facades\Validator;
 
 class testController extends Controller
 {
-    //
     public function test(){
     
         return response()->json('test', 200);

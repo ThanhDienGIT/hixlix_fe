@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import StatisticalReport from 'pages/components-overview/StatisticalReport';
 
 
 // render - dashboard
@@ -17,6 +18,7 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const ComponentTest = Loadable(lazy(() => import('pages/components-overview/ComponentTest')));
+const AsignmentCustomerManager = Loadable(lazy(() => import('pages/components-overview/AsignmentCustomerManager')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -59,6 +61,14 @@ const MainRoutes = {
     {
       path: 'table',
       element: <ComponentTest/>
+    },
+    {
+      path: 'statistical-report',
+      element: <StatisticalReport/>
+    },
+    {
+      path: 'asignment-customer',
+      element: <AsignmentCustomerManager/>
     }
   ]
 };

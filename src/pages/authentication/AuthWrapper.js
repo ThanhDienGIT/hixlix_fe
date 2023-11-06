@@ -5,7 +5,7 @@ import { Box, Grid } from '@mui/material';
 
 // project import
 import AuthCard from './AuthCard';
-import Logo from 'components/Logo';
+// import Logo from 'components/Logo';
 import AuthFooter from 'components/cards/AuthFooter';
 
 // assets
@@ -25,7 +25,7 @@ const AuthWrapper = ({ children }) => (
       }}
     >
       <Grid item xs={12} sx={{ ml: 3, mt: 3 }}>
-        <Logo />
+      <img src='https://itvnpt.vn/wp-content/uploads/2021/11/Logo-VNPT-TP-HCM-1.png' alt='logo' width={150} height={45} />
       </Grid>
       <Grid item xs={12}>
         <Grid

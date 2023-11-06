@@ -15,6 +15,12 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import viLocale from 'date-fns/locale/vi';
+import { viVN } from '@mui/x-date-pickers/locales';
+import { format } from 'date-fns';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -35,6 +41,7 @@ function EditCustomer(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
     const [xaphuong, setXaphuong] = useState([])
+    const [ap, setAp] = useState([])
     // const [form, setForm] = useState([
     //     { form: 1 }
     // ])
@@ -73,6 +80,7 @@ function EditCustomer(props) {
         NGHENGHIEP_KH: "",
         MAHUYEN_KH: 0,
         MAXA_KH: 0,
+        MAAP_KH: 0,
         BAOHONG_KH: 0,
         THOIGIANLAPDAT_KH: null,
         THOIGIANNGUNG_KH: null,
@@ -89,7 +97,7 @@ function EditCustomer(props) {
         TEN_XA: ""
     })
 
-    
+
 
     const CallAPIByIdCustomer = async (id) => {
         await Axios.get('getKH_ByID_LIX/' + id).then(res => {
@@ -114,11 +122,31 @@ function EditCustomer(props) {
         }
     }
 
+    const getAPById = async (id) => {
+        const response = await Axios.get('getAllApById/' + id);
+        if (response.status === 200) {
+            setAp(response.data.ap)
+            console.log(ap)
+        }
+    }
+    // const formatDate = (dateString) => {
+    //     const date = new Date(dateString);
+      
+    //     if (isValid(date)) {
+    //       return format(date, 'dd/MM/yyyy');
+    //     } else {
+    //       return "Ngày không hợp lệ";
+    //     }
+    //   };
+
     React.useEffect(() => {
         if (infoCustomer.MAHUYEN_KH) {
             getXaPhuongById(infoCustomer.MAHUYEN_KH)
         }
-    }, [infoCustomer.MAHUYEN_KH])
+        if (infoCustomer.MAXA_KH) {
+            getAPById(infoCustomer.MAXA_KH)
+        }
+    }, [infoCustomer.MAHUYEN_KH, infoCustomer.MAXA_KH])
 
 
     const onChangeInputDistrict = async (e) => {
@@ -137,6 +165,15 @@ function EditCustomer(props) {
             ...rev, [e.target.name]: e.target.value
         }))
     }
+    const onChangeInputDOB = (e) => {
+        console.log(e)
+        setInfocustomer(rev => ({
+            ...rev, ['NGAYSINH_KH']: format(e, 'yyyy-MM-dd')
+        }))
+    }
+
+    console.log(infoCustomer)
+
     const handleUpdateCustomer = async () => {
         const objectSend = {
             ID_KH: props.idkhachhang,
@@ -149,6 +186,7 @@ function EditCustomer(props) {
             NGHENGHIEP_KH: infoCustomer.NGHENGHIEP_KH,
             MAHUYEN_KH: infoCustomer.MAHUYEN_KH,
             MAXA_KH: infoCustomer.MAXA_KH,
+            MAAP_KH: infoCustomer.MAAP_KH,
             BAOHONG_KH: infoCustomer.BAOHONG_KH,
             NGAYTAO_KH: infoCustomer.NGAYTAO_KH
         }
@@ -181,6 +219,14 @@ function EditCustomer(props) {
     }
 
 
+
+    const onChangeInputap = (e) => {
+        setAp(e.target.value);
+    }
+
+    console.log(infoCustomer.NGAYSINH_KH)
+
+
     return (
         <Dialog
             TransitionComponent={Transition}
@@ -211,9 +257,9 @@ function EditCustomer(props) {
                             onChange={(e) => { onChangeInputDistrict(e) }}
                         >
                             <MenuItem value={0}>Chọn quận huyện</MenuItem>
-                            {props.district && props.district.filter(x => x.ID_CHA_DVHC !== null).map(ele => {
+                            {props.district && props.district.filter(x => x.parent_code !== null).map(ele => {
                                 return (
-                                    <MenuItem key={ele.ID_DVHC} value={ele.ID_DVHC}>{ele.TEN_DVHC}</MenuItem>
+                                    <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                                 )
                             })}
                         </Select>
@@ -226,22 +272,56 @@ function EditCustomer(props) {
                             onChange={(e) => { onChangeInput(e) }}
                         >
                             <MenuItem value={0}>Chọn xã phường</MenuItem>
-                            {xaphuong && xaphuong.filter(x => x.ID_CHA_DVHC !== null).map(ele => {
+                            {xaphuong && xaphuong.filter(x => x.parent_code !== null).map(ele => {
                                 return (
-                                    <MenuItem key={ele.ID_DVHC} value={ele.ID_DVHC}>{ele.TEN_DVHC}</MenuItem>
+                                    <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                                 )
                             })}
                         </Select>
                     </FormControl>
+
+
+
+                    <Typography sx={{ marginTop: 2 }} variant="h6">Ấp/ Khu vực (*)</Typography>
+                    <FormControl sx={{ marginTop: 1 }}>
+                        <Select
+                            value={infoCustomer.MAAP_KH}
+                            name={'MAAP_KH'}
+                            onChange={(e) => { onChangeInputap(e) }}
+                        >
+                            <MenuItem value={0}>Chọn Ấp / Khu vực</MenuItem>
+                            {ap && ap.filter(x => x.parent_code !== null).map(ele => {
+                                return (
+                                    <MenuItem key={ele.id} value={ele.id}>{ele.name}</MenuItem>
+                                )
+                            })}
+                        </Select>
+                    </FormControl>
+
+
+
                     <Typography sx={{ marginTop: 2 }} variant="h6">Địa chỉ (*)</Typography>
                     <TextField multiline sx={{ marginTop: 1 }} value={infoCustomer.DIACHI_KH} name={'DIACHI_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <Typography sx={{ marginTop: 2 }} variant="h6">Số nhân khẩu</Typography>
                     <TextField sx={{ marginTop: 1 }} value={infoCustomer.SONHANKHAU_KH} name={'SONHANKHAU_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <Typography sx={{ marginTop: 2 }} variant="h6">Ngày sinh</Typography>
-                    <TextField
+                    {/* <TextField
                         InputLabelProps={{
                             shrink: true,
-                        }} type={'date'} sx={{ marginTop: 1 }} value={infoCustomer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} />
+                        }} type={'date'} sx={{ marginTop: 1 }} value={infoCustomer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} /> */}
+                    <FormControl sx={{ width: 360, marginRight: 2, marginTop: 1 }} size="small">
+                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
+                            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
+                            <DatePicker
+                                inputProps={{ size: 'small' }}
+                                value={infoCustomer && new Date(infoCustomer.NGAYSINH_KH)}
+                                name={'NGAYSINH_KH'}
+                                onChange={(e) => { onChangeInputDOB(e) }}
+                                // onChange={(date) => setFromDate(date)}
+                                slotProps={{ textField: { size: 'small' } }}
+                                format="dd/MM/yyyy" />
+                        </LocalizationProvider>
+                    </FormControl>
                     <Typography sx={{ marginTop: 2 }} variant="h6">Nghề nghiệp</Typography>
                     <TextField sx={{ marginTop: 1 }} value={infoCustomer.NGHENGHIEP_KH} name={'NGHENGHIEP_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <Typography sx={{ marginTop: 2 }} variant="h6">Đã biết số báo hỏng</Typography>

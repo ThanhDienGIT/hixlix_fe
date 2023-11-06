@@ -18,8 +18,33 @@ use Maatwebsite\Excel\Excel as ExcelExcel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Carbon\Carbon;
+
 class danhsachkhachhang extends Controller
 {
+    public function getNV()
+    {
+        $result = nhanvien::all();
+        if ($result) {
+            return response()->json(['dsnv' => $result], 200);
+        } else {
+            return response()->json(['dsnv' => []], 200);
+        }
+    }
+    public function asigncustomer(Request $request)
+    {
+        if ($request->ID_NV === "" || $request->ID_NV === 0) {
+            return response()->json(["status" => "failed", "message" => "Bạn chưa chọn nhân viên để phân công khảo sát"], 400);
+        } else {
+            foreach ($request->DSKH as $kh) {
+                $checkExistAsignment = khachhang::where('ID_KH', $kh)->get();
+                if ($checkExistAsignment) {
+                    khachhang::where('ID_KH', $kh)->update(['ID_NV' => $request->ID_NV]);
+                }
+            }
+            return response()->json(["status" => "success", "message" => "Danh sách khách hàng cần khảo sát đã chuyển đến nhân viên."], 201);
+        }
+    }
     public function exportExcel(Request $request)
     {
         $Data = $request->export_data;
@@ -35,17 +60,17 @@ class danhsachkhachhang extends Controller
         $currentDate = date('d/m/Y');  // Định dạng "dd/MM/yyyy"
 
         // Gán giá trị vào ô B4
-        $worksheet->setCellValue('B4', 'Ngày: ' . $currentDate);
+        $worksheet->setCellValue('H4', 'Ngày: ' . $currentDate);
 
         // Lấy ô B4 và định dạng nó thành "dd/MM/yyyy"
-        $cell = $worksheet->getCell('B4');
+        $cell = $worksheet->getCell('H4');
         $style = $cell->getStyle();
         $style->getNumberFormat()->setFormatCode('dd/mm/yyyy');
 
         // Nếu bạn muốn sao chép giá trị và định dạng từ ô B4 sang ô C4 (nếu đã được merge)
-        $worksheet->setCellValue('C4', 'Ngày: ' . $currentDate);
-        $cell = $worksheet->getCell('C4');
-        $style = $worksheet->getStyle('B4');
+        $worksheet->setCellValue('I4', 'Ngày: ' . $currentDate);
+        $cell = $worksheet->getCell('I4');
+        $style = $worksheet->getStyle('H4');
         $style->getNumberFormat()->setFormatCode('dd/mm/yyyy');
 
         // Define a style for row 8 (or any other row you want to copy the style from)
@@ -60,11 +85,49 @@ class danhsachkhachhang extends Controller
             $worksheet->duplicateStyle($style8, 'B' . $rowIndex);
             $worksheet->duplicateStyle($style8, 'C' . $rowIndex);
             $worksheet->duplicateStyle($style8, 'D' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'E' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'F' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'G' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'H' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'I' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'J' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'K' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'L' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'M' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'N' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'O' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'P' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'Q' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'R' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'S' . $rowIndex);
 
-            $worksheet->setCellValue('A' . $rowIndex, $item['ID_KH']);
-            $worksheet->setCellValue('B' . $rowIndex, $item['TEN_KH']);
-            $worksheet->setCellValue('C' . $rowIndex, $item['SODIENTHOAI_KH']);
-            $worksheet->setCellValue('D' . $rowIndex, $item['TRANGTHAI_KH'] === 1 ? 'Đã khảo sát' : 'Chưa khảo sát');
+
+            $worksheet->setCellValue('A' . $rowIndex, 'Hậu Giang');
+            $worksheet->setCellValue('B' . $rowIndex, $item['TEN_HUYEN']);
+            $worksheet->setCellValue('C' . $rowIndex, $item['TEN_XA']);
+            $worksheet->setCellValue('D' . $rowIndex, $item['TEN_AP']);
+            $worksheet->setCellValue('E' . $rowIndex, $item['TEN_KH']);
+            $worksheet->setCellValue('F' . $rowIndex, $item['DIACHI_KH']);
+            $worksheet->setCellValue('G' . $rowIndex, $item['SODIENTHOAI_KH']);
+            $worksheet->setCellValue('H' . $rowIndex, $item['SONHANKHAU_KH']);
+            $worksheet->setCellValue('I' . $rowIndex, $item['CCCD_KH']);
+            $worksheet->setCellValue('J' . $rowIndex, $item['TENKHACHHANGDAIDIEN_CTPKS']);
+            $worksheet->setCellValue('K' . $rowIndex, $item['SODIENTHOAIKHACHHANGDAIDIEN_CTPKS']);
+            $worksheet->setCellValue('L' . $rowIndex, $item['ACCOUNTKHACHHANG_CTPKS']);
+            if ($item['NHACUNGCAP_CTPKS'] === 1) {
+                $worksheet->setCellValue('M' . $rowIndex, 'Viettel');
+            } else if ($item['NHACUNGCAP_CTPKS'] === 2) {
+                $worksheet->setCellValue('M' . $rowIndex, 'VinaPhone');
+            } else {
+                $worksheet->setCellValue('M' . $rowIndex, 'FPT');
+            }
+
+            $worksheet->setCellValue('N' . $rowIndex, $item['TEN_DV']);
+            $worksheet->setCellValue('O' . $rowIndex, $item['MUCCUOC_CTPKS']);
+            $worksheet->setCellValue('P' . $rowIndex, $item['HINHTHUCDONG_CTPKS']);
+            $worksheet->setCellValue('Q' . $rowIndex, $item['NGAYBATDAUDONGCOC_CTPKS']);
+            $worksheet->setCellValue('R' . $rowIndex, $item['NGAYKETTHUCDONGCOC_CTPKS']);
+            $worksheet->setCellValue('S' . $rowIndex, $item['TEN_NV']);
         }
 
         // Create a writer to save the spreadsheet to a temporary file
@@ -77,232 +140,228 @@ class danhsachkhachhang extends Controller
     }
 
 
+    public function filterreport(Request $request)
+    {
+        $id_nv = auth()->user()->ID_NV;
+        if (!empty($request->keywords)) {
+
+            $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('phieu_khao_sat.id_nv', $id_nv)
+                ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+
+            if ($request->MAHUYEN_KH != 0) {
+                $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+            }
+            if ($request->MAXA_KH != 0) {
+                $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+            }
+            if ($request->MAAP_KH !== 0) {
+                $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+            }
+            if ($request->quality_survey !== 5) {
+                if ($request->quality_survey === 0) {
+                    $report->whereRaw('((chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS + chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS) / 2) >= 8');
+                }
+                if ($request->quality_survey === 1) {
+                    $report->whereRaw('((chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS + chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS) / 2) < 5');
+                }
+            }
+            if ($request->NHACUNGCAP !== 0) {
+                $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+            }
+            if ($request->DICHVU !== 0) {
+                $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+            }
+            if ($request->TUNGAY !== '' && $request->DENNGAY != '') {
+                // Chuyển đổi định dạng ngày
+                $startDate = str_replace('/', '-', $request->TUNGAY);
+                $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                // Thực hiện truy vấn với định dạng ngày phù hợp
+                // Thực hiện truy vấn với định dạng ngày phù hợp
+                $report->where('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '>=', $startDate)
+                    ->where('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '<=', $endDate);
+            }
+
+            $report = $report
+
+                ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')->get();
+            return response()->json(['dstk' => $report], 200);
+        } else {
+            $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('phieu_khao_sat.id_nv', $id_nv);
+
+            if ($request->MAHUYEN_KH != 0) {
+                $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+            }
+            if ($request->MAXA_KH != 0) {
+                $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+            }
+            if ($request->MAAP_KH !== 0) {
+                $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+            }
+            if ($request->quality_survey !== 5) {
+                if ($request->quality_survey === 0) {
+                    $report->whereRaw('((chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS + chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS) / 2) >= 8');
+                }
+                if ($request->quality_survey === 1) {
+                    $report->whereRaw('((chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS + chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS) / 2) < 5');
+                }
+            }
+            if ($request->NHACUNGCAP !== 0) {
+                $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+            }
+            if ($request->DICHVU !== 0) {
+                $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+            }
+            if ($request->TUNGAY !== '' && $request->DENNGAY != '') {
+
+                $startDate = str_replace('/', '-', $request->TUNGAY);
+                $endDate = str_replace('/', '-', $request->DENNGAY);
+
+
+                // Thực hiện truy vấn với định dạng ngày phù hợp
+                // Thực hiện truy vấn với định dạng ngày phù hợp
+                $report->where('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '>=', $startDate)
+                    ->where('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '<=', $endDate);
+            }
+
+            $report = $report
+                ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')->get();
+            return response()->json(['dstk' => $report], 200);
+        }
+    }
+
+
 
     public function searchcustomer(Request $request)
     {
-        if ($request->keywords !== '') {
-            if ($request->status_survey === 5 && $request->quality_survey !== 5) {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
-                    ->where(function ($query) use ($request) {
-                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
-                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
-                    })
-                    ->get();
+        $id_nv = auth()->user()->ID_NV;
+        if (!empty($request->keywords)) {
 
-                return response()->json(['dskh' => $result], 200);
+            $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('id_nv', $id_nv)
+                ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+
+            if ($request->MAHUYEN_KH != 0) {
+                $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+            }
+            if ($request->MAXA_KH != 0) {
+                $customers->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+            }
+            if ($request->MAAP_KH !== 0) {
+                $customers->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+            }
+            if ($request->status_survey !== 5) {
+                $customers->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
             }
 
-            if ($request->quality_survey === 5 && $request->status_survey !== 5) {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
-                    ->where(function ($query) use ($request) {
-                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
-                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
-                    })
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
-
-
-
-            if ($request->status_survey === 5 || $request->quality_survey === 5) {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where(function ($query) use ($request) {
-                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
-                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
-                    })
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
-            if ($request->status_survey === 0) {
-
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where(function ($query) use ($request) {
-                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
-                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
-                    })
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
-            if ($request->quality_survey === 0) {
-
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '>', 7)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '>', 7)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '>', 7)
-                    ->where(function ($query) use ($request) {
-                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
-                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
-                    })
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            } else {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<', 5)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<', 5)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<', 5)
-                    ->where(function ($query) use ($request) {
-                        $query->where('khach_hang.TEN_KH', 'like', '%' . $request->keywords . '%')
-                            ->orWhere('khach_hang.SODIENTHOAI_KH', 'like', '%' . $request->keywords . '%');
-                    })
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
+            $customers = $customers->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')->get();
+            return response()->json(['dskh' => $customers], 200);
         } else {
-            if ($request->status_survey === 5 && $request->quality_survey !== 5) {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
-                    ->get();
+            $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('id_nv', $id_nv);
 
-                return response()->json(['dskh' => $result], 200);
+            if ($request->MAHUYEN_KH != 0) {
+                $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+            }
+            if ($request->MAXA_KH != 0) {
+                $customers->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+            }
+            if ($request->MAAP_KH !== 0) {
+                $customers->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+            }
+            if ($request->status_survey !== 5) {
+                $customers->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
             }
 
-            if ($request->quality_survey === 5 && $request->status_survey !== 5) {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<=', 10)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<=', 10)
-                    ->get();
+            $customers = $customers->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')->get();
+            return response()->json(['dskh' => $customers], 200);
+        }
+    }
 
-                return response()->json(['dskh' => $result], 200);
+    public function searchinasignment(Request $request)
+    {
+        $id_nv = auth()->user()->ID_NV;
+        if (!empty($request->keywords)) {
+
+            $customers = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('khach_hang.id_nv', $id_nv)
+                ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+
+            if ($request->MAHUYEN_KH != 0) {
+                $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+            }
+            if ($request->MAXA_KH != 0) {
+                $customers->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+            }
+            if ($request->MAAP_KH !== 0) {
+                $customers->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+            }
+            if ($request->status_survey !== 5) {
+                $customers->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+            }
+
+            if ($request->PHANCONG !== 5) {
+                if ($request->PHANCONG === 0) {
+                    $customers->whereNull('khach_hang.ID_NV');
+                } else {
+                    $customers->whereNotNull('khach_hang.ID_NV');
+                }
+            }
+
+            $customers = $customers->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV')->get();
+            return response()->json(['dskh' => $customers], 200);
+        } else {
+            $customers = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('khach_hang.id_nv', $id_nv);
+
+            if ($request->MAHUYEN_KH != 0) {
+                $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+            }
+            if ($request->MAXA_KH != 0) {
+                $customers->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+            }
+            if ($request->MAAP_KH !== 0) {
+                $customers->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+            }
+            if ($request->status_survey !== 5) {
+                $customers->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+            }
+
+            if ($request->PHANCONG !== 5) {
+                if ($request->PHANCONG === 0) {
+                    $customers->whereNull('khach_hang.ID_NV');
+                } else {
+                    $customers->whereNotNull('khach_hang.ID_NV');
+                }
             }
 
 
-            if ($request->status_survey === 5 || $request->quality_survey === 5) {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
-            if ($request->status_survey === 0) {
-
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
-            if ($request->quality_survey === 0) {
-
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '>', 7)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '>', 7)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '>', 7)
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            } else {
-                $result =
-                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                    ->leftJoin(
-                        'chi_tiet_phieu_khao_sat_lix',
-                        'chi_tiet_phieu_khao_sat_lix.ID_PKS',
-                        '=',
-                        'phieu_khao_sat.ID_PKS'
-                    )
-                    ->where('khach_hang.TRANGTHAI_KH', $request->status_survey)
-                    ->where('chi_tiet_phieu_khao_sat_lix.DIEMHAILONG_CTPKS', '<', 5)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', '<', 5)
-                    ->where('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', '<', 5)
-                    ->get();
-
-                return response()->json(['dskh' => $result], 200);
-            }
+            $customers = $customers->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV')->get();
+            return response()->json(['dskh' => $customers], 200);
         }
     }
     public function deletecustomer($id)
@@ -339,6 +398,7 @@ class danhsachkhachhang extends Controller
                 ],
                 'MAHUYEN_KH' => 'required',
                 'MAXA_KH' => 'required',
+                'MAAP_KH' => 'required'
             ],
             [
                 'TEN_KH.required' => 'Vui lòng nhập tên khách hàng',
@@ -351,16 +411,18 @@ class danhsachkhachhang extends Controller
                 'CCCD_KH.unique' => 'Vui lòng nhập CCCD KH là duy nhất',
                 'MAHUYEN_KH.required' => 'Vui lòng chọn huyện thị',
                 'MAXA_KH.required' => 'Vui lòng chọn xã phường',
+                'MAAP_KH.required' => 'Vui lòng chọn ấp, khu vực'
             ]
         );
         if ($validatedData->passes()) {
-            $baohong = $request->BAOHONG_KH == false ? 0 : 1;
+            $baohong = $request->BAOHONG_KH == "false" ? 0 : 1;
             $result = khachhang::where('ID_KH', $request->ID_KH)->update([
                 'BAOHONG_KH' => $baohong,
                 'CCCD_KH' => $request->CCCD_KH,
                 'DIACHI_KH' => $request->DIACHI_KH,
                 'MAHUYEN_KH' => $request->MAHUYEN_KH,
                 'MAXA_KH' => $request->MAXA_KH,
+                'MAAP_KH' => $request->MAAP_KH,
                 'NGAYSINH_KH' => $request->NGAYSINH_KH,
                 'NGHENGHIEP_KH' => $request->NGHENGHIEP_KH,
                 'SODIENTHOAI_KH' => $request->SODIENTHOAI_KH,
@@ -423,6 +485,7 @@ class danhsachkhachhang extends Controller
                 ],
                 'MAHUYEN_KH' => 'required',
                 'MAXA_KH' => 'required',
+                'MAAP_KH' => 'required'
             ],
             [
                 'TEN_KH.required' => 'Vui lòng nhập tên khách hàng',
@@ -435,6 +498,7 @@ class danhsachkhachhang extends Controller
                 'CCCD_KH.unique' => 'Vui lòng nhập CCCD KH là duy nhất',
                 'MAHUYEN_KH.required' => 'Vui lòng chọn huyện thị',
                 'MAXA_KH.required' => 'Vui lòng chọn xã phường',
+                'MAAP_KH.required' => 'Vui lòng chọn ấp'
             ]
         );
         if ($validatedData->passes()) {
@@ -445,6 +509,7 @@ class danhsachkhachhang extends Controller
                 'DIACHI_KH' => $request->DIACHI_KH,
                 'MAHUYEN_KH' => $request->MAHUYEN_KH,
                 'MAXA_KH' => $request->MAXA_KH,
+                'MAAP_KH' => $request->MAAP_KH,
                 'NGAYSINH_KH' => $request->NGAYSINH_KH,
                 'NGAYTAO_KH' => $request->NGAYTAO_KH,
                 'NGHENGHIEP_KH' => $request->NGHENGHIEP_KH,
@@ -487,7 +552,8 @@ class danhsachkhachhang extends Controller
     }
     public function getAllXaPhuong($id)
     {
-        $result = donvihanhchinh::where('CAP_DVHC', 2)->where('ID_CHA_DVHC', $id)->get();
+        // $result = donvihanhchinh::where('CAP_DVHC', 2)->where('ID_CHA_DVHC', $id)->get();
+        $result = DB::table('unit')->where('level', 3)->where('parent_code', $id)->get();
         if ($result) {
             return response(['xaphuong' => $result], 200);
         } else {
@@ -495,13 +561,36 @@ class danhsachkhachhang extends Controller
         }
         return response(['message' => 'Đã có lỗi xảy ra trong lúc lấy dữ liệu DVHC'], 500);
     }
+
+    public function getAllApById($id)
+    {
+        $result = DB::table('unit_village')->where('parent_code', $id)->get();
+        if ($result) {
+            return response(['ap' => $result], 200);
+        } else {
+            return response(['ap' => ''], 404);
+        }
+        return response(['message' => 'Đã có lỗi xảy ra trong lúc lấy dữ liệu DVHC'], 500);
+    }
     public function getallquanhuyen()
     {
-        $result  = donvihanhchinh::where('CAP_DVHC', 1)->get();
+        // $result  = donvihanhchinh::where('CAP_DVHC', 1)->get();
+        $result  = DB::table('unit')->where('parent_code', '93')->get();
         if ($result) {
             return response(['dvhc' => $result], 200);
         } else {
             return response(['dvhc' => ''], 404);
+        }
+        return response(['message' => 'Đã có lỗi xảy ra trong lúc lấy dữ liệu DVHC'], 500);
+    }
+    public function getAllAp($id)
+    {
+        $result  = DB::table('unit_village')
+            ->where('parent_code', $id)->get();
+        if ($result) {
+            return response(['ap' => $result], 200);
+        } else {
+            return response(['ap' => ''], 404);
         }
         return response(['message' => 'Đã có lỗi xảy ra trong lúc lấy dữ liệu DVHC'], 500);
     }
@@ -510,10 +599,18 @@ class danhsachkhachhang extends Controller
 
         // $user=auth()->user();
         $id_nv = auth()->user()->ID_NV;
+        $chucvu_nv = auth()->user()->CHUCVU_NV;
 
-        if ($id_nv) {
+        if ($id_nv && $chucvu_nv === 0) {
             try {
-                $DSKH = khachhang::where('id_nv', $id_nv)->paginate($count);
+                $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    // ->where('khach_hang.id_nv', $id_nv)
+                    ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV')
+                    ->paginate($count);
+
                 if ($DSKH->isEmpty()) {
                     return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
                 }
@@ -531,16 +628,98 @@ class danhsachkhachhang extends Controller
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
             }
         } else {
-            return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
+            // return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
+            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->where('khach_hang.id_nv', $id_nv)
+                ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV')
+                ->paginate($count);
+
+            if ($DSKH->isEmpty()) {
+                return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
+            }
+            // $DSKH_data = [];
+
+            // foreach ($DSKH as $_DSKH) {
+            //     $dskh_item = [
+            //         'id_nv' => $id_nv,
+            //         'danhsachkhachhang' => $_DSKH,
+            //     ];
+            //     $DSKH_data[] = $dskh_item;
+            // }
+            return response()->json($DSKH, 200);
+        }
+    }
+
+
+    public function get_danhsachbaocaophieu($count)
+    {
+
+        // $user=auth()->user();
+        $id_nv = auth()->user()->ID_NV;
+        $chucvu_nv = auth()->user()->CHUCVU_NV;
+
+        if ($id_nv && $chucvu_nv === 0) {
+            try {
+                $DSTK = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    // ->where('phieu_khao_sat.id_nv', $id_nv)
+                    ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
+                    ->paginate($count);
+
+                if ($DSTK->isEmpty()) {
+                    return response()->json(['message' => 'Không tìm thấy danh sách báo cáo phiếu'], 404);
+                }
+
+                return response()->json($DSTK, 200);
+            } catch (\Throwable $th) {
+                return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
+            }
+        } else {
+            // return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
+            try {
+                $DSTK = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('phieu_khao_sat.id_nv', $id_nv)
+                    ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
+                    ->paginate($count);
+
+                if ($DSTK->isEmpty()) {
+                    return response()->json(['message' => 'Không tìm thấy danh sách báo cáo phiếu'], 404);
+                }
+
+                return response()->json($DSTK, 200);
+            } catch (\Throwable $th) {
+                return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
+            }
         }
     }
 
     public function getKHByID($id)
     {
-        $kh = khachhang::join('don_vi_hanh_chinh as dvhc_huyen', 'dvhc_huyen.ID_DVHC', '=', 'khach_hang.MAHUYEN_KH')
-            ->join('don_vi_hanh_chinh as dvhc_xa', 'dvhc_xa.ID_DVHC', '=', 'khach_hang.MAXA_KH')
+        // $kh = khachhang::join('don_vi_hanh_chinh as dvhc_huyen', 'dvhc_huyen.ID_DVHC', '=', 'khach_hang.MAHUYEN_KH')
+        //     ->join('don_vi_hanh_chinh as dvhc_xa', 'dvhc_xa.ID_DVHC', '=', 'khach_hang.MAXA_KH')
+        //     ->where('id_kh', $id)
+        //     ->select('*', 'dvhc_huyen.TEN_DVHC as TEN_HUYEN', 'dvhc_xa.TEN_DVHC as TEN_XA')
+        //     ->first();
+
+        $kh = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+            ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+            ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
             ->where('id_kh', $id)
-            ->select('*', 'dvhc_huyen.TEN_DVHC as TEN_HUYEN', 'dvhc_xa.TEN_DVHC as TEN_XA')
+            ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
             ->first();
 
         if ($kh !== null) {

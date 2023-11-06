@@ -4,20 +4,15 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from '../../../node_modules/@mui/material/index';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '../../../node_modules/@mui/material/index';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Axios from '../../axios/instance';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import LoadingButton from '@mui/lab/LoadingButton';
-import SaveIcon from '@mui/icons-material/Save';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import viLocale from 'date-fns/locale/vi';
-import { viVN } from '@mui/x-date-pickers/locales';
+// import SaveIcon from '@mui/icons-material/Save';
 
 // Create an instance of Notyf
 const notyf = new Notyf({
@@ -30,136 +25,76 @@ const notyf = new Notyf({
 });
 
 
-function AddCustomer(props) {
+function AssignmentCustomer(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
-    const [xaphuong, setXaphuong] = useState([])
-    const [ap, setAp] = useState([])
+    // const [xaphuong, setXaphuong] = useState([])
+    const [selectedNV, setSelectedNV] = useState('')
+    // const [ap, setAp] = useState([])
     // const [form, setForm] = useState([
     //     { form: 1 }
     // ])
-    const [customer, setCustomer] = useState({
-        ID_KH: 0,
-        ID_NV: 0,
-        ID_DVHC: 0,
-        TEN_KH: "",
-        DIACHI_KH: "",
-        SODIENTHOAI_KH: "",
-        CCCD_KH: "",
-        SONHANKHAU_KH: "",
-        NGAYSINH_KH: "",
-        NGHENGHIEP_KH: "",
-        MAHUYEN_KH: 0,
-        MAXA_KH: 0,
-        MAAP_KH: 0,
-        BAOHONG_KH: false,
-        THOIGIANLAPDAT_KH: "",
-        THOIGIANNGUNG_KH: "",
-        FILENAME_KH: "",
-        NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
-        NGUOITAO_KH: 0,
-        GHICHU_KH: "",
-    })
     const [loading, setLoading] = useState(false);
 
-    const onChangeInputDistrict = async (e) => {
-        setCustomer(rev => ({
-            ...rev, [e.target.name]: e.target.value
-        }))
-        const response = await Axios.get('getAllXaPhuong/' + e.target.value);
-        if (response.status === 200) {
-            setXaphuong(response.data.xaphuong)
-            console.log(xaphuong)
-        }
+    // const onChangeInputDistrict = async (e) => {
+    //     setCustomer(rev => ({
+    //         ...rev, [e.target.name]: e.target.value
+    //     }))
+    //     const response = await Axios.get('getAllXaPhuong/' + e.target.value);
+    //     if (response.status === 200) {
+    //         setXaphuong(response.data.xaphuong)
+    //         console.log(xaphuong)
+    //     }
 
-    }
-    const onChangeInputWard = async (e) => {
-        setCustomer(rev => ({
-            ...rev, [e.target.name]: e.target.value
-        }))
-        const response = await Axios.get('getAllAp/' + e.target.value);
-        if (response.status === 200) {
-            setAp(response.data.ap)
-            console.log(ap)
-        }
-    }
-    const onChangeInputAp = (e) => {
-        setCustomer(rev => ({
-            ...rev, [e.target.name]: e.target.value
-        }))
-    }
-    const onChangeInput = (e) => {
-        setCustomer(rev => ({
-            ...rev, [e.target.name]: e.target.value
-        }))
-    }
-    const onChangeInputDOB = (e) => {
-        console.log(e)
-        setCustomer(rev => ({
-            ...rev, ['NGAYSINH_KH']: format(e, 'yyyy-MM-dd')
-        }))
-    }
+    // }
+    // const onChangeInputWard = async (e) => {
+    //     setCustomer(rev => ({
+    //         ...rev, [e.target.name]: e.target.value
+    //     }))
+    //     const response = await Axios.get('getAllAp/' + e.target.value);
+    //     if (response.status === 200) {
+    //         setAp(response.data.ap)
+    //         console.log(ap)
+    //     }
+    // }
+    console.log(props.phancong)
     const handleAddCustomer = async () => {
-        const objectSend = {
-            TEN_KH: customer.TEN_KH,
-            DIACHI_KH: customer.DIACHI_KH,
-            SODIENTHOAI_KH: customer.SODIENTHOAI_KH,
-            CCCD_KH: customer.CCCD_KH,
-            SONHANKHAU_KH: customer.SONHANKHAU_KH,
-            NGAYSINH_KH: customer.NGAYSINH_KH,
-            NGHENGHIEP_KH: customer.NGHENGHIEP_KH,
-            MAHUYEN_KH: customer.MAHUYEN_KH,
-            MAXA_KH: customer.MAXA_KH,
-            MAAP_KH: customer.MAAP_KH,
-            BAOHONG_KH: customer.BAOHONG_KH,
-            NGAYTAO_KH: customer.NGAYTAO_KH
+        if (props.phancong.length !== 0) {
+            const objectSend = {
+                DSKH: props.phancong,
+                ID_NV: selectedNV
+            }
+            setLoading(true)
+            await Axios.post('asigncustomer', objectSend)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        setLoading(false)
+                        notyf.success(res.data.message)
+                        props.handleClose()
+                        props.callApi()
+                    }
+                    else {
+                        const errorMessages = res.data.message;
+                        // Xử lý lỗi khác
+                        notyf.error(errorMessages);
+                    }
+                }).catch((error) => {
+                    if (error.response) {
+                        // Lỗi phản hồi từ phía máy chủ
+                        const errorMessages = error.response.data.message;
+                        notyf.error(errorMessages);
+                        setLoading(false)
+                    } else {
+                        // Lỗi khác, ví dụ: lỗi kết nối
+                        notyf.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+                        setLoading(false)
+                    }
+                });
         }
-        setLoading(true)
-        await Axios.post('addcustomer', objectSend)
-            .then((res) => {
-                if (res.data.status === 'success') {
-                    setLoading(false)
-                    notyf.success(res.data.message)
-                    setCustomer({
-                        ID_KH: 0,
-                        ID_NV: 0,
-                        ID_DVHC: 0,
-                        TEN_KH: "",
-                        DIACHI_KH: "",
-                        SODIENTHOAI_KH: "",
-                        CCCD_KH: "",
-                        SONHANKHAU_KH: "",
-                        NGAYSINH_KH: "",
-                        NGHENGHIEP_KH: "",
-                        MAHUYEN_KH: 0,
-                        MAXA_KH: 0,
-                        BAOHONG_KH: false,
-                        THOIGIANLAPDAT_KH: "",
-                        THOIGIANNGUNG_KH: "",
-                        FILENAME_KH: "",
-                        NGAYTAO_KH: format(new Date(), 'yyyy-MM-dd'),
-                        NGUOITAO_KH: 0,
-                        GHICHU_KH: "",
-                    })
-                    props.callApi()
-                }
-                else {
-                    const errorMessages = res.data.message;
-                    // Xử lý lỗi khác
-                    notyf.error(errorMessages);
-                }
-            }).catch((error) => {
-                if (error.response) {
-                    // Lỗi phản hồi từ phía máy chủ
-                    const errorMessages = error.response.data.message;
-                    notyf.error(errorMessages);
-                    setLoading(false)
-                } else {
-                    // Lỗi khác, ví dụ: lỗi kết nối
-                    notyf.error('Có lỗi xảy ra, vui lòng thử lại sau.');
-                    setLoading(false)
-                }
-            });
+        else
+        {
+            notyf.error('Chọn ít nhất một khách hàng để phân công!');
+        }
     }
 
 
@@ -169,7 +104,6 @@ function AddCustomer(props) {
 
     React.useEffect(() => {
     }, []);
-    console.log(customer)
     return (
         <Dialog
             open={props.open}
@@ -181,30 +115,35 @@ function AddCustomer(props) {
             fullWidth={true}
         >
             <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white' }}>
-                Thêm khách hàng
+                Phân công chăm sóc khách hàng
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} padding={1}>
-                    <TextField label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} name={'TEN_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    {/* <TextField label="Họ và tên chủ hộ (*)" sx={{ marginTop: 1 }} value={customer.TEN_KH} name={'TEN_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <TextField label="Số điện thoại (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} name={'SODIENTHOAI_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <TextField label="CCCD (*)" sx={{ marginTop: 2 }} value={customer.CCCD_KH} name={'CCCD_KH'} onChange={(e) => { onChangeInput(e) }} />
+                    <TextField label="CCCD (*)" sx={{ marginTop: 2 }} value={customer.CCCD_KH} name={'CCCD_KH'} onChange={(e) => { onChangeInput(e) }} /> */}
                     <FormControl sx={{ marginTop: 2 }}>
-                        <InputLabel >Quận huyện (*)</InputLabel>
+                        <InputLabel >Nhân viên chăm sóc (*)</InputLabel>
                         <Select
-                            label='Quận huyện'
-                            value={customer.MAHUYEN_KH}
-                            name={'MAHUYEN_KH'}
-                            onChange={(e) => { onChangeInputDistrict(e) }}
+                            label='Nhân viên chăm sóc'
+                            value={selectedNV}
+                            name={'ID_NV'}
+                            onChange={(e) => { setSelectedNV(e.target.value) }}
                         >
-                            <MenuItem value={0}>Chọn quận huyện</MenuItem>
-                            {props.district && props.district.filter(x => x.parent_code !== null).map(ele => {
+                            <MenuItem value={0}>---Chọn nhân viên---</MenuItem>
+                            {props.nv && props.nv.filter(x => x.TEN_NV !== null && x.CHUCVU_NV !== 0).map(ele => {
+                                return (
+                                    <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
+                                )
+                            })}
+                            {/* {props.district && props.district.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                                 )
-                            })}
+                            })} */}
                         </Select>
                     </FormControl>
-                    <FormControl sx={{ marginTop: 2 }}>
+                    {/* <FormControl sx={{ marginTop: 2 }}>
                         <InputLabel>Xã phường (*)</InputLabel>
                         <Select
                             label='Xã phường'
@@ -232,7 +171,7 @@ function AddCustomer(props) {
                             <MenuItem value={0}>Chọn ấp</MenuItem>
                             {ap && ap.filter(x => x.parent_code !== null).map(ele => {
                                 return (
-                                    <MenuItem key={ele.id} value={ele.id}>{ele.name}</MenuItem>
+                                    <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                                 )
                             })}
                         </Select>
@@ -242,23 +181,10 @@ function AddCustomer(props) {
 
                     <TextField label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} value={customer.DIACHI_KH} name={'DIACHI_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} value={customer.SONHANKHAU_KH} name={'SONHANKHAU_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <FormControl sx={{ width: 380, marginRight: 2, marginTop: 2 }} size="small">
-                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
-                            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
-                            <DatePicker
-                                inputProps={{ size: 'small' }}
-                                label='Ngày sinh nhật'
-                                name={'NGAYSINH_KH'}
-                                onChange={(e) => { onChangeInputDOB(e) }}
-                                // onChange={(date) => setFromDate(date)}
-                                slotProps={{ textField: { size: 'small' } }}
-                                format="dd/MM/yyyy" />
-                        </LocalizationProvider>
-                    </FormControl>
-                    {/* <TextField label="Ngày sinh nhật"
+                    <TextField label="Ngày sinh nhật"
                         InputLabelProps={{
                             shrink: true,
-                        }} type={'date'} sx={{ marginTop: 2 }} value={customer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} /> */}
+                        }} type={'date'} sx={{ marginTop: 2 }} value={customer.NGAYSINH_KH} name={'NGAYSINH_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <TextField label="Nghề nghiệp" sx={{ marginTop: 2 }} value={customer.NGHENGHIEP_KH} name={'NGHENGHIEP_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <FormControl sx={{ marginTop: 2 }} >
                         <FormLabel id="demo-row-radio-buttons-group-label">Đã biết số báo hỏng</FormLabel>
@@ -267,12 +193,12 @@ function AddCustomer(props) {
                             aria-labelledby="demo-row-radio-buttons-group-label"
                             value={customer.BAOHONG_KH}
                             name={'BAOHONG_KH'}
-                            onChange={(e) => { onChangeInputAp(e) }}
+                            onChange={(e) => { onChangeInput(e) }}
                         >
                             <FormControlLabel value={false} control={<Radio />} label="Chưa biết" />
                             <FormControlLabel value={true} control={<Radio />} label="Đã biết" />
                         </RadioGroup>
-                    </FormControl>
+                    </FormControl> */}
                 </Box>
                 {/* {form.map(element => {
                 return (
@@ -358,12 +284,12 @@ function AddCustomer(props) {
                     // onClick={handleClick}
                     loading={loading}
                     loadingPosition="start"
-                    startIcon={<SaveIcon />}
+                    // startIcon={<SaveIcon />}
                     variant="contained"
                     onClick={handleAddCustomer}
                     autoFocus
                 >
-                    <span>Thêm</span>
+                    <span>Phân công</span>
                 </LoadingButton>
                 {/* <Button size={'small'} onClick={handleAddCustomer} color={'primary'} variant='contained' autoFocus>
                     Thêm khách hàng
@@ -375,4 +301,4 @@ function AddCustomer(props) {
     )
 }
 
-export default AddCustomer
+export default AssignmentCustomer

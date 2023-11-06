@@ -9,6 +9,7 @@ import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography } 
 
 // project import
 import { activeItem } from 'store/reducers/menu';
+import jwt_decode from 'jwt-decode';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
@@ -19,12 +20,29 @@ const NavItem = ({ item, level }) => {
 
   const { drawerOpen, openItem } = useSelector((state) => state.menu);
 
+  const userString = localStorage.getItem('access_token');
+  const user = jwt_decode(userString);
+  console.log(user)
+  console.log(item)
+
   let itemTarget = '_self';
   if (item.target) {
     itemTarget = '_blank';
   }
 
-  let listItemProps = { component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />) };
+  let listItemProps = { component: forwardRef((props, ref) => 
+    {
+      if (item.role !== undefined && item.role.includes(user.chucvu_nv) && user.chucvu_nv === 1) 
+      {
+        return <Link ref={ref} {...props} to={item.url} target={itemTarget} />
+      }
+      if (item.role !== undefined && item.role.includes(user.chucvu_nv) && user.chucvu_nv === 0) 
+      {
+        return <Link ref={ref} {...props} to={item.url} target={itemTarget} />
+      }
+    }
+  
+  ) };
   if (item?.external) {
     listItemProps = { component: 'a', href: item.url, target: itemTarget };
   }
@@ -44,6 +62,8 @@ const NavItem = ({ item, level }) => {
     }
     // eslint-disable-next-line
   }, [pathname]);
+
+  
 
   const textColor = 'text.primary';
   const iconSelectedColor = 'primary.main';

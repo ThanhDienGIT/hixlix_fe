@@ -28,6 +28,7 @@ function DiaLogError(props) {
       .then((res) => {
         if (res.data.status === 'success') {
           notyf.success(res.data.message)
+          props.handleClose()
           props.callApi()
         }
         else {
