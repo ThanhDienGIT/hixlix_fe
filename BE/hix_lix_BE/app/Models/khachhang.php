@@ -25,6 +25,7 @@ class khachhang extends Model
         'nghenghiep_kh',
         'mahuyen_kh',
         'maxa_kh',
+        'maap_kh',
         'baohong_kh',
         'thoigianlapdat_kh',
         'thoigianngung_kh',

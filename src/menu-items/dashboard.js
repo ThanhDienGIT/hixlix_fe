@@ -1,6 +1,8 @@
 // assets
 import { DashboardOutlined,SolutionOutlined } from '@ant-design/icons';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
+import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 // icons
 const icons = {
   DashboardOutlined,FormatListBulletedIcon
@@ -12,7 +14,7 @@ const icons2 = {
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+  title: 'Chức năng hệ thống',
   type: 'group',
   children: [
     {
@@ -21,7 +23,8 @@ const dashboard = {
       type: 'item',
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      role: [1, 0]
     },
     {
       id: 'customer',
@@ -29,15 +32,34 @@ const dashboard = {
       type: 'item',
       url: '/table',
       icon: icons2.SolutionOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      role: [1, 0]
+    },
+    // {
+    //   id: 'surveyform',
+    //   title: 'Danh sách phiếu khảo sát',
+    //   type: 'item',
+    //   url: '/surveylist',
+    //   icon: icons.FormatListBulletedIcon,
+    //   breadcrumbs: false
+    // }
+    {
+      id: 'statistical',
+      title: 'Thống kê & Báo cáo',
+      type: 'item',
+      url: '/statistical-report',
+      icon: BarChartRoundedIcon,
+      breadcrumbs: false,
+      role: [1, 0]
     },
     {
-      id: 'surveyform',
-      title: 'Danh sách phiếu khảo sát',
+      id: 'asignment',
+      title: 'Phân công khảo sát KH',
       type: 'item',
-      url: '/surveylist',
-      icon: icons.FormatListBulletedIcon,
-      breadcrumbs: false
+      url: '/asignment-customer',
+      icon: AssignmentIndRoundedIcon,
+      breadcrumbs: false,
+      role: [0]
     }
   ]
 };

@@ -15,13 +15,13 @@ const AuthFooter = () => {
         textAlign={matchDownSM ? 'center' : 'inherit'}
       >
         <Typography variant="subtitle2" color="secondary" component="span">
-          &copy; Mantis React Dashboard Template By&nbsp;
-          <Typography component={Link} variant="subtitle2" href="https://codedthemes.com" target="_blank" underline="hover">
-            CodedThemes
+          &copy; VNPT LIX-HIX bởi&nbsp;
+          <Typography component={Link} variant="subtitle2" href="http://haugiang.vnpt.vn/" target="_blank" underline="hover">
+            VTHG
           </Typography>
         </Typography>
 
-        <Stack direction={matchDownSM ? 'column' : 'row'} spacing={matchDownSM ? 1 : 3} textAlign={matchDownSM ? 'center' : 'inherit'}>
+        {/* <Stack direction={matchDownSM ? 'column' : 'row'} spacing={matchDownSM ? 1 : 3} textAlign={matchDownSM ? 'center' : 'inherit'}>
           <Typography
             variant="subtitle2"
             color="secondary"
@@ -52,7 +52,7 @@ const AuthFooter = () => {
           >
             Support
           </Typography>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Container>
   );

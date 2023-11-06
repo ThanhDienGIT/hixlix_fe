@@ -13,6 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from '@mui/material/CircularProgress';
 import Slide from '@mui/material/Slide';
+import { format, isValid } from 'date-fns';
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -37,6 +38,17 @@ function DetailCustomer(props) {
             setLoading(false)
         }).catch(err => console.log(err))
     }
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+      
+        if (isValid(date)) {
+          return format(date, 'dd/MM/yyyy');
+        } else {
+          return "Ngày không hợp lệ";
+        }
+      };
+      
 
     React.useEffect(() => {
         if (props.idkhachhang) {
@@ -75,26 +87,32 @@ function DetailCustomer(props) {
                             <Typography><b>Số điện thoại:</b> <br /> {infoCustomer && infoCustomer.SODIENTHOAI_KH} </Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography><b>Ngày sinh:</b> <br />{infoCustomer && infoCustomer.NGAYSINH_KH}</Typography>
+                            <Typography><b>Ngày sinh:</b> <br />{infoCustomer && formatDate(infoCustomer.NGAYSINH_KH)}</Typography>
                         </Grid>
 
                         <Grid item xs={6}>
                             <Typography><b> CCCD:</b> <br /> {infoCustomer && infoCustomer.CCCD_KH} </Typography>
                         </Grid>
-                        <Grid item xs={6}>
-                            <Typography><b>Account BRCĐ:</b> <br />{'anguyenvan123'}</Typography>
-                        </Grid>
+                        {/* <Grid item xs={6}>
+                            <Typography><b>Account BRCĐ:</b> <br />{'nguyenvanc123'}</Typography>
+                        </Grid> */}
                         <Grid item xs={6}>
                             <Typography><b>Nghề nghiệp:</b> <br />{infoCustomer && infoCustomer.NGHENGHIEP_KH}</Typography>
                         </Grid>
 
                         <Grid item xs={6}>
-                            <Typography><b>Xã phường:</b> <br />{infoCustomer && infoCustomer.TEN_XA}</Typography>
+                            <Typography><b>Quận/ Huyện:</b> <br />{infoCustomer && infoCustomer.TEN_HUYEN}</Typography>
                         </Grid>
+
                         <Grid item xs={6}>
-                            <Typography><b>Quận huyện:</b> <br />{infoCustomer && infoCustomer.TEN_HUYEN}</Typography>
+                            <Typography><b>Xã/ Phường:</b> <br />{infoCustomer && infoCustomer.TEN_XA}</Typography>
                         </Grid>
-                        <Grid item xs={12}>
+
+                        <Grid item xs={6}>
+                            <Typography><b>Ấp/ Khu vực:</b> <br />{infoCustomer && infoCustomer.TEN_AP}</Typography>
+                        </Grid>
+                        
+                        <Grid item xs={6}>
                             <Typography><b> Địa chỉ cụ thể:</b> <br /> {infoCustomer && infoCustomer.DIACHI_KH} </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -130,8 +148,8 @@ function DetailCustomer(props) {
                                                     {survey.NHACUNGCAP_CTPKS === 2 ? 'Viettel' : null}
                                                     {survey.NHACUNGCAP_CTPKS === 3 ? 'Mobifone' : null}
                                                 </TableCell>
-                                                <TableCell> {survey.NGAYBATDAUDONGCOC_CTPKS}</TableCell>
-                                                <TableCell> {survey.NGAYKETTHUCDONGCOC_CTPKS}</TableCell>
+                                                <TableCell> {formatDate(survey.NGAYBATDAUDONGCOC_CTPKS)}</TableCell>
+                                                <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS)}</TableCell>
                                                 <TableCell> {survey.TRANGTHAI_PKS === 1 ? 'Đã khảo sát' : 'Chưa khảo sát'}</TableCell>
                                                 <TableCell>
                                                     <Tooltip title="Xem chi tiết khảo sát">

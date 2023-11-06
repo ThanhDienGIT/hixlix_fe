@@ -5,27 +5,29 @@ import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Sele
 import LixDialog from 'pages/component/LixDialog'
 import AddCustomer from 'pages/component/AddCustomer'
 import EditCustomer from 'pages/component/EditCustomer'
-import DeleteIcon from '@mui/icons-material/Delete';
+// import DeleteIcon from '@mui/icons-material/Delete';
 import DiaLogSuccess from 'pages/component/DiaLogSuccess'
 import DiaLogError from 'pages/component/DiaLogError'
-import AddIcon from '@mui/icons-material/Add';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+// import AddIcon from '@mui/icons-material/Add';
+import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+// import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import instance from '../../axios/instance'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DetailCustomer from 'pages/component/DetailCustomer'
 import SearchIcon from '@mui/icons-material/Search';
 // import SaveIcon from '@mui/icons-material/Save';
-import EditNoteIcon from '@mui/icons-material/EditNote';
+// import EditNoteIcon from '@mui/icons-material/EditNote';
 import { TokenContext } from '../../globalVar/TokenProvider'
-import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+// import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
+import Checkbox from '@mui/material/Checkbox';
 
 
 
 
-function ComponentTest() {
+function AssignmentCustomerManager() {
     const { token } = useContext(TokenContext);
     token
     const [data, setData] = useState([])
@@ -52,26 +54,29 @@ function ComponentTest() {
     const [huyen, setHuyen] = useState('')
     const [xa, setXa] = useState('')
     const [ap, setAp] = useState('')
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [nv, setNv] = useState([])
+    const [asignment, setAsignment] = useState('')
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
             .catch(err => console.log(err))
     }
 
-    const openDialogError = (id) => {
-        setDialogError(true)
-        setIDKhachHang(id)
-    }
+    // const openDialogError = (id) => {
+    //     setDialogError(true)
+    //     setIDKhachHang(id)
+    // }
 
     const closeDialogError = () => {
         setDialogError(false)
         setIDKhachHang(0)
     }
 
-    const openDialogDetail = (id) => {
-        setDialogDetail(true)
-        setIDKhachHang(id)
-    }
+    // const openDialogDetail = (id) => {
+    //     setDialogDetail(true)
+    //     setIDKhachHang(id)
+    // }
 
     const closeDialogDetail = () => {
         setDialogDetail(false)
@@ -93,10 +98,13 @@ function ComponentTest() {
         setIDKhachHang(0)
     }
 
-    const openDialogCustomer = () => {
-        setDialogCustomer(true);
-    }
+    // const openDialogCustomer = () => {
+    //     setDialogCustomer(true);
+    // }
 
+    const openDialogPhanCong = () => {
+        setDialogPhanCong(true)
+    }
 
     const closeDialogPhanCong = () => {
         setDialogPhanCong(false)
@@ -106,20 +114,36 @@ function ComponentTest() {
         setDialogCustomer(false);
     };
 
-    const openDialog = (id) => {
-        setDiaLog(true);
-        setIdKhaoSat(id);
-    }
+    // const openDialog = (id) => {
+    //     setDiaLog(true);
+    //     setIdKhaoSat(id);
+    // }
 
-    const openDialogEditKH = (id) => {
-        setdialogEdit(true)
-        setIDKhachHang(id)
-    }
+    // const openDialogEditKH = (id) => {
+    //     setdialogEdit(true)
+    //     setIDKhachHang(id)
+    // }
 
     const closeDialog = () => {
         setDiaLog(false);
         setIdKhaoSat(0);
     }
+
+    const handleCheckboxChange = (id_kh) => {
+        if (selectedRows.includes(id_kh)) {
+            // Bỏ chọn: Xóa id_kh khỏi mảng
+            const updatedRows = selectedRows.filter((row) => row !== id_kh);
+            setSelectedRows(updatedRows);
+        } else {
+            // Chọn: Thêm id_kh vào mảng
+            const updatedRows = [...selectedRows, id_kh];
+            setSelectedRows(updatedRows);
+        }
+    };
+
+
+    console.log(selectedRows)
+
 
     const [maxPage, setMaxPage] = useState(0);
     const listPage = [5, 10, 15, 25, 50];
@@ -148,6 +172,12 @@ function ComponentTest() {
             setAlloption(res.data.data)
         }).catch(err => console.log(err))
     }
+
+    const getNV = () => {
+        instance.get(`getNV`).then(res => {
+            setNv(res.data.dsnv)
+        }).catch(err => console.log(err))
+    }
     const getAllQuanHuyen = async () => {
         const response = await instance.get('getallquanhuyen');
 
@@ -164,6 +194,7 @@ function ComponentTest() {
 
     useEffect(() => {
         CallAPI()
+        getNV()
     }, [page, rowPage]);
 
     const onchangeHuyen = async (e) => {
@@ -230,6 +261,16 @@ function ComponentTest() {
     };
 
 
+    const handleSelectAll = () => {
+        const allIds = data.map((ele) => ele.ID_KH);
+        if (selectedRows.length === allIds.length) {
+            setSelectedRows([]);
+        } else {
+            setSelectedRows(allIds);
+        }
+    };
+
+
 
 
     const handleSearch = async () => {
@@ -242,10 +283,10 @@ function ComponentTest() {
             MAXA_KH: xa,
             MAAP_KH: ap,
             status_survey: statusSurvey,
-            // quality_survey: qualityService,
+            PHANCONG: asignment,
             keywords: searchInput
         }
-        await instance.post('searchcustomer', objectSend)
+        await instance.post('searchinasignment', objectSend)
             .then((res) => {
                 console.log(res)
                 setData(res.data.dskh)
@@ -277,7 +318,7 @@ function ComponentTest() {
 
     return (
         <ComponentSkeleton>
-            <MainCard title="DANH SÁCH KHÁCH HÀNG">
+            <MainCard title="PHÂN CÔNG KHẢO SÁT">
                 <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                     <Box display={'flex'} flexWrap={'wrap'}>
                         <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
@@ -366,27 +407,23 @@ function ComponentTest() {
                                 <MenuItem value={1}>Khách hàng đã khảo sát</MenuItem>
                             </Select>
                         </FormControl>
-                        {/* <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1.5 }} size="small">
-                            <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
+                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
+                            <InputLabel id="demo-select-small-label">Trạng thái phân công</InputLabel>
                             <Select
-                                disabled={statusSurvey === 0}
                                 labelId="demo-select-small-label"
                                 id="demo-select-small"
-                                label="Chất lượng dịch vụ"
-                                value={statusSurvey === 0 ? '' : qualityService}
-                                onChange={(e) => setQualityService(e.target.value)}
+                                label="Trạng thái khảo sát"
+                                value={asignment}
+                                onChange={(e) => setAsignment(e.target.value)}
                             >
                                 <MenuItem value={5}>
                                     Tất cả
                                 </MenuItem>
-                                <MenuItem value={0}>Chất lượng tốt</MenuItem>
-                                <MenuItem value={1}>Chất lượng kém</MenuItem>
+                                <MenuItem value={0}>Chưa phân công</MenuItem>
+                                <MenuItem value={1}>Đã phân công</MenuItem>
                             </Select>
-                        </FormControl> */}
-                        {/* <TextField label='Tìm kiếm...' size="small"
-                            sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)} /> */}
+                        </FormControl>
+
                         <Autocomplete
                             id="free-solo-demo"
                             freeSolo
@@ -413,16 +450,31 @@ function ComponentTest() {
                         <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
                     </Box>
                     <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                        <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
+                        {/* <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
+                        </Button> */}
+                        <Button disabled={!selectedRows || selectedRows.length <= 0} size="small" sx={{ display: 'flex', marginRight: 1 }} variant="outlined" color={'success'} onClick={openDialogPhanCong}>
+                            <AssignmentIndRoundedIcon />
+                            <Typography >Phân công</Typography>
                         </Button>
+                        {/* <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={exportDataToExcel}>
+                            <SaveIcon />
+                            <Typography >Xuất excel</Typography>
+                        </Button> */}
+
                     </Box>
+
                 </Box>
                 <TableContainer component={Paper}>
                     <Table size='small'>
                         <TableHead sx={{ backgroundColor: '#0099ff' }} >
                             <TableRow>
+                                <TableCell sx={{ color: 'white' }}> <Checkbox
+                                    checked={selectedRows.length === data.length}
+                                    onChange={handleSelectAll}
+                                    color="success"
+                                /></TableCell>
                                 <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell>
                                 {/* <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell> */}
                                 <TableCell sx={{ color: 'white' }}> Số điện thoại </TableCell>
@@ -433,14 +485,22 @@ function ComponentTest() {
                                 <TableCell sx={{ color: 'white' }}> Xã/ Phường </TableCell>
                                 <TableCell sx={{ color: 'white' }}> Ấp/ Khu vực </TableCell>
                                 <TableCell sx={{ color: 'white' }}> Địa chỉ </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Trạng thái </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
+                                <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
+                                <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell>
+                                <TableCell sx={{ color: 'white' }}> Nhân viên phụ trách</TableCell>
+                                {/* <TableCell sx={{ color: 'white' }}> Thao tác </TableCell> */}
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {data.map((ele, index) => {
                                 return (
                                     <TableRow key={index}>
+                                        <TableCell>
+                                            <Checkbox
+                                                checked={selectedRows.includes(ele.ID_KH)} // Kiểm tra nếu id_kh đã được chọn
+                                                onChange={() => handleCheckboxChange(ele.ID_KH)} // Sử dụng hàm xử lý khi checkbox thay đổi
+                                                color="success" />
+                                        </TableCell>
                                         <TableCell>
                                             {ele.TEN_KH}
                                         </TableCell>
@@ -478,32 +538,18 @@ function ComponentTest() {
                                             </Typography>}
                                         </TableCell>
                                         <TableCell>
-                                            {ele.trangthai !== '' ? <>
-                                                <Tooltip title="Chi tiết khách hàng">
-                                                    <IconButton onClick={() => { openDialogDetail(ele.ID_KH) }}>
-                                                        <RemoveRedEyeIcon color={'primary'} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Cập nhật phiếu LIX">
-                                                    <IconButton>
-                                                        <EditNoteIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Cập nhật Khách hàng">
-                                                    <IconButton>
-                                                        <DriveFileRenameOutlineIcon color='info' onClick={() => { openDialogEditKH(ele.ID_KH) }} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Xóa khách hàng">
-                                                    <IconButton>
-                                                        <DeleteIcon color='error' onClick={() => { openDialogError(ele.ID_KH) }} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                {/* <Button sx={{width:20,margin:1}} variant='contained' color='warning'>Sửa</Button>  */}
-                                                {/* <Button sx={{ width: 20, margin: 1 }} variant='contained' color='error' onClick={() => { openDialog(ele.stt) }}>Xoá</Button> */}
-                                            </>
-                                                : ""}
+                                            {ele.ID_NV === null ? <Typography color="secondary" variant="h6">
+                                                Chưa phân công
+                                            </Typography> : <Typography sx={{
+                                                color: 'success.main'
+                                            }} variant="h6">
+                                                Đã phân công
+                                            </Typography>}
                                         </TableCell>
+                                        <TableCell>
+                                            {ele.TEN_NV}
+                                        </TableCell>
+                                        
                                     </TableRow>
                                 )
                             })}
@@ -553,6 +599,9 @@ function ComponentTest() {
             <AssignmentCustomer
                 open={dialogPhanCong}
                 handleClose={closeDialogPhanCong}
+                phancong={selectedRows}
+                nv={nv}
+                callApi={CallAPI}
             />
             <AddCustomer
                 open={dialogCustomer}
@@ -588,7 +637,7 @@ function ComponentTest() {
         </ComponentSkeleton>
     )
 }
-export default ComponentTest
+export default AssignmentCustomerManager
 
 
 

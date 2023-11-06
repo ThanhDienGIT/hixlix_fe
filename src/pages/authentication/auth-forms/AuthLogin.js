@@ -79,7 +79,8 @@ const AuthLogin = () => {
       setLoading(false)
       setOpen(true)
       // setMessage(data.message)
-      navigate('/')
+      // navigate('/table')
+      window.location.reload();
     } else {
       setLoading(false)
     }
@@ -98,6 +99,13 @@ const AuthLogin = () => {
   const handleClose = () => {
     setOpen(false)
   }
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+        // Xử lý sự kiện khi người dùng ấn phím "Enter" ở đây
+        handleLogin()
+    }
+};
 
   return (
     <>
@@ -134,6 +142,7 @@ const AuthLogin = () => {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChangeUsername}
+                    onKeyPress={handleKeyPress}
                     placeholder="Nhập tên tài khoản"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
@@ -156,6 +165,7 @@ const AuthLogin = () => {
                     name="password"
                     onBlur={handleBlur}
                     onChange={handleChangePassword}
+                    onKeyPress={handleKeyPress}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
