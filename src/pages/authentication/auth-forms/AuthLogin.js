@@ -64,10 +64,8 @@ const AuthLogin = () => {
   };
 
   const { JWTToken } = useContext(TokenContext);
-
  
   const handleLogin = async () => {
-    console.log('handle')
     // Gửi yêu cầu đăng nhập với username và password đến API của Laravel
     const objectSend = {
       username: username,
@@ -228,7 +226,7 @@ const AuthLogin = () => {
         )}
       </Formik>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
           This is a success message!
         </Alert>
       </Snackbar>

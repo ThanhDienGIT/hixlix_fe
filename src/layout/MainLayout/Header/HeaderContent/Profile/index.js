@@ -60,7 +60,7 @@ const Profile = () => {
   const handleLogout = async () => {
     // logout
     localStorage.removeItem('access_token');
-    window.location.href="/login";
+    window.location.href="/free/login";
   };
 
   const anchorRef = useRef(null);
@@ -145,10 +145,10 @@ const Profile = () => {
                           <Stack direction="row" spacing={1.25} alignItems="center">
                             <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                             <Stack>
-                            <Typography variant="subtitle1">John Cena</Typography>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography variant="h6">John Cena</Typography>
+                              {/* <Typography variant="body2" color="textSecondary">
                                 UI/UX Designer
-                              </Typography>
+                              </Typography> */}
                             </Stack>
                           </Stack>
                         </Grid>

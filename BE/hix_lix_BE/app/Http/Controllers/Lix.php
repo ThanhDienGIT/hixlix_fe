@@ -230,6 +230,132 @@ class Lix extends Controller
         }
     }
 
+    public function getLix_By_IdCustomer_and_IdService($khachhang, $Service, $idnhanvien)
+    {
+
+        try {
+            $phieukhaosat = phieukhaosat::where('ID_KH', $khachhang)->first();
+
+            if ($phieukhaosat) {
+                $dichvu = chi_tiet_phieu_khao_sat_lix::where("ID_PKS", $phieukhaosat->ID_PKS)->where('ID_DV', $Service)->first();
+                if ($dichvu) {
+                    return response()->json($dichvu, 200);
+                } else {
+                    return response()->json('Chưa có dịch vụ này', 200);
+                }
+            } else {
+                $data = [
+                    'id_kh' => $khachhang,
+                    'id_nv' => $idnhanvien,
+                    'trangthai_pks' => 1,
+                ];
+                $result = PhieuKhaoSat::insert($data);
+                if ($result) {
+                    return response()->json('Khách hàng không có phiếu khảo sát đã tạo thành công', 200);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi xoá khảo sát: ' . $e->getMessage()], 500);
+        }
+    }
+    // $PKS = phieukhaosat::query()
+    //     ->with('chitietpks', 'khachhangs', 'nhanviens')
+    //     ->where('id_nv', $id_nv)
+    //     ->where(function ($query) use ($_searchTerm) {
+    //         $query->where('id_dv', 'like', "%$_searchTerm%")
+    //             ->orWhere('kh_ten', 'like', "%$_searchTerm%");
+    //         // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
+    //     })
+    //     ->get();
+
+    public function AddEditLix(Request $request)
+    {
+        $data = $request->all();
+        $result = phieukhaosat::where('ID_KH', $request->ID_KH)->first();
+        // Nếu khách hàng đã có phiếu
+        if ($result) {
+            // Khách hàng chưa có phiếu
+            $resultDetailBallot = chi_tiet_phieu_khao_sat_lix::find($request->ID_CTPKS);
+            if ($resultDetailBallot) {
+                $resultDetailBallot->update([
+                    'TENKHACHHANGDAIDIEN_CTPKS' => $request['TENKHACHHANGDAIDIEN_CTPKS'],
+                    'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS' => $request['SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'],
+                    'ACCOUNTKHACHHANG_CTPKS' => $request['ACCOUNTKHACHHANG_CTPKS'],
+                    'MUCCUOC_CTPKS' => $request['MUCCUOC_CTPKS'],
+                    'HINHTHUCDONG_CTPKS' => $request['HINHTHUCDONG_CTPKS'],
+                    'NGAYBATDAUDONGCOC_CTPKS' => $request['NGAYBATDAUDONGCOC_CTPKS'],
+                    'NGAYKETTHUCDONGCOC_CTPKS' => $request['NGAYKETTHUCDONGCOC_CTPKS'],
+                    'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                    'DIEMHAILONG_CTPKS' => $request['DIEMHAILONG_CTPKS'],
+                    'CAMNHANDICHVU_CTPKS' => $request['CAMNHANDICHVU_CTPKS'],
+                    'CANNHANPHUCVU_CTPKS' => $request['CANNHANPHUCVU_CTPKS'],
+                    'YKIENKHAC' => $request['YKIENKHAC'],
+                    'NGUOIUPDATE_CTPKS' => $request['NGUOIUPDATE_CTPKS'],
+                    'NGAYUPDATE_CTPKS' => $request['NGAYUPDATE_CTPKS'],
+                ]);
+
+                return response()->json('Cập nhật thành công', 200);
+            } else {
+                $data = [
+                    'ID_PKS' =>  $result->ID_PKS,
+                    'ID_DV' => $request->ID_DV,
+                    'TENKHACHHANGDAIDIEN_CTPKS' => $request->TENKHACHHANGDAIDIEN_CTPKS,
+                    'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS' => $request->SODIENTHOAIKHACHHANGDAIDIEN_CTPKS,
+                    'ACCOUNTKHACHHANG_CTPKS' => $request->ACCOUNTKHACHHANG_CTPKS,
+                    'MUCCUOC_CTPKS' => $request->MUCCUOC_CTPKS,
+                    'HINHTHUCDONG_CTPKS' => $request->HINHTHUCDONG_CTPKS,
+                    'NGAYBATDAUDONGCOC_CTPKS' => $request->NGAYBATDAUDONGCOC_CTPKS,
+                    'NGAYKETTHUCDONGCOC_CTPKS' => $request->NGAYKETTHUCDONGCOC_CTPKS,
+                    'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
+                    'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
+                    'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
+                    'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
+                    'YKIENKHAC' => $request->YKIENKHAC,
+                    'NGUOITAO_CTPKS' => $request->NGUOITAO_CTPKS,
+                    'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
+                    'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
+                    'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
+                    'IS_DELETED' => 0
+                ];
+                $ketqua = chi_tiet_phieu_khao_sat_lix::insert($data);
+                if ($ketqua) {
+                    return response()->json('Thu thập khảo sát thành công', 200);
+                }
+            }
+        } else {
+            $data = [
+                'id_kh' => $request->ID_KH,
+                'id_nv' => 1,
+                'trangthai_pks' => 1,
+            ];
+            $create = PhieuKhaoSat::create($data);
+            $data2 = [
+                'ID_PKS' =>  $create->ID_PKS,
+                'ID_DV' => $request->ID_DV,
+                'TENKHACHHANGDAIDIEN_CTPKS' => $request->TENKHACHHANGDAIDIEN_CTPKS,
+                'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS' => $request->SODIENTHOAIKHACHHANGDAIDIEN_CTPKS,
+                'ACCOUNTKHACHHANG_CTPKS' => $request->ACCOUNTKHACHHANG_CTPKS,
+                'MUCCUOC_CTPKS' => $request->MUCCUOC_CTPKS,
+                'HINHTHUCDONG_CTPKS' => $request->HINHTHUCDONG_CTPKS,
+                'NGAYBATDAUDONGCOC_CTPKS' => $request->NGAYBATDAUDONGCOC_CTPKS,
+                'NGAYKETTHUCDONGCOC_CTPKS' => $request->NGAYKETTHUCDONGCOC_CTPKS,
+                'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
+                'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
+                'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
+                'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
+                'YKIENKHAC' => $request->YKIENKHAC,
+                'NGUOITAO_CTPKS' => $request->NGUOITAO_CTPKS,
+                'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
+                'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
+                'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
+                'IS_DELETED' => 0
+            ];
+            $result = chi_tiet_phieu_khao_sat_lix::insert($data2);
+            if ($result) {
+                return response()->json('Thu thập khảo sát thành công', 200);
+            }
+        }
+    }
 
     public function livesearch_lix(Request $request)
     {
