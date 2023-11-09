@@ -56,6 +56,9 @@ function AssignmentCustomerManager() {
     const [selectedRows, setSelectedRows] = useState([]);
     const [nv, setNv] = useState([])
     const [asignment, setAsignment] = useState(5)
+    const [searchStatus, setSearchStatus] = useState(0)
+
+
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -69,7 +72,7 @@ function AssignmentCustomerManager() {
         setIDKhachHang(0)
     }
 
- 
+
 
     const closeDialogDetail = () => {
         setDialogDetail(false)
@@ -172,7 +175,11 @@ function AssignmentCustomerManager() {
     }
 
     useEffect(() => {
-        CallAPI()
+        if (searchStatus === 0) {
+            CallAPI()
+        } else {
+            handleSearch()
+        }
         getNV()
     }, [page, rowPage]);
 
@@ -227,6 +234,7 @@ function AssignmentCustomerManager() {
                 ID_CHA_DVHC: 1,
             },
         ])
+        
     }, []);
 
 
@@ -235,7 +243,7 @@ function AssignmentCustomerManager() {
 
     const handleAutocompleteChange = (event, value) => {
         setSearchInput(value); // Cập nhật giá trị của trường TextField khi người dùng chọn một gợi ý
-        
+
     };
 
 
@@ -264,10 +272,13 @@ function AssignmentCustomerManager() {
             PHANCONG: asignment,
             keywords: searchInput
         }
-        await instance.post('searchinasignment', objectSend)
+        await instance.post(`searchinasignment/${rowPage}?page=${page}`, objectSend)
             .then((res) => {
                 console.log(res)
-                setData(res.data.dskh)
+                setData(res.data.dskh.data)
+                setMaxPage(res.data.dskh.last_page)
+                setAlloption(res.data.dskh.data)
+                setSearchStatus(1)
             })
     }
 
@@ -407,11 +418,11 @@ function AssignmentCustomerManager() {
                                 />
                             )}
                         />
-                       
+
                     </Box>
                     <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                    <Button onClick={handleSearch}  sx={{ display: 'flex', marginRight: 1, width: 150 }} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
-                        <Button disabled={!selectedRows || selectedRows.length <= 0} sx={{ display: 'flex', marginRight: 1, width: 150}} variant="contained" color={'primary'} onClick={openDialogPhanCong}>
+                        <Button onClick={handleSearch} sx={{ display: 'flex', marginRight: 1, width: 150 }} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                        <Button disabled={!selectedRows || selectedRows.length <= 0} sx={{ display: 'flex', marginRight: 1, width: 150 }} variant="contained" color={'primary'} onClick={openDialogPhanCong}>
                             <AssignmentIndRoundedIcon />
                             <Typography >Phân công</Typography>
                         </Button>
@@ -442,7 +453,7 @@ function AssignmentCustomerManager() {
                                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
                                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
                                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
-                                <TableCell sx={{ color: 'white'}}> Trạng thái khảo sát</TableCell>
+                                <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
                                 <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell>
                                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên phụ trách</TableCell>
                                 {/* <TableCell sx={{ color: 'white' }}> Thao tác </TableCell> */}
@@ -458,7 +469,7 @@ function AssignmentCustomerManager() {
                                                 onChange={() => handleCheckboxChange(ele.ID_KH)} // Sử dụng hàm xử lý khi checkbox thay đổi
                                                 color="secondary" />
                                         </TableCell>
-                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_KH}
                                         </TableCell>
                                         {/* <TableCell>
@@ -473,16 +484,16 @@ function AssignmentCustomerManager() {
                                         <TableCell>
                                             {ele.SONHANKHAU_KH}
                                         </TableCell> */}
-                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_HUYEN}
                                         </TableCell>
-                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_XA}
                                         </TableCell>
-                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_AP}
                                         </TableCell>
-                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.DIACHI_KH}
                                         </TableCell>
                                         <TableCell>
@@ -503,10 +514,10 @@ function AssignmentCustomerManager() {
                                                 Đã phân công
                                             </Typography>}
                                         </TableCell>
-                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_NV}
                                         </TableCell>
-                                        
+
                                     </TableRow>
                                 )
                             })}

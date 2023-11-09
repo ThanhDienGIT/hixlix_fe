@@ -38,6 +38,7 @@ function UserManagement() {
     const [alloption, setAlloption] = useState([]);
     const [role, setRole] = useState(5);
     const [status, setStatus] = useState(5);
+    const [searchStatus, setSearchStatus] = useState(0)
     // const [user, setUser] = useState({
     //     TEN_NV: '',
     //     SDT_NV: '',
@@ -116,7 +117,11 @@ function UserManagement() {
 
 
     useEffect(() => {
-        CallAPI()
+        if (searchStatus === 0) {
+            CallAPI()
+          } else {
+            handleSearch()
+          }
     }, [page, rowPage]);
 
 
@@ -139,10 +144,13 @@ function UserManagement() {
             TRANGTHAI_NV: status,
             CHUCVU_NV: role
         }
-        await instance.post('search-user', objectSend)
+        await instance.post(`search-user/${rowPage}?page=${page}`, objectSend)
             .then((res) => {
                 console.log(res)
-                setData(res.data.dsuser)
+                setData(res.data.dsuser.data)
+                setMaxPage(res.data.dsuser.last_page)
+                setAlloption(res.data.dsuser.data)
+                setSearchStatus(1)
                 setLoading(false)
             })
     }

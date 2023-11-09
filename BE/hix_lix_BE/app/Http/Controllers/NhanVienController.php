@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class NhanVienController extends Controller
 {
-    public function search(Request $request)
+    public function search($count, Request $request)
     {
         if (!empty($request->keywords)) {
 
@@ -27,7 +27,7 @@ class NhanVienController extends Controller
             }
 
             $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
-            ->get();
+            ->paginate($count);
             return response()->json(['dsuser' => $user], 200);
         } else {
             $user = DB::table('nhan_vien');
@@ -41,7 +41,7 @@ class NhanVienController extends Controller
             }
 
             $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
-            ->get();
+            ->paginate($count);
             return response()->json(['dsuser' => $user], 200);
         }
     }

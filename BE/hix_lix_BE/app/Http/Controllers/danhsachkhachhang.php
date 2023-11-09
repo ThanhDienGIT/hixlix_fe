@@ -169,7 +169,7 @@ class danhsachkhachhang extends Controller
     }
 
 
-    public function filterreport(Request $request)
+    public function filterreport($count, Request $request)
     {
         $id_nv = auth()->user()->ID_NV;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
@@ -230,7 +230,7 @@ class danhsachkhachhang extends Controller
                 $report = $report
 
                     ->select('nhan_vien.ID_NV', 'nhan_vien.TEN_NV', 'chi_tiet_phieu_khao_sat_lix.*', 'phieu_khao_sat.*', 'nha_cung_cap.*', 'khach_hang.*', 'dich_vu.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dstk' => $report], 200);
             } else {
                 $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
@@ -289,7 +289,7 @@ class danhsachkhachhang extends Controller
                 $report = $report
 
                     ->select('nhan_vien.ID_NV', 'nhan_vien.TEN_NV', 'chi_tiet_phieu_khao_sat_lix.*', 'phieu_khao_sat.*', 'nha_cung_cap.*', 'khach_hang.*', 'dich_vu.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dstk' => $report], 200);
             }
         } else {
@@ -348,7 +348,7 @@ class danhsachkhachhang extends Controller
                 $report = $report
 
                     ->select('nhan_vien.ID_NV', 'nhan_vien.TEN_NV', 'chi_tiet_phieu_khao_sat_lix.*', 'phieu_khao_sat.*', 'nha_cung_cap.*', 'khach_hang.*', 'dich_vu.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dstk' => $report], 200);
             } else {
                 $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
@@ -406,7 +406,7 @@ class danhsachkhachhang extends Controller
                 $report = $report
 
                     ->select('nhan_vien.ID_NV', 'nhan_vien.TEN_NV', 'chi_tiet_phieu_khao_sat_lix.*', 'phieu_khao_sat.*', 'nha_cung_cap.*', 'khach_hang.*', 'dich_vu.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dstk' => $report], 200);
             }
         }
@@ -514,7 +514,7 @@ class danhsachkhachhang extends Controller
         }
     }
 
-    public function searchinasignment(Request $request)
+    public function searchinasignment($count, Request $request)
     {
         $id_nv = auth()->user()->ID_NV;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
@@ -549,7 +549,7 @@ class danhsachkhachhang extends Controller
 
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
                 $customers = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
@@ -582,7 +582,7 @@ class danhsachkhachhang extends Controller
 
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             }
         } else {
@@ -615,7 +615,7 @@ class danhsachkhachhang extends Controller
 
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
                 $customers = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
@@ -647,7 +647,7 @@ class danhsachkhachhang extends Controller
 
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             }
         }

@@ -33,6 +33,7 @@ function SupplierManagement() {
     const [idsupplier, setIdsupplier] = useState(0)
     const [searchInput, setSearchInput] = useState('');
     const [alloption, setAlloption] = useState([]);
+    const [searchStatus, setSearchStatus] = useState(0)
 
     
 
@@ -98,7 +99,11 @@ function SupplierManagement() {
 
 
     useEffect(() => {
-        CallAPI()
+        if (searchStatus === 0) {
+            CallAPI()
+          } else {
+            handleSearch()
+          }
     }, [page, rowPage]);
 
 
@@ -119,10 +124,13 @@ function SupplierManagement() {
         const objectSend = {
             keywords: searchInput
         }
-        await instance.post('search-suppliler', objectSend)
+        await instance.post(`search-suppliler/${rowPage}?page=${page}`, objectSend)
             .then((res) => {
                 console.log(res)
-                setData(res.data.dsspl)
+                setData(res.data.dsspl.data)
+                setMaxPage(res.data.dsspl.last_page)
+                setAlloption(res.data.dsspl.data)
+                setSearchStatus(1)
                 setLoading(false)
             })
     }

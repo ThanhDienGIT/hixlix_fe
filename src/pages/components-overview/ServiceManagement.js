@@ -35,6 +35,7 @@ function ServiceManagement() {
     const [searchInput, setSearchInput] = useState('');
     const [alloption, setAlloption] = useState([]);
     const [service, setService] = useState(0);
+    const [searchStatus, setSearchStatus] = useState(0)
 
     const callAPIServiceList = () => {
         instance.get('dichvu')
@@ -109,7 +110,11 @@ function ServiceManagement() {
     }
 
     useEffect(() => {
-        CallAPI()
+        if (searchStatus === 0) {
+            CallAPI()
+        } else {
+            handleSearch()
+        }
     }, [page, rowPage]);
 
 
@@ -132,10 +137,13 @@ function ServiceManagement() {
             LOAI_DV: service,
             keywords: searchInput
         }
-        await instance.post('search-dv', objectSend)
+        await instance.post(`search-dv/${rowPage}?page=${page}`, objectSend)
             .then((res) => {
                 console.log(res)
-                setData(res.data.dsdv)
+                setData(res.data.dsdv.data)
+                setMaxPage(res.data.dsdv.last_page)
+                setAlloption(res.data.dsdv.data)
+                setSearchStatus(1)
                 setLoading(false)
             })
     }
@@ -220,11 +228,11 @@ function ServiceManagement() {
                             <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} color={'info'} variant="outlined" onClick={handleSearch}>
                                 {loading ? <>
                                     <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
-                                </> : <><SearchIcon/><Typography >Tìm kiếm</Typography></>}
+                                </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
                             </Button>
                         </AnimateButton>
                         <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={openDialogService}>
-                            <AddIcon/><Typography >Dịch vụ</Typography>
+                            <AddIcon /><Typography >Dịch vụ</Typography>
                         </Button>
 
 

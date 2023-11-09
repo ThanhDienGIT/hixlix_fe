@@ -14,24 +14,24 @@ class DichVuController extends Controller
         $dsnhacungcap = DB::table('nha_cung_cap')->get();
         return response()->json($dsnhacungcap);
     }
-    public function searchsp(Request $request)
+    public function searchsp($count, Request $request)
     {
         if (!empty($request->keywords)) {
 
             $sp = DB::table('nha_cung_cap')
                 ->where('TEN_NCC', 'like', '%' . $request->keywords . '%');
 
-            $sp = $sp->get();
+            $sp = $sp->paginate($count);
             return response()->json(['dsspl' => $sp], 200);
         } else {
             $sp = DB::table('nha_cung_cap');
 
 
-            $sp = $sp->get();
+            $sp = $sp->paginate($count);
             return response()->json(['dsspl' => $sp], 200);
         }
     }
-    public function search(Request $request)
+    public function search($count, Request $request)
     {
         if (!empty($request->keywords)) {
 
@@ -43,7 +43,7 @@ class DichVuController extends Controller
                 $dv->where('dich_vu.ID_LDV', $request->LOAI_DV);
             }
 
-            $dv = $dv->get();
+            $dv = $dv->paginate($count);
             return response()->json(['dsdv' => $dv], 200);
         } else {
             $dv = DB::table('dich_vu')->join('loai_dich_vu', 'loai_dich_vu.ID_LDV', '=', 'dich_vu.ID_LDV');
@@ -52,7 +52,7 @@ class DichVuController extends Controller
                 $dv->where('dich_vu.ID_LDV', $request->LOAI_DV);
             }
 
-            $dv = $dv->get();
+            $dv = $dv->paginate($count);
             return response()->json(['dsdv' => $dv], 200);
         }
     }

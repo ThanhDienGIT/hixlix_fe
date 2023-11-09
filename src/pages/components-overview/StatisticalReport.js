@@ -47,7 +47,7 @@ function StatisticalReport() {
   const [provider, setProvider] = useState([])
   const [wards, setWards] = useState([])
   const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  const [statusSurvey, setStatusSurvey] = useState('');
+  // const [statusSurvey, setStatusSurvey] = useState('');
   const [serveSurvey, setServeSurvey] = useState(5);
   const [qualityService, setQualityService] = useState(5);
   const [searchInput, setSearchInput] = useState('');
@@ -63,6 +63,7 @@ function StatisticalReport() {
   const [fromDate, setFromDate] = useState(formattedToday);
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
+  const [searchStatus, setSearchStatus] = useState(0)
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -162,8 +163,11 @@ function StatisticalReport() {
   }
 
   useEffect(() => {
-    CallAPI()
-    setStatusSurvey('')
+    if (searchStatus === 0) {
+      CallAPI()
+    } else {
+      handleSearch()
+    }
   }, [page, rowPage]);
 
   const onchangeHuyen = async (e) => {
@@ -217,7 +221,9 @@ function StatisticalReport() {
         ID_CHA_DVHC: 1,
       },
     ])
+    
   }, []);
+
 
 
   const screenWidth = window.innerWidth
@@ -252,10 +258,13 @@ function StatisticalReport() {
       TUNGAY: fromDate,
       DENNGAY: toDate
     }
-    await instance.post('filter-report', objectSend)
+    await instance.post(`filter-report/${rowPage}?page=${page}`, objectSend)
       .then((res) => {
         console.log(res)
-        setData(res.data.dstk)
+        setData(res.data.dstk.data)
+        setMaxPage(res.data.dstk.last_page)
+        setAlloption(res.data.dstk.data)
+        setSearchStatus(1)
       })
   }
 
@@ -370,11 +379,10 @@ function StatisticalReport() {
             <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
               <Select
-                disabled={statusSurvey === 0}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 label="Chất lượng dịch vụ"
-                value={statusSurvey === 0 ? '' : qualityService}
+                value={qualityService}
                 onChange={(e) => setQualityService(e.target.value)}
               >
                 <MenuItem value={5}>
