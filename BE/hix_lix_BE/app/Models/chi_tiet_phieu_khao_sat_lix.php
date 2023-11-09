@@ -24,6 +24,8 @@ class chi_tiet_phieu_khao_sat_lix extends Model
         'HINHTHUCDONG_CTPKS',
         'NGAYBATDAUDONGCOC_CTPKS',
         'NGAYKETTHUCDONGCOC_CTPKS',
+        'THOIGIANLAPDAT_CTPKS',
+        'THOIGIANNGUNG_CTPKS',
         'NHACUNGCAP_CTPKS',
         'DIEMHAILONG_CTPKS',
         'CAMNHANDICHVU_CTPKS',

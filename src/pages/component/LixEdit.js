@@ -16,7 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
 
-function LixDialog(props) {
+function LixEdit(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
     const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
@@ -281,7 +281,20 @@ function LixDialog(props) {
     }, [service.ID_DV])
 
 
-    console.log(service)
+    useEffect(() => {
+        if (props.iddv && props.iddv !== 0) {
+            setService(prevService => ({
+                ...prevService,
+                ['ID_DV']: props.iddv
+            }));
+        }
+
+    }, [props.iddv])
+
+
+
+
+    console.log(props.iddv)
 
 
     return (
@@ -343,7 +356,7 @@ function LixDialog(props) {
                             <TextField label="Mức cước/tháng" type={'number'} sx={{ marginTop: 2 }} value={service.MUCCUOC_CTPKS} name={'MUCCUOC_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} value={service.HINHTHUCDONG_CTPKS} name={'HINHTHUCDONG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.TENKHACHHANGDAIDIEN_CTPKS} name={'TENKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                            <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} name={'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} value={service.ACCOUNTKHACHHANG_CTPKS} name={'ACCOUNTKHACHHANG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
 
@@ -486,4 +499,4 @@ function LixDialog(props) {
     )
 }
 
-export default LixDialog
+export default LixEdit

@@ -29,25 +29,35 @@ import AnimateButton from 'components/@extended/AnimateButton';
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+
 
 // ============================|| FIREBASE - LOGIN ||============================ //
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+
+
+
+// Create an instance of Notyf
+const notyf = new Notyf({
+  duration: 3500,
+  position: {
+    x: 'right',
+    y: 'top',
+  },
+  dismissible: true
 });
+
 
 const AuthLogin = () => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   // const [checked, setChecked] = React.useState(false);
   const [loading, setLoading] = React.useState(false)
-  const [open, setOpen] = React.useState(false);
   // const [message, setMessage] = React.useState('')
 
   const navigate = useNavigate();
   React.useEffect(() => {
-    if(localStorage.getItem('access_token') && localStorage.getItem('access_token') !== null){
+    if (localStorage.getItem('access_token') && localStorage.getItem('access_token') !== null) {
       navigate('/')
     }
   }, [])
@@ -62,7 +72,6 @@ const AuthLogin = () => {
   };
 
 
-
   const handleLogin = async () => {
     // Gửi yêu cầu đăng nhập với username và password đến API của Laravel
     const objectSend = {
@@ -70,42 +79,59 @@ const AuthLogin = () => {
       password: password
     }
     setLoading(true)
-    const response = await Axios.post('login', objectSend);
+    await Axios.post('login', objectSend)
+      .then((response) => {
+        if (response.status === 200) {
+          // Đăng nhập thành công, lưu token vào localStorage hoặc sử dụng một cơ chế lưu trữ khác
+          localStorage.setItem('access_token', response.data.access_token);
+          // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
+          setLoading(false)
 
-    if (response.status === 200) {
-      // Đăng nhập thành công, lưu token vào localStorage hoặc sử dụng một cơ chế lưu trữ khác
-      localStorage.setItem('access_token', response.data.access_token);
-      // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
-      setLoading(false)
-      setOpen(true)
-      // setMessage(data.message)
-      // navigate('/table')
-      window.location.reload();
-    } else {
-      setLoading(false)
-    }
+          notyf.success(response.data.message)
+          // navigate('/table')
+          window.location.reload();
+        } else {
+          setLoading(false)
+
+          notyf.error(response.data.message)
+        }
+      }).catch((error) => {
+        if (error.response) {
+
+          // Lỗi phản hồi từ phía máy chủ
+          const errorMessages = error.response.data.message;
+          notyf.error(errorMessages)
+          setLoading(false)
+        } else {
+          // Lỗi khác, ví dụ: lỗi kết nối
+
+          notyf.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+          setLoading(false)
+        }
+      });
+
+
   }
 
   const handleChangeUsername = (e) => {
-    const {value } = e.target;
+    const { value } = e.target;
     setUsername(value)
   };
 
   const handleChangePassword = (e) => {
-    const {value } = e.target;
+    const { value } = e.target;
     setPassword(value)
   };
 
-  const handleClose = () => {
-    setOpen(false)
-  }
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-        // Xử lý sự kiện khi người dùng ấn phím "Enter" ở đây
-        handleLogin()
+      // Xử lý sự kiện khi người dùng ấn phím "Enter" ở đây
+      handleLogin()
     }
-};
+  };
+
+
 
   return (
     <>
@@ -216,7 +242,7 @@ const AuthLogin = () => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button onClick={handleLogin} disableElevation disabled={isSubmitting} fullWidth size="large" type="button" variant="contained" color="primary">
-                    {loading == false ? 'Đăng nhập' :  <CircularProgress color="inherit"/>}
+                    {loading == false ? 'Đăng nhập' : <CircularProgress color="inherit" />}
                   </Button>
                 </AnimateButton>
               </Grid>
@@ -232,11 +258,7 @@ const AuthLogin = () => {
           </form>
         )}
       </Formik>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          This is a success message!
-        </Alert>
-      </Snackbar>
+
     </>
   );
 };

@@ -29,13 +29,31 @@ class testController extends Controller
             $user = NhanVien::whereRaw("LOWER(TAIKHOAN_NV) = LOWER(?)",strtolower($credentials['username']))
                 ->first();
 
+            
+
             if (!$user) {
-                return response()->json(['invalid_email_or_password'], 422);
+                return response()->json(['status' => 'failed', 'message' => 'Sai tên đăng nhập, vui lòng kiểm tra lại.'], 422);
             }
             
 
             if (!password_verify($credentials['password'], $user->MATKHAU_NV)) {
-                return response()->json(['invalid_email_or_password'], 422);
+                return response()->json(['status' => 'failed', 'message' => 'Sai mật khẩu, vui lòng kiểm tra lại.'], 422);
+            }
+
+            $usercheckactive = NhanVien::where('TRANGTHAI_NV', 0)->where('ID_NV', $user->ID_NV)
+                ->first();
+
+            $usercheckExist = NhanVien::where('IS_DELETED', 1)->where('ID_NV', $user->ID_NV)
+                ->first();
+
+            if($usercheckactive)
+            {
+                return response()->json(['status' => 'failed', 'message' => 'Tài khoản của bạn đã bị khóa, hãy liên hệ Admin để được mở khóa!'], 400);
+            }
+
+            if($usercheckExist)
+            {
+                return response()->json(['status' => 'failed', 'message' => 'Tài khoản của bạn đã bị xóa!'], 400);
             }
 
             $customClaims = [
@@ -47,12 +65,12 @@ class testController extends Controller
             ];
 
             $token = JWTAuth::fromUser($user, $customClaims);
-            return response()->json(['message' => 'Login successful', 'access_token' => $token]);
+            return response()->json(['status' => 'success','message' => 'Đăng nhập thành công', 'access_token' => $token]);
         } catch (JWTException $e) {
-            return response()->json(['message' => 'failed_to_create_token'], 500);
+            return response()->json(['status' => 'failed','message' => 'failed_to_create_token'], 500);
         }
 
-        return response()->json(['message' => 'Login successful', 'access_token' => $token]);
+        return response()->json(['status' => 'success','message' => 'Đăng nhập thành công', 'access_token' => $token]);
     }
 
 }

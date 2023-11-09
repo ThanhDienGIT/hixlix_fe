@@ -12,8 +12,8 @@ import instance from '../../axios/instance'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DetailCustomer from 'pages/component/DetailCustomer'
-// import SearchIcon from '@mui/icons-material/Search';
-// import SaveIcon from '@mui/icons-material/Save';
+import SearchIcon from '@mui/icons-material/Search';
+import SaveIcon from '@mui/icons-material/Save';
 import { TokenContext } from '../../globalVar/TokenProvider'
 // import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -23,7 +23,7 @@ import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
 import { format, isValid } from 'date-fns';
 import Autocomplete from '@mui/material/Autocomplete';
-import AnimateButton from 'components/@extended/AnimateButton';
+// import AnimateButton from 'components/@extended/AnimateButton';
 import CircularProgress from '@mui/material/CircularProgress';
 
 
@@ -48,19 +48,21 @@ function StatisticalReport() {
   const [wards, setWards] = useState([])
   const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   const [statusSurvey, setStatusSurvey] = useState('');
-  const [qualityService, setQualityService] = useState('');
+  const [serveSurvey, setServeSurvey] = useState(5);
+  const [qualityService, setQualityService] = useState(5);
   const [searchInput, setSearchInput] = useState('');
   const [alloption, setAlloption] = useState([]);
   const [quanhuyen, setQuanhuyen] = useState([]);
   const [xaphuong, setXaphuong] = useState([]);
   const [apKV, setApKV] = useState([]);
-  const [huyen, setHuyen] = useState('')
-  const [xa, setXa] = useState('')
-  const [ap, setAp] = useState('')
-  const [supplier, setSupplier] = useState([]);
-  const [service, setService] = useState([]);
+  const [huyen, setHuyen] = useState(0)
+  const [xa, setXa] = useState(0)
+  const [ap, setAp] = useState(0)
+  const [supplier, setSupplier] = useState(0);
+  const [service, setService] = useState(0);
   const [fromDate, setFromDate] = useState(formattedToday);
   const [toDate, setToDate] = useState(formattedToday);
+  const [disabled, setDisabled] = useState(false);
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -68,10 +70,7 @@ function StatisticalReport() {
       .catch(err => console.log(err))
   }
 
-  // const openDialogError = (id) => {
-  //   setDialogError(true)
-  //   setIDKhachHang(id)
-  // }
+
 
   const closeDialogError = () => {
     setDialogError(false)
@@ -88,20 +87,14 @@ function StatisticalReport() {
     }
   };
 
-  // const openDialogDetail = (id) => {
-  //   setDialogDetail(true)
-  //   setIDKhachHang(id)
-  // }
+
 
   const closeDialogDetail = () => {
     setDialogDetail(false)
     setIDKhachHang(0)
   }
 
-  // const openDialogSuccess = (id) => {
-  //     setDialogSuccess(true)
-  //     setIDKhachHang(id)
-  // }
+
 
   const closeDialogEdit = () => {
     setdialogEdit(false)
@@ -113,23 +106,13 @@ function StatisticalReport() {
     setIDKhachHang(0)
   }
 
-  // const openDialogCustomer = () => {
-  //   setDialogCustomer(true);
-  // }
+
 
   const closeDialogCustomer = () => {
     setDialogCustomer(false);
   };
 
-  // const openDialog = (id) => {
-  //   setDiaLog(true);
-  //   setIdKhaoSat(id);
-  // }
 
-  // const openDialogEditKH = (id) => {
-  //   setdialogEdit(true)
-  //   setIDKhachHang(id)
-  // }
 
   const closeDialog = () => {
     setDiaLog(false);
@@ -238,11 +221,9 @@ function StatisticalReport() {
 
 
   const screenWidth = window.innerWidth
-  let isOpen = false; // Khai báo biến để điều khiển việc mở hoặc đóng trình gợi ý
 
   const handleAutocompleteChange = (event, value) => {
     setSearchInput(value); // Cập nhật giá trị của trường TextField khi người dùng chọn một gợi ý
-    isOpen = false; // Đóng trình gợi ý khi có giá trị được chọn
   };
 
   const onchangeFromDate = (date) => {
@@ -261,6 +242,7 @@ function StatisticalReport() {
 
     const objectSend = {
       quality_survey: qualityService,
+      CHATLUONG_PV: serveSurvey,
       keywords: searchInput,
       MAHUYEN_KH: huyen,
       MAXA_KH: xa,
@@ -279,6 +261,7 @@ function StatisticalReport() {
 
   const exportDataToExcel = async () => {
     setLoading(true)
+    setDisabled(true)
     await instance.post('export-excel', { export_data: data }, { responseType: 'blob' })
       .then(response => {
         const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
@@ -293,21 +276,15 @@ function StatisticalReport() {
         document.body.appendChild(link);
         link.click();
         setLoading(false)
+        setDisabled(false)
       })
       .catch(error => {
         setLoading(false)
+        setDisabled(false)
         console.error('Lỗi khi tải tệp Excel:', error);
       });
   };
 
-  // const viTexts = {
-  //   today: 'Hôm nay',
-  //   date: 'Ngày',
-  //   month: 'Tháng',
-  //   year: 'Năm',
-  //   monthAndYear: 'Tháng và Năm',
-  //   noOptions: 'Không có lựa chọn',
-  // };
 
 
 
@@ -317,42 +294,11 @@ function StatisticalReport() {
     <ComponentSkeleton>
       <MainCard title="THỐNG KÊ & BÁO CÁO">
         <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
-          {/* <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-            <Button size="small" sx={{ display: 'flex', mr: 1 }} color={'primary'} variant="contained" onClick={handleSearch}>
-                            <SearchIcon />
-                            <Typography >Lọc</Typography>
-                        </Button>
-            <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={exportDataToExcel}>
-                            <SaveIcon />
-                            <Typography >Xuất excel</Typography>
-                        </Button>
 
-          </Box> */}
-          <Autocomplete
-            id="free-solo-demo"
-            freeSolo
-            open={isOpen || (searchInput && searchInput.length > 0)} // Kiểm tra giá trị isOpen và searchInput để quyết định mở hoặc đóng trình gợi ý
-            options={alloption.map((option) => option.TEN_KH)}
-            value={searchInput}
-            onChange={(event, value) => {
-              handleAutocompleteChange(event, value);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label='Tìm kiếm...'
-                size="small"
-                sx={{ marginRight: 1, marginTop: 0.8, width: 160 }}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onInputChange={(e, value) => {
-                  setSearchInput(value);
-                  isOpen = value.length > 0; // Mở hoặc đóng trình gợi ý dựa trên giá trị nhập vào
-                }}
-              />
-            )}
-          />
+
           <Box display={'flex'} flexWrap={'wrap'}>
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Quận/ huyện</InputLabel>
               <Select
                 labelId="demo-select-small-label"
@@ -373,7 +319,7 @@ function StatisticalReport() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Xã/ Phường</InputLabel>
               <Select
                 labelId="demo-select-small-label"
@@ -395,7 +341,7 @@ function StatisticalReport() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Ấp/ Khu vực</InputLabel>
               <Select
                 labelId="demo-select-small-label"
@@ -421,7 +367,7 @@ function StatisticalReport() {
 
 
 
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
               <Select
                 disabled={statusSurvey === 0}
@@ -438,7 +384,26 @@ function StatisticalReport() {
                 <MenuItem value={1}>Chất lượng kém</MenuItem>
               </Select>
             </FormControl>
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+              <InputLabel id="demo-select-small-label">Chất lượng phục vụ</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                label="Chất lượng phục vụ"
+                value={serveSurvey}
+                onChange={(e) => setServeSurvey(e.target.value)}
+              >
+                <MenuItem value={5}>
+                  Tất cả
+                </MenuItem>
+                <MenuItem value={0}>Chất lượng tốt</MenuItem>
+                <MenuItem value={1}>Chất lượng kém</MenuItem>
+              </Select>
+            </FormControl>
+
+
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Nhà cung cấp</InputLabel>
               <Select
                 labelId="demo-select-small-label"
@@ -459,7 +424,7 @@ function StatisticalReport() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Dịch vụ</InputLabel>
               <Select
                 labelId="demo-select-small-label"
@@ -479,7 +444,7 @@ function StatisticalReport() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ width: 160, marginRight: 1, marginTop: 1 }} size="small">
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
                 <DatePicker
@@ -492,7 +457,7 @@ function StatisticalReport() {
               </LocalizationProvider>
             </FormControl>
 
-            <FormControl sx={{ width: 160, marginRight: 0, marginTop: 1 }} size="small">
+            <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
                 <DatePicker
@@ -505,29 +470,56 @@ function StatisticalReport() {
               </LocalizationProvider>
             </FormControl>
 
+            <Autocomplete
+              freeSolo
+              id="free-solo-2-demo"
+              disableClearable
+              options={alloption.filter((option, index, self) =>
+                index === self.findIndex((t) => (
+                  t.ID_KH === option.ID_KH
+                ))
+              ).map((option) => option.TEN_KH)}
+              onChange={(event, value) => {
+                handleAutocompleteChange(event, value);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label='Tìm kiếm...'
+                  size="small"
+                  sx={{ marginRight: 1, marginTop: 1.8, width: 150 }}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onInputChange={(e, value) => {
+                    setSearchInput(value);
+                  }}
+                  InputProps={{
+                    ...params.InputProps,
+                    type: 'search',
+                  }}
+                />
+              )}
+            />
 
 
-
-          </Box>
-
-          <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-            {/* <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
-              <AddIcon />
-              <Typography >Khách hàng</Typography>
-            </Button> */}
-            <Button size="small" sx={{ display: 'flex', mr: 1 }} color={'primary'} variant="contained" onClick={handleSearch}>
-              <Typography >Lọc</Typography>
-            </Button>
-            <AnimateButton>
-              <Button size="small" sx={{ display: 'flex' }} color={'success'} variant="contained" onClick={exportDataToExcel}>
-                {loading ? <>
-                  <CircularProgress size="1rem" color="inherit" sx={{mr: 0.5}} /><Typography >Xuất excel</Typography>
-                </> : <Typography >Xuất excel</Typography>}
+            <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
+              <Button sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={handleSearch}>
+                <SearchIcon />
+                <Typography >Tra cứu</Typography>
               </Button>
-            </AnimateButton>
 
+              <Button disabled={disabled} sx={{ display: 'flex', width: 150 }} color={'success'} variant="outlined" onClick={exportDataToExcel}>
+                {loading ? <>
+                  <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Xuất excel</Typography>
+                </> : <><SaveIcon /><Typography >Xuất excel</Typography></>}
+              </Button>
+
+
+
+            </Box>
 
           </Box>
+
+
 
 
         </Box>
@@ -535,91 +527,97 @@ function StatisticalReport() {
           <Table size='small'>
             <TableHead sx={{ backgroundColor: '#0099ff' }} >
               <TableRow>
-                <TableCell sx={{ color: 'white' }}> Tỉnh </TableCell>
-                <TableCell sx={{ color: 'white' }}> Quận/ Huyện </TableCell>
-                <TableCell sx={{ color: 'white' }}> Xã/ Phường </TableCell>
-                <TableCell sx={{ color: 'white' }}> Ấp/ Khu vực </TableCell>
-                <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell>
-                <TableCell sx={{ color: 'white' }}> Địa chỉ </TableCell>
-                <TableCell sx={{ color: 'white' }}> Số điện thoại </TableCell>
-                <TableCell sx={{ color: 'white' }}> Số nhân khẩu </TableCell>
-                <TableCell sx={{ color: 'white' }}> CCCD </TableCell>
-                <TableCell sx={{ color: 'white' }}> Người đứng tên hợp đồng </TableCell>
-                <TableCell sx={{ color: 'white' }}> SĐT người đứng tên HĐ </TableCell>
-                <TableCell sx={{ color: 'white' }}> Account </TableCell>
-                <TableCell sx={{ color: 'white' }}> Nhà cung cấp </TableCell>
-                <TableCell sx={{ color: 'white' }}> Dịch vụ </TableCell>
-                <TableCell sx={{ color: 'white' }}> Mức cước </TableCell>
-                <TableCell sx={{ color: 'white' }}> Hình thức cước BRCĐ </TableCell>
-                <TableCell sx={{ color: 'white' }}> Tháng bắt đầu đặt cọc </TableCell>
-                <TableCell sx={{ color: 'white' }}> Tháng kết thúc đặt cọc </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tỉnh </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Quận/ Huyện </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số điện thoại </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số nhân khẩu </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> CCCD </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Người đứng tên hợp đồng </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT người đứng tên HĐ </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Account </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhà cung cấp </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Dịch vụ </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Mức cước </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Hình thức cước BRCĐ </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tháng bắt đầu đặt cọc </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tháng kết thúc đặt cọc </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thời gian lắp đặt </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thời gian ngưng </TableCell>
                 {/* <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
                 <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell> */}
-                <TableCell sx={{ color: 'white' }}> Nhân viên thu cước </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên thu cước </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.map((ele, index) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       Hậu Giang
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_HUYEN}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_XA}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_AP}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_KH}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.DIACHI_KH}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.SODIENTHOAI_KH}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.SONHANKHAU_KH}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.CCCD_KH}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TENKHACHHANGDAIDIEN_CTPKS}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.ACCOUNTKHACHHANG_CTPKS}
                     </TableCell>
-                    <TableCell>
-                      {ele.NHACUNGCAP_CTPKS == 1 ? 'Viettel' : ''}
-                      {ele.NHACUNGCAP_CTPKS == 2 ? 'VinaPhone' : ''}
-                      {ele.NHACUNGCAP_CTPKS == 3 ? 'FPT' : ''}
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      {ele.TEN_NCC}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_DV}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.HINHTHUCDONG_CTPKS}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {formatDate(ele.NGAYBATDAUDONGCOC_CTPKS)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      {formatDate(ele.THOIGIANLAPDAT_CTPKS)}
+                    </TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      {formatDate(ele.THOIGIANNGUNG_CTPKS)}
+                    </TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_NV}
                     </TableCell>
 

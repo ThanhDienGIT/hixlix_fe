@@ -4,6 +4,9 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import StatisticalReport from 'pages/components-overview/StatisticalReport';
+import ServiceManagement from 'pages/components-overview/ServiceManagement';
+import SupplierManagement from 'pages/components-overview/SupplierManagement';
+import UserManagement from 'pages/components-overview/UserManagement';
 
 
 // render - dashboard
@@ -69,7 +72,20 @@ const MainRoutes = {
     {
       path: 'asignment-customer',
       element: <AsignmentCustomerManager/>
+    },
+    {
+      path: 'service-management',
+      element: <ServiceManagement/>
+    },
+    {
+      path: 'supplier-management',
+      element: <SupplierManagement/>
+    },
+    {
+      path: 'user-management',
+      element: <UserManagement/>
     }
+    
   ]
 };
 

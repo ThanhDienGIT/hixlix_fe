@@ -242,7 +242,7 @@ function AddCustomer(props) {
 
                     <TextField label="Địa chỉ (*)" multiline sx={{ marginTop: 2 }} value={customer.DIACHI_KH} name={'DIACHI_KH'} onChange={(e) => { onChangeInput(e) }} />
                     <TextField label="Số nhân khẩu" sx={{ marginTop: 2 }} value={customer.SONHANKHAU_KH} name={'SONHANKHAU_KH'} onChange={(e) => { onChangeInput(e) }} />
-                    <FormControl sx={{ width: 380, marginRight: 2, marginTop: 2 }} size="small">
+                    <FormControl sx={{ width: 360, marginRight: 2, marginTop: 2 }} size="small">
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
                             localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
                             <DatePicker

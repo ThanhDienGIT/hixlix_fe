@@ -40,6 +40,10 @@ const NavItem = ({ item, level }) => {
       {
         return <Link ref={ref} {...props} to={item.url} target={itemTarget} />
       }
+      if (item.role !== undefined && item.role.includes(user.chucvu_nv) && user.chucvu_nv === 2) 
+      {
+        return <Link ref={ref} {...props} to={item.url} target={itemTarget} />
+      }
     }
   
   ) };

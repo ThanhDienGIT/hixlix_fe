@@ -131,7 +131,7 @@ function AssignmentCustomer(props) {
                             onChange={(e) => { setSelectedNV(e.target.value) }}
                         >
                             <MenuItem value={0}>---Chọn nhân viên---</MenuItem>
-                            {props.nv && props.nv.filter(x => x.TEN_NV !== null && x.CHUCVU_NV !== 0).map(ele => {
+                            {props.nv && props.nv.filter(x => x.TEN_NV !== null && (x.CHUCVU_NV !== 0 && x.CHUCVU_NV !== 2)).map(ele => {
                                 return (
                                     <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
                                 )

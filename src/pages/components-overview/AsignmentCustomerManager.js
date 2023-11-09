@@ -43,50 +43,40 @@ function AssignmentCustomerManager() {
     const [provider, setProvider] = useState([])
     const [wards, setWards] = useState([])
     const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    const [statusSurvey, setStatusSurvey] = useState('');
-    // const [qualityService, setQualityService] = useState('');
+    const [statusSurvey, setStatusSurvey] = useState(5);
     const [searchInput, setSearchInput] = useState('');
     const [alloption, setAlloption] = useState([]);
     const [quanhuyen, setQuanhuyen] = useState([]);
     const [xaphuong, setXaphuong] = useState([]);
     const [apKV, setApKV] = useState([]);
     const [dialogPhanCong, setDialogPhanCong] = useState(false);
-    const [huyen, setHuyen] = useState('')
-    const [xa, setXa] = useState('')
-    const [ap, setAp] = useState('')
+    const [huyen, setHuyen] = useState(0)
+    const [xa, setXa] = useState(0)
+    const [ap, setAp] = useState(0)
     const [selectedRows, setSelectedRows] = useState([]);
     const [nv, setNv] = useState([])
-    const [asignment, setAsignment] = useState('')
+    const [asignment, setAsignment] = useState(5)
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
             .catch(err => console.log(err))
     }
 
-    // const openDialogError = (id) => {
-    //     setDialogError(true)
-    //     setIDKhachHang(id)
-    // }
+
 
     const closeDialogError = () => {
         setDialogError(false)
         setIDKhachHang(0)
     }
 
-    // const openDialogDetail = (id) => {
-    //     setDialogDetail(true)
-    //     setIDKhachHang(id)
-    // }
+ 
 
     const closeDialogDetail = () => {
         setDialogDetail(false)
         setIDKhachHang(0)
     }
 
-    // const openDialogSuccess = (id) => {
-    //     setDialogSuccess(true)
-    //     setIDKhachHang(id)
-    // }
+
 
     const closeDialogEdit = () => {
         setdialogEdit(false)
@@ -98,9 +88,7 @@ function AssignmentCustomerManager() {
         setIDKhachHang(0)
     }
 
-    // const openDialogCustomer = () => {
-    //     setDialogCustomer(true);
-    // }
+
 
     const openDialogPhanCong = () => {
         setDialogPhanCong(true)
@@ -114,15 +102,6 @@ function AssignmentCustomerManager() {
         setDialogCustomer(false);
     };
 
-    // const openDialog = (id) => {
-    //     setDiaLog(true);
-    //     setIdKhaoSat(id);
-    // }
-
-    // const openDialogEditKH = (id) => {
-    //     setdialogEdit(true)
-    //     setIDKhachHang(id)
-    // }
 
     const closeDialog = () => {
         setDiaLog(false);
@@ -253,11 +232,10 @@ function AssignmentCustomerManager() {
 
     const screenWidth = window.innerWidth
 
-    let isOpen = false; // Khai báo biến để điều khiển việc mở hoặc đóng trình gợi ý
 
     const handleAutocompleteChange = (event, value) => {
         setSearchInput(value); // Cập nhật giá trị của trường TextField khi người dùng chọn một gợi ý
-        isOpen = false; // Đóng trình gợi ý khi có giá trị được chọn
+        
     };
 
 
@@ -293,26 +271,6 @@ function AssignmentCustomerManager() {
             })
     }
 
-    // const exportDataToExcel = async () => {
-    //     await instance.post('export-excel', { export_data: data }, { responseType: 'blob' })
-    //         .then(response => {
-    //             const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
-
-    //             // Tạo một URL cho blob
-    //             const url = window.URL.createObjectURL(blob);
-
-    //             // Tạo một thẻ a để tải tệp Excel
-    //             const link = document.createElement('a');
-    //             link.href = url;
-    //             link.setAttribute('download', 'Khach_hang_data.xlsx'); // Đặt tên tệp Excel
-    //             document.body.appendChild(link);
-    //             link.click();
-    //         })
-    //         .catch(error => {
-    //             console.error('Lỗi khi tải tệp Excel:', error);
-    //         });
-    // };
-
 
 
 
@@ -321,7 +279,7 @@ function AssignmentCustomerManager() {
             <MainCard title="PHÂN CÔNG KHẢO SÁT">
                 <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                     <Box display={'flex'} flexWrap={'wrap'}>
-                        <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Quận/ huyện</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -342,7 +300,7 @@ function AssignmentCustomerManager() {
                             </Select>
                         </FormControl>
 
-                        <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Xã/ Phường</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -364,7 +322,7 @@ function AssignmentCustomerManager() {
                             </Select>
                         </FormControl>
 
-                        <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Ấp/ Khu vực</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -391,7 +349,7 @@ function AssignmentCustomerManager() {
 
 
 
-                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -407,7 +365,7 @@ function AssignmentCustomerManager() {
                                 <MenuItem value={1}>Khách hàng đã khảo sát</MenuItem>
                             </Select>
                         </FormControl>
-                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Trạng thái phân công</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -425,11 +383,10 @@ function AssignmentCustomerManager() {
                         </FormControl>
 
                         <Autocomplete
-                            id="free-solo-demo"
                             freeSolo
-                            open={isOpen || (searchInput && searchInput.length > 0)} // Kiểm tra giá trị isOpen và searchInput để quyết định mở hoặc đóng trình gợi ý
+                            id="free-solo-2-demo"
+                            disableClearable
                             options={alloption.map((option) => option.TEN_KH)}
-                            value={searchInput}
                             onChange={(event, value) => {
                                 handleAutocompleteChange(event, value);
                             }}
@@ -438,23 +395,23 @@ function AssignmentCustomerManager() {
                                     {...params}
                                     label='Tìm kiếm...'
                                     size="small"
-                                    sx={{ marginRight: 2, marginTop: 0.8, width: 220 }}
+                                    sx={{ marginRight: 1, marginTop: 1.8, width: 150 }}
                                     onChange={(e) => setSearchInput(e.target.value)}
                                     onInputChange={(e, value) => {
                                         setSearchInput(value);
-                                        isOpen = value.length > 0; // Mở hoặc đóng trình gợi ý dựa trên giá trị nhập vào
+                                    }}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        type: 'search',
                                     }}
                                 />
                             )}
                         />
-                        <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                       
                     </Box>
-                    <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                        {/* <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
-                            <AddIcon />
-                            <Typography >Khách hàng</Typography>
-                        </Button> */}
-                        <Button disabled={!selectedRows || selectedRows.length <= 0} size="small" sx={{ display: 'flex', marginRight: 1 }} variant="outlined" color={'success'} onClick={openDialogPhanCong}>
+                    <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
+                    <Button onClick={handleSearch}  sx={{ display: 'flex', marginRight: 1, width: 150 }} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                        <Button disabled={!selectedRows || selectedRows.length <= 0} sx={{ display: 'flex', marginRight: 1, width: 150}} variant="contained" color={'primary'} onClick={openDialogPhanCong}>
                             <AssignmentIndRoundedIcon />
                             <Typography >Phân công</Typography>
                         </Button>
@@ -473,21 +430,21 @@ function AssignmentCustomerManager() {
                                 <TableCell sx={{ color: 'white' }}> <Checkbox
                                     checked={selectedRows.length === data.length}
                                     onChange={handleSelectAll}
-                                    color="success"
+                                    color="secondary"
                                 /></TableCell>
-                                <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell>
                                 {/* <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell> */}
-                                <TableCell sx={{ color: 'white' }}> Số điện thoại </TableCell>
-                                <TableCell sx={{ color: 'white' }}> CCCD </TableCell>
+                                {/* <TableCell sx={{ color: 'white'}}> Số điện thoại </TableCell> */}
+                                {/* <TableCell sx={{ color: 'white' }}> CCCD </TableCell>
                                 <TableCell sx={{ color: 'white' }}> Nghề nghiệp </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Số nhân khẩu </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Quận/ Huyện </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Xã/ Phường </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Ấp/ Khu vực </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Địa chỉ </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
+                                <TableCell sx={{ color: 'white' }}> Số nhân khẩu </TableCell> */}
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Quận/ Huyện </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
+                                <TableCell sx={{ color: 'white'}}> Trạng thái khảo sát</TableCell>
                                 <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell>
-                                <TableCell sx={{ color: 'white' }}> Nhân viên phụ trách</TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên phụ trách</TableCell>
                                 {/* <TableCell sx={{ color: 'white' }}> Thao tác </TableCell> */}
                             </TableRow>
                         </TableHead>
@@ -499,15 +456,15 @@ function AssignmentCustomerManager() {
                                             <Checkbox
                                                 checked={selectedRows.includes(ele.ID_KH)} // Kiểm tra nếu id_kh đã được chọn
                                                 onChange={() => handleCheckboxChange(ele.ID_KH)} // Sử dụng hàm xử lý khi checkbox thay đổi
-                                                color="success" />
+                                                color="secondary" />
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
                                             {ele.TEN_KH}
                                         </TableCell>
-                                        <TableCell>
+                                        {/* <TableCell>
                                             {ele.SODIENTHOAI_KH}
-                                        </TableCell>
-                                        <TableCell>
+                                        </TableCell> */}
+                                        {/* <TableCell>
                                             {ele.CCCD_KH}
                                         </TableCell>
                                         <TableCell>
@@ -515,17 +472,17 @@ function AssignmentCustomerManager() {
                                         </TableCell>
                                         <TableCell>
                                             {ele.SONHANKHAU_KH}
-                                        </TableCell>
-                                        <TableCell>
+                                        </TableCell> */}
+                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
                                             {ele.TEN_HUYEN}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
                                             {ele.TEN_XA}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
                                             {ele.TEN_AP}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
                                             {ele.DIACHI_KH}
                                         </TableCell>
                                         <TableCell>
@@ -546,7 +503,7 @@ function AssignmentCustomerManager() {
                                                 Đã phân công
                                             </Typography>}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{whiteSpace: 'nowrap'}}>
                                             {ele.TEN_NV}
                                         </TableCell>
                                         

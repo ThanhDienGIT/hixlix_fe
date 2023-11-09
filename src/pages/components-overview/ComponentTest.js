@@ -41,7 +41,7 @@ function ComponentTest() {
     const [provider, setProvider] = useState([])
     const [wards, setWards] = useState([])
     const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    const [statusSurvey, setStatusSurvey] = useState('');
+    const [statusSurvey, setStatusSurvey] = useState(5);
     // const [qualityService, setQualityService] = useState('');
     const [searchInput, setSearchInput] = useState('');
     const [alloption, setAlloption] = useState([]);
@@ -49,12 +49,17 @@ function ComponentTest() {
     const [xaphuong, setXaphuong] = useState([]);
     const [apKV, setApKV] = useState([]);
     const [dialogPhanCong, setDialogPhanCong] = useState(false);
-    const [huyen, setHuyen] = useState('')
-    const [xa, setXa] = useState('')
-    const [ap, setAp] = useState('')
+    const [huyen, setHuyen] = useState(0)
+    const [xa, setXa] = useState(0)
+    const [ap, setAp] = useState(0)
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
+            .catch(err => console.log(err))
+    }
+    const callAPISupplier = () => {
+        instance.get('dsnhacungcap')
+            .then(res => setProvider(res.data))
             .catch(err => console.log(err))
     }
 
@@ -186,20 +191,7 @@ function ComponentTest() {
     useEffect(() => {
         getAllQuanHuyen()
         callAPIServiceList()
-        setProvider([
-            {
-                ID_NHACUNGCAP: 1,
-                TEN_NHACUNGCAP: "Viettel",
-            },
-            {
-                ID_NHACUNGCAP: 2,
-                TEN_NHACUNGCAP: "VNPT",
-            },
-            {
-                ID_NHACUNGCAP: 3,
-                TEN_NHACUNGCAP: "FPT",
-            },
-        ])
+        callAPISupplier()
         setWards([
             {
                 ID_DVHC: 1,
@@ -222,11 +214,10 @@ function ComponentTest() {
 
     const screenWidth = window.innerWidth
 
-    let isOpen = false; // Khai báo biến để điều khiển việc mở hoặc đóng trình gợi ý
+
 
     const handleAutocompleteChange = (event, value) => {
         setSearchInput(value); // Cập nhật giá trị của trường TextField khi người dùng chọn một gợi ý
-        isOpen = false; // Đóng trình gợi ý khi có giá trị được chọn
     };
 
 
@@ -252,25 +243,6 @@ function ComponentTest() {
             })
     }
 
-    // const exportDataToExcel = async () => {
-    //     await instance.post('export-excel', { export_data: data }, { responseType: 'blob' })
-    //         .then(response => {
-    //             const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
-
-    //             // Tạo một URL cho blob
-    //             const url = window.URL.createObjectURL(blob);
-
-    //             // Tạo một thẻ a để tải tệp Excel
-    //             const link = document.createElement('a');
-    //             link.href = url;
-    //             link.setAttribute('download', 'Khach_hang_data.xlsx'); // Đặt tên tệp Excel
-    //             document.body.appendChild(link);
-    //             link.click();
-    //         })
-    //         .catch(error => {
-    //             console.error('Lỗi khi tải tệp Excel:', error);
-    //         });
-    // };
 
 
 
@@ -280,7 +252,7 @@ function ComponentTest() {
             <MainCard title="DANH SÁCH KHÁCH HÀNG">
                 <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                     <Box display={'flex'} flexWrap={'wrap'}>
-                        <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Quận/ huyện</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -301,7 +273,7 @@ function ComponentTest() {
                             </Select>
                         </FormControl>
 
-                        <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Xã/ Phường</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -323,7 +295,7 @@ function ComponentTest() {
                             </Select>
                         </FormControl>
 
-                        <FormControl sx={{ width: 150, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Ấp/ Khu vực</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -350,7 +322,7 @@ function ComponentTest() {
 
 
 
-                        <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1 }} size="small">
+                        <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                             <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
@@ -366,33 +338,12 @@ function ComponentTest() {
                                 <MenuItem value={1}>Khách hàng đã khảo sát</MenuItem>
                             </Select>
                         </FormControl>
-                        {/* <FormControl sx={{ width: 220, marginRight: 2, marginTop: 1.5 }} size="small">
-                            <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
-                            <Select
-                                disabled={statusSurvey === 0}
-                                labelId="demo-select-small-label"
-                                id="demo-select-small"
-                                label="Chất lượng dịch vụ"
-                                value={statusSurvey === 0 ? '' : qualityService}
-                                onChange={(e) => setQualityService(e.target.value)}
-                            >
-                                <MenuItem value={5}>
-                                    Tất cả
-                                </MenuItem>
-                                <MenuItem value={0}>Chất lượng tốt</MenuItem>
-                                <MenuItem value={1}>Chất lượng kém</MenuItem>
-                            </Select>
-                        </FormControl> */}
-                        {/* <TextField label='Tìm kiếm...' size="small"
-                            sx={{ marginRight: 2, marginTop: 1.5, width: 220 }}
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)} /> */}
+
                         <Autocomplete
-                            id="free-solo-demo"
                             freeSolo
-                            open={isOpen || (searchInput && searchInput.length > 0)} // Kiểm tra giá trị isOpen và searchInput để quyết định mở hoặc đóng trình gợi ý
+                            id="free-solo-2-demo"
+                            disableClearable
                             options={alloption.map((option) => option.TEN_KH)}
-                            value={searchInput}
                             onChange={(event, value) => {
                                 handleAutocompleteChange(event, value);
                             }}
@@ -401,19 +352,24 @@ function ComponentTest() {
                                     {...params}
                                     label='Tìm kiếm...'
                                     size="small"
-                                    sx={{ marginRight: 2, marginTop: 0.8, width: 220 }}
+                                    sx={{ marginRight: 1, marginTop: 1.8, width: 150 }}
                                     onChange={(e) => setSearchInput(e.target.value)}
                                     onInputChange={(e, value) => {
                                         setSearchInput(value);
-                                        isOpen = value.length > 0; // Mở hoặc đóng trình gợi ý dựa trên giá trị nhập vào
+                                    }}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        type: 'search',
                                     }}
                                 />
                             )}
                         />
-                        <Button onClick={handleSearch} sx={{ marginRight: 2, marginTop: 1 }} size={'small'} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+
+
                     </Box>
-                    <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                        <Button size="small" sx={{ display: 'flex', marginRight: 1 }} variant="contained" onClick={openDialogCustomer}>
+                    <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
+                        <Button onClick={handleSearch} size="small" sx={{ display: 'flex', mr: 1, width: 150 }} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                        <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
                         </Button>
@@ -423,31 +379,31 @@ function ComponentTest() {
                     <Table size='small'>
                         <TableHead sx={{ backgroundColor: '#0099ff' }} >
                             <TableRow>
-                                <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell>
-                                {/* <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell> */}
-                                <TableCell sx={{ color: 'white' }}> Số điện thoại </TableCell>
-                                <TableCell sx={{ color: 'white' }}> CCCD </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Nghề nghiệp </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Số nhân khẩu </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Quận/ Huyện </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Xã/ Phường </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Ấp/ Khu vực </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Địa chỉ </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Trạng thái </TableCell>
-                                <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell>
+                                {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell> */}
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số điện thoại </TableCell>
+                                {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> CCCD </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nghề nghiệp </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số nhân khẩu </TableCell> */}
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Quận/ Huyện </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Trạng thái </TableCell>
+                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thao tác </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {data.map((ele, index) => {
                                 return (
                                     <TableRow key={index}>
-                                        <TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_KH}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.SODIENTHOAI_KH}
                                         </TableCell>
-                                        <TableCell>
+                                        {/* <TableCell>
                                             {ele.CCCD_KH}
                                         </TableCell>
                                         <TableCell>
@@ -455,20 +411,20 @@ function ComponentTest() {
                                         </TableCell>
                                         <TableCell>
                                             {ele.SONHANKHAU_KH}
-                                        </TableCell>
-                                        <TableCell>
+                                        </TableCell> */}
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_HUYEN}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_XA}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TEN_AP}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.DIACHI_KH}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             {ele.TRANGTHAI_KH === 0 ? <Typography color="secondary" variant="h6">
                                                 Chưa khảo sát
                                             </Typography> : <Typography sx={{
@@ -583,6 +539,8 @@ function ComponentTest() {
                 open={dialogDetail}
                 handleClose={closeDialogDetail}
                 idkhachhang={idKhachHang}
+                serviceList={defaultService}
+                provider={provider}
             />
 
         </ComponentSkeleton>

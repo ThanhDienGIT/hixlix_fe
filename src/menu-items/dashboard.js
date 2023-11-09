@@ -24,7 +24,7 @@ const dashboard = {
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
       breadcrumbs: false,
-      role: [1, 0]
+      role: [1, 0, 2]
     },
     {
       id: 'customer',
@@ -33,7 +33,7 @@ const dashboard = {
       url: '/table',
       icon: icons2.SolutionOutlined,
       breadcrumbs: false,
-      role: [1, 0]
+      role: [1, 0, 2]
     },
     // {
     //   id: 'surveyform',
@@ -50,7 +50,7 @@ const dashboard = {
       url: '/statistical-report',
       icon: BarChartRoundedIcon,
       breadcrumbs: false,
-      role: [1, 0]
+      role: [1, 0, 2]
     },
     {
       id: 'asignment',
@@ -59,7 +59,7 @@ const dashboard = {
       url: '/asignment-customer',
       icon: AssignmentIndRoundedIcon,
       breadcrumbs: false,
-      role: [0]
+      role: [0, 2]
     }
   ]
 };
