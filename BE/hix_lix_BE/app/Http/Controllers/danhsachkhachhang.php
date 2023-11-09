@@ -414,7 +414,7 @@ class danhsachkhachhang extends Controller
 
 
 
-    public function searchcustomer(Request $request)
+    public function searchcustomer($count, Request $request)
     {
         $id_nv = auth()->user()->ID_NV;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
@@ -439,7 +439,7 @@ class danhsachkhachhang extends Controller
                 }
 
                 $customers = $customers->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
@@ -462,7 +462,7 @@ class danhsachkhachhang extends Controller
                 }
 
                 $customers = $customers->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             }
         } else {
@@ -485,7 +485,7 @@ class danhsachkhachhang extends Controller
                 }
 
                 $customers = $customers->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
@@ -508,7 +508,7 @@ class danhsachkhachhang extends Controller
 
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ->get();
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             }
         }

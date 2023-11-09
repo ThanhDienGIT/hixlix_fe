@@ -36,7 +36,7 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/get_danhsachbaocaophieu/{count}', [danhsachkhachhang::class, 'get_danhsachbaocaophieu']);
         Route::get('/get_danhsachdichvu/{count}', [DichVuController::class, 'getAllServices']);
         Route::get('/get_danhsachnhacungcap/{count}', [DichVuController::class, 'get_danhsachnhacungcap']);
-        
+
         Route::get('/getServiceType', [DichVuController::class, 'getServiceType']);
         Route::post('/search-dv', [DichVuController::class, 'search']);
 
@@ -50,9 +50,9 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/dsnhacungcap', [DichVuController::class, 'dsnhacungcap']);
 
         Route::post('/getDetailLix',[Lix::class, 'getDetailLix']);
-        
-        
-        
+
+
+
 
 
         Route::post('/addService', [DichVuController::class, 'themDichVu']);
@@ -61,24 +61,24 @@ Route::group(['middleware' => ['api']], function () {
         Route::post('/search-suppliler', [DichVuController::class, 'searchsp']);
         Route::post('/updateSupplier/{id}', [DichVuController::class, 'updateSupplier']);
         Route::get('/getSpByID/{id}', [DichVuController::class, 'getSpByID']);
-        
-        
-        
-        
-        
+
+
+
+
+
         Route::delete('/deleteservice/{id}', [DichVuController::class, 'xoaDichVu']);
         Route::get('/getSVByID/{id}', [DichVuController::class, 'getServiceById']);
         Route::post('/updateService/{id}', [DichVuController::class, 'capNhatDichVu']);
-        
-        
-        
+
+
+
         Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
         Route::get('/getsurveybyKH/{id}', [danhsachkhachhang::class, 'getsurveybyKH']);
         Route::post('/addcustomer', [danhsachkhachhang::class, 'addcustomer']);
         Route::post('/asigncustomer', [danhsachkhachhang::class, 'asigncustomer']);
         Route::put('/updatecustomer', [danhsachkhachhang::class, 'updatecustomer']);
         Route::delete('/deletecustomer/{id}', [danhsachkhachhang::class, 'deletecustomer']);
-        Route::post('/searchcustomer', [danhsachkhachhang::class, 'searchcustomer']);
+        Route::post('/searchcustomer/{count}', [danhsachkhachhang::class, 'searchcustomer']);
         Route::post('/searchinasignment', [danhsachkhachhang::class, 'searchinasignment']);
         Route::post('/filter-report', [danhsachkhachhang::class, 'filterreport']);
         Route::get('/getNV', [danhsachkhachhang::class, 'getNV']);

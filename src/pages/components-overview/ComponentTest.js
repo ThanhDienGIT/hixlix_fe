@@ -52,6 +52,7 @@ function ComponentTest() {
     const [huyen, setHuyen] = useState(0)
     const [xa, setXa] = useState(0)
     const [ap, setAp] = useState(0)
+    const [searchStatus,setSearchStatus] = useState(0)
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -168,7 +169,12 @@ function ComponentTest() {
     }
 
     useEffect(() => {
-        CallAPI()
+        if(searchStatus === 0){
+            CallAPI()
+        }else{
+            handleSearch()
+        }
+       
     }, [page, rowPage]);
 
     const onchangeHuyen = async (e) => {
@@ -220,9 +226,6 @@ function ComponentTest() {
         setSearchInput(value); // Cập nhật giá trị của trường TextField khi người dùng chọn một gợi ý
     };
 
-
-
-
     const handleSearch = async () => {
         // Thực hiện tìm kiếm dựa trên các giá trị
         console.log("Trạng thái khảo sát:", statusSurvey);
@@ -236,10 +239,12 @@ function ComponentTest() {
             // quality_survey: qualityService,
             keywords: searchInput
         }
-        await instance.post('searchcustomer', objectSend)
+        await instance.post(`searchcustomer/${rowPage}?page=${page}`, objectSend)
             .then((res) => {
-                console.log(res)
-                setData(res.data.dskh)
+                setData(res.data.dskh.data)
+                setMaxPage(res.data.dskh.last_page)
+                setAlloption(res.data.dskh.data)
+                setSearchStatus(1)
             })
     }
 
