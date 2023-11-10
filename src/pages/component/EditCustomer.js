@@ -126,12 +126,15 @@ function EditCustomer(props) {
         const response = await Axios.get('getAllApById/' + id);
         if (response.status === 200) {
             setAp(response.data.ap)
+            // setInfocustomer(rev => ({
+            //     ...rev, ['MAAP_KH']: ''
+            // }))
             console.log(ap)
         }
     }
     // const formatDate = (dateString) => {
     //     const date = new Date(dateString);
-      
+
     //     if (isValid(date)) {
     //       return format(date, 'dd/MM/yyyy');
     //     } else {
@@ -149,6 +152,7 @@ function EditCustomer(props) {
     }, [infoCustomer.MAHUYEN_KH, infoCustomer.MAXA_KH])
 
 
+
     const onChangeInputDistrict = async (e) => {
         setInfocustomer(rev => ({
             ...rev, [e.target.name]: e.target.value
@@ -156,9 +160,30 @@ function EditCustomer(props) {
         const response = await Axios.get('getAllXaPhuong/' + e.target.value);
         if (response.status === 200) {
             setXaphuong(response.data.xaphuong)
+            setInfocustomer(rev => ({
+                ...rev, ['MAXA_KH']: ''
+            }))
             console.log(xaphuong)
         }
 
+    }
+    const onChangeInputWard = async (e) => {
+        setInfocustomer(rev => ({
+            ...rev, [e.target.name]: e.target.value
+        }))
+        const response = await Axios.get('getAllAp/' + e.target.value);
+        if (response.status === 200) {
+            setAp(response.data.ap)
+            setInfocustomer(rev => ({
+                ...rev, ['MAAP_KH']: ''
+            }))
+            console.log(ap)
+        }
+    }
+    const onChangeInputAp = (e) => {
+        setInfocustomer(rev => ({
+            ...rev, [e.target.name]: e.target.value
+        }))
     }
     const onChangeInput = (e) => {
         setInfocustomer(rev => ({
@@ -220,9 +245,9 @@ function EditCustomer(props) {
 
 
 
-    const onChangeInputap = (e) => {
-        setAp(e.target.value);
-    }
+    // const onChangeInputap = (e) => {
+    //     setAp(e.target.value);
+    // }
 
     console.log(infoCustomer.NGAYSINH_KH)
 
@@ -256,7 +281,7 @@ function EditCustomer(props) {
                             name={'MAHUYEN_KH'}
                             onChange={(e) => { onChangeInputDistrict(e) }}
                         >
-                            <MenuItem value={0}>Chọn quận huyện</MenuItem>
+                            <MenuItem value="">Chọn quận huyện</MenuItem>
                             {props.district && props.district.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
@@ -267,11 +292,12 @@ function EditCustomer(props) {
                     <Typography sx={{ marginTop: 2 }} variant="h6">Xã phường (*)</Typography>
                     <FormControl sx={{ marginTop: 1 }}>
                         <Select
+                            disabled={infoCustomer.MAHUYEN_KH === 0}
                             value={infoCustomer.MAXA_KH}
                             name={'MAXA_KH'}
-                            onChange={(e) => { onChangeInput(e) }}
+                            onChange={(e) => { onChangeInputWard(e) }}
                         >
-                            <MenuItem value={0}>Chọn xã phường</MenuItem>
+                            <MenuItem value="">Chọn xã phường</MenuItem>
                             {xaphuong && xaphuong.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
@@ -285,11 +311,12 @@ function EditCustomer(props) {
                     <Typography sx={{ marginTop: 2 }} variant="h6">Ấp/ Khu vực (*)</Typography>
                     <FormControl sx={{ marginTop: 1 }}>
                         <Select
+                            disabled={infoCustomer.MAXA_KH === 0}
                             value={infoCustomer.MAAP_KH}
                             name={'MAAP_KH'}
-                            onChange={(e) => { onChangeInputap(e) }}
+                            onChange={(e) => { onChangeInputAp(e) }}
                         >
-                            <MenuItem value={0}>Chọn Ấp / Khu vực</MenuItem>
+                            <MenuItem value="">Chọn Ấp / Khu vực</MenuItem>
                             {ap && ap.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.id} value={ele.id}>{ele.name}</MenuItem>

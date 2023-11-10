@@ -69,6 +69,9 @@ function AddCustomer(props) {
         const response = await Axios.get('getAllXaPhuong/' + e.target.value);
         if (response.status === 200) {
             setXaphuong(response.data.xaphuong)
+            setCustomer(rev => ({
+                ...rev, ['MAXA_KH']: ''
+            }))
             console.log(xaphuong)
         }
 
@@ -80,6 +83,9 @@ function AddCustomer(props) {
         const response = await Axios.get('getAllAp/' + e.target.value);
         if (response.status === 200) {
             setAp(response.data.ap)
+            setCustomer(rev => ({
+                ...rev, ['MAAP_KH']: ''
+            }))
             console.log(ap)
         }
     }
@@ -196,7 +202,7 @@ function AddCustomer(props) {
                             name={'MAHUYEN_KH'}
                             onChange={(e) => { onChangeInputDistrict(e) }}
                         >
-                            <MenuItem value={0}>Chọn quận huyện</MenuItem>
+                            <MenuItem value="">Chọn quận huyện</MenuItem>
                             {props.district && props.district.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
@@ -207,12 +213,13 @@ function AddCustomer(props) {
                     <FormControl sx={{ marginTop: 2 }}>
                         <InputLabel>Xã phường (*)</InputLabel>
                         <Select
+                            disabled={customer.MAHUYEN_KH === 0}
                             label='Xã phường'
                             value={customer.MAXA_KH}
                             name={'MAXA_KH'}
                             onChange={(e) => { onChangeInputWard(e) }}
                         >
-                            <MenuItem value={0}>Chọn xã phường</MenuItem>
+                            <MenuItem value="">Chọn xã phường</MenuItem>
                             {xaphuong && xaphuong.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
@@ -224,12 +231,13 @@ function AddCustomer(props) {
                     <FormControl sx={{ marginTop: 2 }}>
                         <InputLabel>Ấp (*)</InputLabel>
                         <Select
+                            disabled={customer.MAXA_KH === 0}
                             label='Ấp'
                             value={customer.MAAP_KH}
                             name={'MAAP_KH'}
                             onChange={(e) => { onChangeInput(e) }}
                         >
-                            <MenuItem value={0}>Chọn ấp</MenuItem>
+                            <MenuItem value="">Chọn ấp</MenuItem>
                             {ap && ap.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.id} value={ele.id}>{ele.name}</MenuItem>

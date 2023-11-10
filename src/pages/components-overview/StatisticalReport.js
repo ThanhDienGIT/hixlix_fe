@@ -175,6 +175,7 @@ function StatisticalReport() {
     const response = await instance.get('getAllXaPhuong/' + e.target.value);
     if (response.status === 200) {
       setXaphuong(response.data.xaphuong)
+      setXa(0)
     }
   }
 
@@ -183,6 +184,7 @@ function StatisticalReport() {
     const response = await instance.get('getAllAp/' + e.target.value);
     if (response.status === 200) {
       setApKV(response.data.ap)
+      setAp(0)
     }
   }
 
@@ -335,7 +337,7 @@ function StatisticalReport() {
                 id="demo-select-small"
                 label="Xã/ Phường"
                 name="MAXA_KH"
-                disabled={huyen === ''}
+                disabled={huyen === 0}
                 value={xa}
                 onChange={(e) => onchangeXa(e)}
               >
@@ -357,7 +359,7 @@ function StatisticalReport() {
                 id="demo-select-small"
                 label="Ấp/ Khu vực"
                 name="MAAP_KH"
-                disabled={xa === ''}
+                disabled={xa === 0}
                 value={ap}
                 onChange={(e) => setAp(e.target.value)}
               >
