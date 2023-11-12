@@ -30,7 +30,7 @@ const MainRoutes = {
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: <ComponentTest />
     },
     {
       path: 'color',

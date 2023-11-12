@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from '../../../axios/instance';
-
+import jwt_decode from 'jwt-decode';
 // material-ui
 import {
   Button,
@@ -87,9 +87,18 @@ const AuthLogin = () => {
           // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
           setLoading(false)
 
+          const user = jwt_decode(response.data.access_token)
+          if (user && Number(user.chucvu_nv) === 1)
+          {
+            window.location.replace('/table');
+          }
+          else if (user && Number(user.chucvu_nv) === 0 || Number(user.chucvu_nv) === 2)
+          {
+            window.location.replace('/statistical-report');
+          }
+
           notyf.success(response.data.message)
-          // navigate('/table')
-          window.location.reload();
+
         } else {
           setLoading(false)
 
