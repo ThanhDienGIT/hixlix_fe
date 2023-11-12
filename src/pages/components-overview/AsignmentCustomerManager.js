@@ -23,6 +23,7 @@ import { TokenContext } from '../../globalVar/TokenProvider'
 import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
 import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -57,6 +58,7 @@ function AssignmentCustomerManager() {
     const [nv, setNv] = useState([])
     const [asignment, setAsignment] = useState(5)
     const [searchStatus, setSearchStatus] = useState(0)
+    const [loading, setLoading] = useState(false)
 
 
     const callAPIServiceList = () => {
@@ -236,7 +238,7 @@ function AssignmentCustomerManager() {
                 ID_CHA_DVHC: 1,
             },
         ])
-        
+
     }, []);
 
 
@@ -262,6 +264,7 @@ function AssignmentCustomerManager() {
 
 
     const handleSearch = async () => {
+        setLoading(true)
         // Thực hiện tìm kiếm dựa trên các giá trị
         console.log("Trạng thái khảo sát:", statusSurvey);
         // console.log("Chất lượng dịch vụ:", qualityService);
@@ -281,6 +284,7 @@ function AssignmentCustomerManager() {
                 setMaxPage(res.data.dskh.last_page)
                 setAlloption(res.data.dskh.data)
                 setSearchStatus(1)
+                setLoading(false)
             })
     }
 
@@ -423,7 +427,11 @@ function AssignmentCustomerManager() {
 
                     </Box>
                     <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                        <Button onClick={handleSearch} sx={{ display: 'flex', marginRight: 1, width: 150 }} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                        <Button onClick={handleSearch} sx={{ display: 'flex', marginRight: 1, width: 150 }} variant={'outlined'}>
+                            {loading ? <>
+                                <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
+                            </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
+                        </Button>
                         <Button disabled={!selectedRows || selectedRows.length <= 0} sx={{ display: 'flex', marginRight: 1, width: 150 }} variant="contained" color={'primary'} onClick={openDialogPhanCong}>
                             <AssignmentIndRoundedIcon />
                             <Typography >Phân công</Typography>

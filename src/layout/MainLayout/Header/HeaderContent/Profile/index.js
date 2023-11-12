@@ -27,7 +27,8 @@ import Transitions from 'components/@extended/Transitions';
 
 // assets
 import avatar1 from 'assets/images/users/avatar-5.jpg';
-import { LogoutOutlined
+import {
+  LogoutOutlined
   // , SettingOutlined, UserOutlined 
 } from '@ant-design/icons';
 import jwt_decode from 'jwt-decode';
@@ -113,7 +114,14 @@ const Profile = () => {
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">{user.ten_nv}</Typography>
+          <Stack sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6">{user.ten_nv}</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {user.chucvu_nv === 0 ? 'Nhân viên quản lý' : ''}
+              {user.chucvu_nv === 2 ? 'Admin' : ''}
+              {user.chucvu_nv === 1 ? 'Nhân viên' : ''}
+            </Typography>
+          </Stack>
         </Stack>
       </ButtonBase>
       <Popper
@@ -157,9 +165,11 @@ const Profile = () => {
                             <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                             <Stack>
                               <Typography variant="h6">{user.ten_nv}</Typography>
-                              {/* <Typography variant="body2" color="textSecondary">
-                                UI/UX Designer
-                              </Typography> */}
+                              <Typography variant="body2" color="textSecondary">
+                                {user.chucvu_nv === 0 ? 'Nhân viên quản lý' : ''}
+                                {user.chucvu_nv === 2 ? 'Admin' : ''}
+                                {user.chucvu_nv === 1 ? 'Nhân viên' : ''}
+                              </Typography>
                             </Stack>
                           </Stack>
                         </Grid>

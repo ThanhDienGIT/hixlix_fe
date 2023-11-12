@@ -180,7 +180,7 @@ function AddStaff(props) {
                             onChange={(e) => { onChangeInput(e) }}
                         >
                             <MenuItem value="">Chọn chức vụ</MenuItem>
-                            <MenuItem value={0}>Admin</MenuItem>
+                            <MenuItem value={0}>Nhân viên quản lý</MenuItem>
                             <MenuItem value={1}>Nhân viên</MenuItem>
                         </Select>
                     </FormControl>

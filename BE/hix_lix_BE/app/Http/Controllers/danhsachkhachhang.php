@@ -521,9 +521,9 @@ class danhsachkhachhang extends Controller
         if (!empty($request->keywords)) {
             if ($chucvu_nv === 2 || $chucvu_nv === 0) {
                 $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('ten_kh', 'like', '%' . $request->keywords . '%');
 
                 if ($request->MAHUYEN_KH != 0) {
@@ -552,10 +552,10 @@ class danhsachkhachhang extends Controller
                     ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
-                $customers = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('khach_hang.id_nv', $id_nv)
                     ->where('ten_kh', 'like', '%' . $request->keywords . '%');
 
@@ -588,9 +588,9 @@ class danhsachkhachhang extends Controller
         } else {
             if ($chucvu_nv === 2 || $chucvu_nv === 0) {
                 $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
 
                 if ($request->MAHUYEN_KH != 0) {
                     $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -618,10 +618,10 @@ class danhsachkhachhang extends Controller
                     ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
-                $customers = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('khach_hang.id_nv', $id_nv);
 
                 if ($request->MAHUYEN_KH != 0) {
@@ -934,7 +934,7 @@ class danhsachkhachhang extends Controller
             }
         } else {
             // return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
-            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
                 ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                 ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                 ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')

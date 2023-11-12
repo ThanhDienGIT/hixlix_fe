@@ -75,7 +75,7 @@ function DetailCustomer(props) {
         if (isValid(date)) {
             return format(date, 'dd/MM/yyyy');
         } else {
-            return "Ngày không hợp lệ";
+            return "Chưa có";
         }
     };
 
@@ -113,23 +113,23 @@ function DetailCustomer(props) {
 
                         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                             <Grid item xs={6}>
-                                <Typography><b>Họ và tên khách hàng:</b> <br /> {infoCustomer && infoCustomer.TEN_KH}</Typography>
+                                <Typography><b>Họ và tên khách hàng:</b> <br /> {infoCustomer && infoCustomer.TEN_KH ? infoCustomer.TEN_KH : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography><b>Số điện thoại:</b> <br /> {infoCustomer && infoCustomer.SODIENTHOAI_KH} </Typography>
+                                <Typography><b>Số điện thoại:</b> <br /> {infoCustomer && infoCustomer.SODIENTHOAI_KH ? infoCustomer.SODIENTHOAI_KH : 'Chưa có'} </Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography><b>Ngày sinh:</b> <br />{infoCustomer && formatDate(infoCustomer.NGAYSINH_KH)}</Typography>
+                                <Typography><b>Ngày sinh:</b> <br />{infoCustomer && formatDate(infoCustomer.NGAYSINH_KH) ? formatDate(infoCustomer.SODIENTHOAI_KH) : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b> CCCD:</b> <br /> {infoCustomer && infoCustomer.CCCD_KH} </Typography>
+                                <Typography><b> CCCD:</b> <br /> {infoCustomer && infoCustomer.CCCD_KH ? infoCustomer.CCCD_KH : 'Chưa có'} </Typography>
                             </Grid>
                             {/* <Grid item xs={6}>
                             <Typography><b>Account BRCĐ:</b> <br />{'nguyenvanc123'}</Typography>
                         </Grid> */}
                             <Grid item xs={6}>
-                                <Typography><b>Nghề nghiệp:</b> <br />{infoCustomer && infoCustomer.NGHENGHIEP_KH}</Typography>
+                                <Typography><b>Nghề nghiệp:</b> <br />{infoCustomer && infoCustomer.NGHENGHIEP_KH ? infoCustomer.NGHENGHIEP_KH : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
@@ -145,10 +145,10 @@ function DetailCustomer(props) {
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b> Địa chỉ cụ thể:</b> <br /> {infoCustomer && infoCustomer.DIACHI_KH} </Typography>
+                                <Typography><b> Địa chỉ cụ thể:</b> <br /> {infoCustomer && infoCustomer.DIACHI_KH ? infoCustomer.DIACHI_KH : 'Chưa có'} </Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography><b>Số nhân khẩu:</b> <br /> {infoCustomer && infoCustomer.SONHANKHAU_KH} </Typography>
+                                <Typography><b>Số nhân khẩu:</b> <br /> {infoCustomer && infoCustomer.SONHANKHAU_KH ? infoCustomer.SONHANKHAU_KH : 'Chưa có'} </Typography>
                             </Grid>
                             <Grid item xs={6}>
                                 <Typography ><b>Điện thoại báo hỏng:</b> <br />{infoCustomer && infoCustomer.BAOHONG_KH === 0 ? "Chưa biết" : "Đã biết"}</Typography>

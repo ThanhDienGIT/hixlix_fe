@@ -221,7 +221,7 @@ function UserManagement() {
                                     Tất cả
                                 </MenuItem>
                                 <MenuItem value={0}>
-                                    Admin
+                                    Nhân viên quản lý
                                 </MenuItem>
                                 <MenuItem value={1}>
                                     Nhân viên
@@ -326,9 +326,9 @@ function UserManagement() {
                                             {ele.TAIKHOAN_NV}
                                         </TableCell>
                                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.CHUCVU_NV === 0 ? 'Admin' : ''}
+                                            {ele.CHUCVU_NV === 0 ? 'Nhân viên quản lý' : ''}
                                             {ele.CHUCVU_NV === 1 ? 'Nhân viên' : ''}
-                                            {ele.CHUCVU_NV === 2 ? 'Super Admin' : ''}
+                                            {ele.CHUCVU_NV === 2 ? 'Admin' : ''}
                                         </TableCell>
                                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>

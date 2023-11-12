@@ -28,7 +28,7 @@ function DetailLix(props) {
         if (isValid(date)) {
             return format(date, 'dd/MM/yyyy');
         } else {
-            return "Ngày không hợp lệ";
+            return "Chưa có";
         }
     };
 
@@ -80,54 +80,54 @@ function DetailLix(props) {
                                 <Typography><b>Họ và tên chủ hộ:</b> <br /> {detail.TEN_KH}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography><b>Số điện thoại:</b> <br /> {detail.SODIENTHOAI_KH}</Typography>
+                                <Typography><b>Số điện thoại:</b> <br /> {detail.SODIENTHOAI_KH ? detail.SODIENTHOAI_KH : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography><b>Ngày sinh:</b>  <br />{detail.NGAYSINH_KH && formatDate(detail.NGAYSINH_KH)}</Typography>
+                                <Typography><b>Ngày sinh:</b>  <br />{detail.NGAYSINH_KH && formatDate(detail.NGAYSINH_KH) ? formatDate(detail.NGAYSINH_KH) : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b> CCCD:</b>  <br /> {detail.CCCD_KH}</Typography>
+                                <Typography><b> CCCD:</b>  <br /> {detail.CCCD_KH ? detail.CCCD_KH : 'Chưa có'}</Typography>
                             </Grid>
                             {/* <Grid item xs={6}>
                             <Typography><b>Account BRCĐ:</b> <br />{'nguyenvanc123'}</Typography>
                         </Grid> */}
                             <Grid item xs={6}>
-                                <Typography><b>Nghề nghiệp:</b>  <br /> {detail.NGHENGHIEP_KH}</Typography>
+                                <Typography><b>Nghề nghiệp:</b>  <br /> {detail.NGHENGHIEP_KH ? detail.NGHENGHIEP_KH : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b>Quận/ Huyện:</b>  <br /> {detail.TEN_HUYEN}</Typography>
+                                <Typography><b>Quận/ Huyện:</b>  <br /> {detail.TEN_HUYEN ? detail.TEN_HUYEN : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b>Xã/ Phường:</b> <br /> {detail.TEN_XA}</Typography>
+                                <Typography><b>Xã/ Phường:</b> <br /> {detail.TEN_XA ? detail.TEN_XA : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b>Ấp/ Khu vực:</b>  <br /> {detail.TEN_AP}</Typography>
+                                <Typography><b>Ấp/ Khu vực:</b>  <br /> {detail.TEN_AP ? detail.TEN_AP : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography><b> Địa chỉ cụ thể:</b>  <br />  {detail.DIACHI_KH}</Typography>
+                                <Typography><b> Địa chỉ cụ thể:</b>  <br />  {detail.DIACHI_KH ? detail.DIACHI_KH : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography><b>Số nhân khẩu:</b>  <br />  {detail.SONHANKHAU_KH}</Typography>
+                                <Typography><b>Số nhân khẩu:</b>  <br />  {detail.SONHANKHAU_KH ? detail.SONHANKHAU_KH : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Người đứng tên hợp đồng:</b> <br /> {detail.TENKHACHHANGDAIDIEN_CTPKS}</Typography>
+                                <Typography ><b>Người đứng tên hợp đồng:</b> <br /> {detail.TENKHACHHANGDAIDIEN_CTPKS ? detail.TENKHACHHANGDAIDIEN_CTPKS : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>SDT người đứng tên hợp đồng:</b> <br /> {detail.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS}</Typography>
+                                <Typography ><b>SDT người đứng tên hợp đồng:</b> <br /> {detail.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS ? detail.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Account BRCĐ:</b> <br /> {detail.ACCOUNTKHACHHANG_CTPKS}</Typography>
+                                <Typography ><b>Account BRCĐ:</b> <br /> {detail.ACCOUNTKHACHHANG_CTPKS ? detail.ACCOUNTKHACHHANG_CTPKS : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Nhà cung cấp:</b> <br /> {detail.TEN_NCC}</Typography>
+                                <Typography ><b>Nhà cung cấp:</b> <br /> {detail.TEN_NCC ? detail.TEN_NCC : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Dịch vụ:</b> <br /> {detail.TEN_DV}</Typography>
+                                <Typography ><b>Dịch vụ:</b> <br /> {detail.TEN_DV ? detail.TEN_DV : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
                                 <Typography ><b>Mức cước:</b> <br /> {detail.MUCCUOC_CTPKS && detail.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Typography>

@@ -64,6 +64,7 @@ function StatisticalReport() {
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
   const [searchStatus, setSearchStatus] = useState(0)
+  const [loadingSearch, setLoadingSearch] = useState(false)
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -223,7 +224,7 @@ function StatisticalReport() {
         ID_CHA_DVHC: 1,
       },
     ])
-    
+
   }, []);
 
 
@@ -247,7 +248,7 @@ function StatisticalReport() {
 
 
   const handleSearch = async () => {
-
+    setLoadingSearch(true)
     const objectSend = {
       quality_survey: qualityService,
       CHATLUONG_PV: serveSurvey,
@@ -267,6 +268,7 @@ function StatisticalReport() {
         setMaxPage(res.data.dstk.last_page)
         setAlloption(res.data.dstk.data)
         setSearchStatus(1)
+        setLoadingSearch(false)
       })
   }
 
@@ -513,8 +515,9 @@ function StatisticalReport() {
 
             <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
               <Button sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={handleSearch}>
-                <SearchIcon />
-                <Typography >Tra cứu</Typography>
+                {loadingSearch ? <>
+                  <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
+                </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
               </Button>
 
               <Button disabled={disabled} sx={{ display: 'flex', width: 150 }} color={'success'} variant="outlined" onClick={exportDataToExcel}>
@@ -537,26 +540,26 @@ function StatisticalReport() {
           <Table size='small'>
             <TableHead sx={{ backgroundColor: '#0099ff' }} >
               <TableRow>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tỉnh </TableCell>
+                {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tỉnh </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Quận/ Huyện </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell> */}
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
+                {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số điện thoại </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số nhân khẩu </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> CCCD </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> CCCD </TableCell> */}
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Người đứng tên hợp đồng </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT người đứng tên HĐ </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Account </TableCell>
+                {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT người đứng tên HĐ </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Account </TableCell> */}
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhà cung cấp </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Dịch vụ </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Mức cước </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Hình thức cước BRCĐ </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tháng bắt đầu đặt cọc </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tháng kết thúc đặt cọc </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thời gian lắp đặt </TableCell>
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thời gian ngưng </TableCell>
+                {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Mức cước </TableCell>
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Hình thức cước BRCĐ </TableCell> */}
+                <TableCell sx={{ color: 'white' }}> Tháng bắt đầu đặt cọc </TableCell>
+                <TableCell sx={{ color: 'white' }}> Tháng kết thúc đặt cọc </TableCell>
+                <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
+                <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell>
                 {/* <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
                 <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell> */}
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên thu cước </TableCell>
@@ -566,7 +569,7 @@ function StatisticalReport() {
               {data.map((ele, index) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       Hậu Giang
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -577,11 +580,11 @@ function StatisticalReport() {
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_AP}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_KH}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.DIACHI_KH}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -592,39 +595,39 @@ function StatisticalReport() {
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.CCCD_KH}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TENKHACHHANGDAIDIEN_CTPKS}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.ACCOUNTKHACHHANG_CTPKS}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_NCC}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_DV}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                    </TableCell>
+                    </TableCell> */}
 
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.HINHTHUCDONG_CTPKS}
-                    </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    </TableCell> */}
+                    <TableCell>
                       {formatDate(ele.NGAYBATDAUDONGCOC_CTPKS)}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    <TableCell>
                       {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS)}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    <TableCell>
                       {formatDate(ele.THOIGIANLAPDAT_CTPKS)}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                    <TableCell>
                       {formatDate(ele.THOIGIANNGUNG_CTPKS)}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>

@@ -21,6 +21,7 @@ import { TokenContext } from '../../globalVar/TokenProvider'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -52,7 +53,8 @@ function ComponentTest() {
     const [huyen, setHuyen] = useState(0)
     const [xa, setXa] = useState(0)
     const [ap, setAp] = useState(0)
-    const [searchStatus,setSearchStatus] = useState(0)
+    const [searchStatus, setSearchStatus] = useState(0)
+    const [loading, setLoading] = useState(false)
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -169,12 +171,12 @@ function ComponentTest() {
     }
 
     useEffect(() => {
-        if(searchStatus === 0){
+        if (searchStatus === 0) {
             CallAPI()
-        }else{
+        } else {
             handleSearch()
         }
-       
+
     }, [page, rowPage]);
 
     const onchangeHuyen = async (e) => {
@@ -229,6 +231,7 @@ function ComponentTest() {
     };
 
     const handleSearch = async () => {
+        setLoading(true)
         // Thực hiện tìm kiếm dựa trên các giá trị
         console.log("Trạng thái khảo sát:", statusSurvey);
         // console.log("Chất lượng dịch vụ:", qualityService);
@@ -247,6 +250,7 @@ function ComponentTest() {
                 setMaxPage(res.data.dskh.last_page)
                 setAlloption(res.data.dskh.data)
                 setSearchStatus(1)
+                setLoading(false)
             })
     }
 
@@ -375,7 +379,11 @@ function ComponentTest() {
 
                     </Box>
                     <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                        <Button onClick={handleSearch} size="small" sx={{ display: 'flex', mr: 1, width: 150 }} variant={'outlined'} startIcon={<SearchIcon />}>Tìm kiếm</Button>
+                        <Button onClick={handleSearch} size="small" sx={{ display: 'flex', mr: 1, width: 150 }} variant={'outlined'}>
+                            {loading ? <>
+                                <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
+                            </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
+                        </Button>
                         <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} variant="contained" onClick={openDialogCustomer}>
                             <AddIcon />
                             <Typography >Khách hàng</Typography>
