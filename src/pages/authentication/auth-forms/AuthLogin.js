@@ -31,6 +31,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
+import jwt_decode from 'jwt-decode';
 
 
 // ============================|| FIREBASE - LOGIN ||============================ //
@@ -46,6 +47,7 @@ const notyf = new Notyf({
   },
   dismissible: true
 });
+
 
 
 const AuthLogin = () => {
@@ -88,8 +90,21 @@ const AuthLogin = () => {
           setLoading(false)
 
           notyf.success(response.data.message)
-          // navigate('/table')
-          window.location.reload();
+          const user = jwt_decode(response.data.access_token)
+
+          if (user && user.chucvu_nv === 0)
+          {
+            window.location.replace('/statistical-report');
+          }
+          else if (user && user.chucvu_nv === 1)
+          {
+            window.location.replace('/table');
+          }
+          else if (user && user.chucvu_nv === 2)
+          {
+            window.location.replace('/user-management');
+          }
+          
         } else {
           setLoading(false)
 

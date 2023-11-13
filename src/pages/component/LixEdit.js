@@ -22,6 +22,9 @@ function LixEdit(props) {
     const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
     const [openAlertError, setOpenAlertError] = useState(false);
     const [contentNotifi, setContenNotifi] = useState('')
+    const [typeService, setTypeService] = useState([])
+    const [serviceList, setServiceList] = useState([])
+    const [idTypeService, setIdTypeService] = useState(0)
 
     const alertError = (string) => {
         setContenNotifi(string)
@@ -68,6 +71,7 @@ function LixEdit(props) {
     const [service, setService] = useState({
         ID_PKS: 0,
         ID_DV: 0,
+        ID_LDV: 0,
         DIACHI_KH: "",
         ID_KH: props.customer,
         TENKHACHHANGDAIDIEN_CTPKS: "",
@@ -146,16 +150,50 @@ function LixEdit(props) {
         }));
     };
 
+    const onChangeTypeOfservice = async (e) => {
+        reloadDataBack()
+        setIdTypeService(e.target.value);
+        await instance.get('getAllSVById/' + e.target.value)
+            .then((res) => {
+                setServiceList(res.data)
+            })
+            .catch(err => console.log(err))
+
+    };
+
 
     const getInfoCustomer = (id) => {
         instance.get('getKH_ByID_LIX/' + id).then(res => setCustomer(res.data)).catch(err => console.log(err))
     }
 
+    const getTypeOfService = async () => {
+        await instance.get('getServiceType')
+            .then((res) => {
+                setTypeService(res.data)
+            })
+            .catch(err => console.log(err))
+    }
+
+    const getInitialData = async (id) => {
+        await instance.get('getAllSVById/' + id)
+        .then((res) => {
+            setServiceList(res.data)
+        })
+        .catch(err => console.log(err))
+    }
+
     useEffect(() => {
         if (props.idCustomer !== 0) {
             getInfoCustomer(props.idCustomer)
+            getTypeOfService()
         }
     }, [props.idCustomer])
+
+    useEffect(() => {
+        if (service.ID_LDV !== 0) {
+            getInitialData(service.ID_LDV)
+        }
+    }, [service.ID_LDV])
 
     const createSurvey = () => {
         if (service.ID_DV !== 0) {
@@ -163,6 +201,7 @@ function LixEdit(props) {
                 .then(res => {
                     alertSuccess(res.data);
                     callAPI()
+                    props.reloadService(props.idCustomer)
                 })
                 .catch(err => {
                     alertError(err)
@@ -180,6 +219,7 @@ function LixEdit(props) {
             ID_PKS: 0,
             ID_DV: service.ID_DV !== 0 ? service.ID_DV : 0,
             ID_KH: props.idCustomer !== 0 ? props.idCustomer : 0,
+            ID_LDV: 0,
             DIACHI_KH: "",
             TENKHACHHANGDAIDIEN_CTPKS: "",
             SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
@@ -207,6 +247,7 @@ function LixEdit(props) {
             ID_PKS: 0,
             ID_DV: 0,
             ID_KH: 0,
+            ID_LDV: 0,
             DIACHI_KH: "",
             TENKHACHHANGDAIDIEN_CTPKS: "",
             SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
@@ -228,6 +269,7 @@ function LixEdit(props) {
             NGAYUPDATE_CTPKS: "",
             IS_DELETED: 0,
         })
+        setIdTypeService(0)
     }
 
 
@@ -240,6 +282,7 @@ function LixEdit(props) {
                         ID_PKS: 0,
                         ID_DV: service.ID_DV,
                         ID_KH: customer.ID_KH,
+                        ID_LDV: 0,
                         DIACHI_KH: "",
                         TENKHACHHANGDAIDIEN_CTPKS: "",
                         SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
@@ -265,6 +308,7 @@ function LixEdit(props) {
                     var a = res.data;
                     a['ID_KH'] = customer.ID_KH
                     setService(a)
+                    setIdTypeService(res.data.ID_LDV)
                 }
             })
             .catch(err => console.log(err))
@@ -273,6 +317,8 @@ function LixEdit(props) {
     useEffect(() => {
         if (props.idCustomer !== 0 && service.ID_DV !== 0) {
             callAPI()
+            console.log(serviceList)
+
         }
         if (service.ID_DV === 0) {
             reloadData()
@@ -294,8 +340,7 @@ function LixEdit(props) {
 
 
 
-    console.log(props.iddv)
-
+    console.log(service)
 
     return (
         <Dialog
@@ -319,16 +364,37 @@ function LixEdit(props) {
                             <Typography gutterBottom variant="h5" component="div">
                                 Dịch vụ sử dụng
                             </Typography>
+
                             <FormControl fullwidth sx={{ marginTop: 1 }}>
+                                <InputLabel>Loại dịch vụ</InputLabel>
+                                <Select
+                                    value={idTypeService}
+                                    label='Loại dịch vụ'
+                                    name={'ID_LDV'}
+                                    onChange={(e) => { onChangeTypeOfservice(e) }}
+                                >
+                                    <MenuItem value={0}>Chọn loại dịch vụ</MenuItem>
+                                    {typeService && typeService.map(ele => {
+                                        return (
+                                            <MenuItem key={ele.ID_LDV} value={ele.ID_LDV}>{ele.TEN_LDV}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+
+
+
+                            <FormControl fullwidth sx={{ marginTop: 2 }}>
                                 <InputLabel>Dịch vụ</InputLabel>
                                 <Select
+                                    disabled={idTypeService === 0}
                                     value={service.ID_DV}
                                     label='Dịch vụ'
                                     name={'ID_DV'}
                                     onChange={(e) => { onChangeservice(e) }}
                                 >
                                     <MenuItem value={0}>Chọn dịch vụ</MenuItem>
-                                    {props.serviceList && props.serviceList.map(ele => {
+                                    {serviceList && serviceList.map(ele => {
                                         return (
                                             <MenuItem key={ele.ID_DV} value={ele.ID_DV}>{ele.TEN_DV}</MenuItem>
                                         )
@@ -356,7 +422,7 @@ function LixEdit(props) {
                             <TextField label="Mức cước/tháng" type={'number'} sx={{ marginTop: 2 }} value={service.MUCCUOC_CTPKS} name={'MUCCUOC_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} value={service.HINHTHUCDONG_CTPKS} name={'HINHTHUCDONG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.TENKHACHHANGDAIDIEN_CTPKS} name={'TENKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                            <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} name={'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} value={service.ACCOUNTKHACHHANG_CTPKS} name={'ACCOUNTKHACHHANG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
 
@@ -470,7 +536,7 @@ function LixEdit(props) {
                 <Button variant={'outlined'} color={'error'} onClick={
                     () => {
                         props.handleClose()
-                        reloadDataBack()
+                        // reloadDataBack()
                     }
 
                 }>Huỷ</Button>
