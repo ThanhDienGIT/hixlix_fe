@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import jwt_decode from 'jwt-decode';
 
+
 export function TokenProvider({ children }) {
     const [token, setToken] = useState(null);
 
@@ -20,6 +21,7 @@ export function TokenProvider({ children }) {
             JWTToken(localStorage.getItem('access_token'))
         }
     }, [])
+
 
     return (
         <TokenContext.Provider value={{ token, JWTToken }}>

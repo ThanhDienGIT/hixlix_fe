@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from '../../../axios/instance';
-
+import jwt_decode from 'jwt-decode';
 // material-ui
 import {
   Button,
@@ -88,7 +88,6 @@ const AuthLogin = () => {
           localStorage.setItem('access_token', response.data.access_token);
           // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
           setLoading(false)
-
           notyf.success(response.data.message)
           const user = jwt_decode(response.data.access_token)
 

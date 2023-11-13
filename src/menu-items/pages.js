@@ -53,7 +53,7 @@ const pages = {
     },
     {
       id: 'account',
-      title: 'Danh mục người dùng',
+      title: 'Danh mục nhân viên',
       type: 'item',
       url: '/user-management',
       icon: ManageAccountsRoundedIcon,
