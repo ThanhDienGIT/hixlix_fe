@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from '../../../axios/instance';
-import jwt_decode from 'jwt-decode';
 // material-ui
 import {
   Button,

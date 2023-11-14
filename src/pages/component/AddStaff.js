@@ -18,6 +18,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Typography from '@mui/material/Typography';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import jwt_decode from 'jwt-decode';
+
 
 
 // Create an instance of Notyf
@@ -47,6 +49,11 @@ function AddStaff(props) {
     })
     const [loading, setLoading] = useState(false);
 
+
+
+
+    var currentUser = jwt_decode(localStorage.getItem('access_token'))
+
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -54,7 +61,7 @@ function AddStaff(props) {
 
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
-      };
+    };
 
 
 
@@ -63,6 +70,8 @@ function AddStaff(props) {
             ...rev, [e.target.name]: e.target.value
         }))
     }
+
+    console.log(user)
 
     const handleAddUser = async () => {
         const objectSend = {
@@ -116,6 +125,12 @@ function AddStaff(props) {
     // const addForm = () => {
     //     setForm(rev => [...rev, { form: form.length + 1 }])
     // }
+
+    const roles = [
+        { id: 0, label: 'Nhân viên quản lý' },
+        { id: 1, label: 'Nhân viên' },
+    ];
+
 
     React.useEffect(() => {
     }, []);
@@ -179,9 +194,21 @@ function AddStaff(props) {
                             name={'CHUCVU_NV'}
                             onChange={(e) => { onChangeInput(e) }}
                         >
-                            <MenuItem value="">Chọn chức vụ</MenuItem>
-                            <MenuItem value={0}>Nhân viên quản lý</MenuItem>
-                            <MenuItem value={1}>Nhân viên</MenuItem>
+                            <MenuItem value="" disabled>Chọn chức vụ</MenuItem>
+                            {currentUser && currentUser.chucvu_nv === 0 ?
+                                roles.filter((roleOption) => roleOption.id === 1).map((roleOption) => (
+                                    <MenuItem key={roleOption.id} value={roleOption.id}>
+                                        {roleOption.label}
+                                    </MenuItem>
+                                ))
+                                :
+                                roles.map((roleOption) => (
+                                    <MenuItem key={roleOption.id} value={roleOption.id}>
+                                        {roleOption.label}
+                                    </MenuItem>
+                                ))
+                            }
+
                         </Select>
                     </FormControl>
 
