@@ -52,7 +52,7 @@ function DetailLix(props) {
 
     React.useEffect(() => {
             getDetailLix()
-    }, [props.idCustomer, props.iddv, props.id])
+    }, [props.open])
 
 
 
@@ -132,6 +132,16 @@ function DetailLix(props) {
                             <Grid item xs={6}>
                                 <Typography ><b>Mức cước:</b> <br /> {detail.MUCCUOC_CTPKS && detail.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Typography>
                             </Grid>
+
+                            <Grid item xs={6}>
+                                <Typography sx={Number(detail.CAMNHANDICHVU_CTPKS) < 5 ? {color:'red'} : ""} ><b>Điểm chất lượng dịch vụ:</b> <br /> {detail.CAMNHANDICHVU_CTPKS ? detail.CAMNHANDICHVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography sx={Number(detail.CANNHANPHUCVU_CTPKS) < 5 ? {color:'red'} : ""}><b>Điểm chất lượng phục vụ:</b> <br /> {detail.CANNHANPHUCVU_CTPKS ? detail.CANNHANPHUCVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
+                            </Grid>
+
+
+
                             <Grid item xs={6}>
                                 <Typography ><b>Hình thức cước BRCĐ:</b> <br /> {detail.HINHTHUCDONG_CTPKS}</Typography>
                             </Grid>
