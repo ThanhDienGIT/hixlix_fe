@@ -68,6 +68,7 @@ Route::group(['middleware' => ['api']], function () {
 
         Route::delete('/deleteservice/{id}', [DichVuController::class, 'xoaDichVu']);
         Route::get('/getSVByID/{id}', [DichVuController::class, 'getServiceById']);
+        Route::get('/getAllSVById/{id}', [DichVuController::class, 'getAllServiceById']);
         Route::post('/updateService/{id}', [DichVuController::class, 'capNhatDichVu']);
 
 

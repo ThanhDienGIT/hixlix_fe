@@ -263,7 +263,9 @@ class Lix extends Controller
             $phieukhaosat = phieukhaosat::where('ID_KH', $khachhang)->first();
 
             if ($phieukhaosat) {
-                $dichvu = chi_tiet_phieu_khao_sat_lix::where("ID_PKS", $phieukhaosat->ID_PKS)->where('ID_DV', $Service)->first();
+                $dichvu = chi_tiet_phieu_khao_sat_lix::join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                ->join('loai_dich_vu', 'loai_dich_vu.ID_LDV', '=', 'dich_vu.ID_LDV')
+                ->where("ID_PKS", $phieukhaosat->ID_PKS)->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $Service)->first();
                 if ($dichvu) {
                     return response()->json($dichvu, 200);
                 } else {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from '../../../axios/instance';
-import jwt_decode from 'jwt-decode';
 // material-ui
 import {
   Button,
@@ -31,6 +30,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
+import jwt_decode from 'jwt-decode';
 
 
 // ============================|| FIREBASE - LOGIN ||============================ //
@@ -46,6 +46,7 @@ const notyf = new Notyf({
   },
   dismissible: true
 });
+
 
 
 const AuthLogin = () => {
@@ -86,19 +87,22 @@ const AuthLogin = () => {
           localStorage.setItem('access_token', response.data.access_token);
           // Redirect hoặc thực hiện hành động sau khi đăng nhập thành công
           setLoading(false)
-
+          notyf.success(response.data.message)
           const user = jwt_decode(response.data.access_token)
-          if (user && Number(user.chucvu_nv) === 1)
-          {
-            window.location.replace('/table');
-          }
-          else if (user && Number(user.chucvu_nv) === 0 || Number(user.chucvu_nv) === 2)
+
+          if (user && user.chucvu_nv === 0)
           {
             window.location.replace('/statistical-report');
           }
-
-          notyf.success(response.data.message)
-
+          else if (user && user.chucvu_nv === 1)
+          {
+            window.location.replace('/table');
+          }
+          else if (user && user.chucvu_nv === 2)
+          {
+            window.location.replace('/user-management');
+          }
+          
         } else {
           setLoading(false)
 

@@ -22,6 +22,9 @@ function LixDialog(props) {
     const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
     const [openAlertError, setOpenAlertError] = useState(false);
     const [contentNotifi, setContenNotifi] = useState('')
+    const [typeService, setTypeService] = useState([])
+    const [serviceList, setServiceList] = useState([])
+    const [idTypeService, setIdTypeService] = useState(0)
 
     const alertError = (string) => {
         setContenNotifi(string)
@@ -147,13 +150,37 @@ function LixDialog(props) {
     };
 
 
+    const onChangeTypeOfservice = async (e) => {
+        reloadDataBack()
+        setIdTypeService(e.target.value);
+        await instance.get('getAllSVById/' + e.target.value)
+        .then((res) => {
+            setServiceList(res.data)
+        })
+        .catch(err => console.log(err))
+       
+    };
+
+
+    
+
+
     const getInfoCustomer = (id) => {
         instance.get('getKH_ByID_LIX/' + id).then(res => setCustomer(res.data)).catch(err => console.log(err))
+    }
+
+    const getTypeOfService = async () => {
+        await instance.get('getServiceType')
+        .then((res) => {
+            setTypeService(res.data)
+        })
+        .catch(err => console.log(err))
     }
 
     useEffect(() => {
         if (props.idCustomer !== 0) {
             getInfoCustomer(props.idCustomer)
+            getTypeOfService()
         }
     }, [props.idCustomer])
 
@@ -163,6 +190,7 @@ function LixDialog(props) {
                 .then(res => {
                     alertSuccess(res.data);
                     callAPI()
+                    props.reloadApi()
                 })
                 .catch(err => {
                     alertError(err)
@@ -228,6 +256,7 @@ function LixDialog(props) {
             NGAYUPDATE_CTPKS: "",
             IS_DELETED: 0,
         })
+        setIdTypeService(0)
     }
 
 
@@ -306,16 +335,36 @@ function LixDialog(props) {
                             <Typography gutterBottom variant="h5" component="div">
                                 Dịch vụ sử dụng
                             </Typography>
+
                             <FormControl fullwidth sx={{ marginTop: 1 }}>
+                                <InputLabel>Loại dịch vụ</InputLabel>
+                                <Select
+                                    value={idTypeService}
+                                    label='Loại dịch vụ'
+                                    name={'ID_LDV'}
+                                    onChange={(e) => { onChangeTypeOfservice(e) }}
+                                >
+                                    <MenuItem value={0}>Chọn loại dịch vụ</MenuItem>
+                                    {typeService && typeService.map(ele => {
+                                        return (
+                                            <MenuItem key={ele.ID_LDV} value={ele.ID_LDV}>{ele.TEN_LDV}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+
+
+                            <FormControl fullwidth sx={{ marginTop: 2 }}>
                                 <InputLabel>Dịch vụ</InputLabel>
                                 <Select
+                                    disabled={idTypeService === 0}
                                     value={service.ID_DV}
                                     label='Dịch vụ'
                                     name={'ID_DV'}
                                     onChange={(e) => { onChangeservice(e) }}
                                 >
                                     <MenuItem value={0}>Chọn dịch vụ</MenuItem>
-                                    {props.serviceList && props.serviceList.map(ele => {
+                                    {serviceList && serviceList.map(ele => {
                                         return (
                                             <MenuItem key={ele.ID_DV} value={ele.ID_DV}>{ele.TEN_DV}</MenuItem>
                                         )

@@ -520,6 +520,7 @@ function ComponentTest() {
                 wards={wards}
                 servicePointList={servicePointList}
                 idCustomer={idKhaoSat}
+                reloadApi={CallAPI}
             />
             <AssignmentCustomer
                 open={dialogPhanCong}

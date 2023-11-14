@@ -236,6 +236,7 @@ function DetailCustomer(props) {
                 provider={props.provider}
                 idCustomer={props.idkhachhang}
                 iddv={idDV}
+                reloadService={CallAPIGetSurveyOfCustomer}
             />
             <DetailLix
                 open={openDiaLogDetail}

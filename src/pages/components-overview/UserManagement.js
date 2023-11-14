@@ -255,7 +255,7 @@ function UserManagement() {
                             freeSolo
                             id="free-solo-2-demo"
                             disableClearable
-                            options={alloption.filter((option) => option.CHUCVU_NV !== 2).map((option) => option.TEN_NV)}
+                            options={alloption.filter((option) => option.CHUCVU_NV !== 2 && option.CHUCVU_NV !== 0).map((option) => option.TEN_NV)}
                             onChange={(event, value) => {
                                 handleAutocompleteChange(event, value);
                             }}
@@ -307,7 +307,7 @@ function UserManagement() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {data.filter((ele) => ele.ID_NV !== user.id_nv).map((ele, index) => {
+                            {data.filter((ele) => ele.ID_NV !== user.id_nv && ele.CHUCVU_NV !== 2).map((ele, index) => {
                                 return (
                                     <TableRow key={index}>
                                         <TableCell sx={{ whiteSpace: 'nowrap' }}>

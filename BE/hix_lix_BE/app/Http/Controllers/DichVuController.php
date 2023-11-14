@@ -260,6 +260,15 @@ class DichVuController extends Controller
             ->first();
         return response()->json($result, 200);
     }
+
+    public function getAllServiceById($id)
+    {
+        $result = DB::table('dich_vu')
+            ->join('loai_dich_vu', 'dich_vu.ID_LDV', '=', 'loai_dich_vu.ID_LDV')
+            ->where('dich_vu.ID_LDV', $id)
+            ->get();
+        return response()->json($result, 200);
+    }
     public function getSpByID($id)
     {
         $result = DB::table('nha_cung_cap')

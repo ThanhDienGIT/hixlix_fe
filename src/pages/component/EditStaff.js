@@ -19,6 +19,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Typography from '@mui/material/Typography';
 // import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import jwt_decode from 'jwt-decode';
 
 
 // Create an instance of Notyf
@@ -47,6 +48,8 @@ function EditStaff(props) {
         TRANGTHAI_NV: 0
     })
     const [loading, setLoading] = useState(false);
+
+    var currentUser = jwt_decode(localStorage.getItem('access_token'))
 
     // const [showPassword, setShowPassword] = React.useState(false);
     // const handleClickShowPassword = () => {
@@ -77,7 +80,7 @@ function EditStaff(props) {
             TRANGTHAI_NV: user.TRANGTHAI_NV
         }
         setLoading(true)
-        await Axios.post('updateUser/'+props.idstaff, objectSend)
+        await Axios.post('updateUser/' + props.idstaff, objectSend)
             .then((res) => {
                 if (res.data.status === 'success') {
                     setLoading(false)
@@ -120,6 +123,11 @@ function EditStaff(props) {
             setUser(res.data)
         }).catch(err => console.log(err))
     }
+
+    const roles = [
+        { id: 0, label: 'Nhân viên quản lý' },
+        { id: 1, label: 'Nhân viên' },
+    ];
 
 
     React.useEffect(() => {
@@ -186,8 +194,19 @@ function EditStaff(props) {
                             onChange={(e) => { onChangeInput(e) }}
                         >
                             <MenuItem value="">Chọn chức vụ</MenuItem>
-                            <MenuItem value={0}>Nhân viên quản lý</MenuItem>
-                            <MenuItem value={1}>Nhân viên</MenuItem>
+                            {currentUser && currentUser.chucvu_nv === 0 ?
+                                roles.filter((roleOption) => roleOption.id === 1).map((roleOption) => (
+                                    <MenuItem key={roleOption.id} value={roleOption.id}>
+                                        {roleOption.label}
+                                    </MenuItem>
+                                ))
+                                :
+                                roles.map((roleOption) => (
+                                    <MenuItem key={roleOption.id} value={roleOption.id}>
+                                        {roleOption.label}
+                                    </MenuItem>
+                                ))
+                            }
                         </Select>
                     </FormControl>
 
