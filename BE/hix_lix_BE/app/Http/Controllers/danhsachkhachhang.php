@@ -41,6 +41,7 @@ class danhsachkhachhang extends Controller
                 $checkExistAsignment = khachhang::where('ID_KH', $kh)->get();
                 if ($checkExistAsignment) {
                     khachhang::where('ID_KH', $kh)->update(['ID_NV' => $request->ID_NV]);
+                    phieukhaosat::where('ID_KH', $kh)->update(['ID_NV' => $request->ID_NV]);
                 }
             }
             return response()->json(["status" => "success", "message" => "Danh sách khách hàng cần khảo sát đã chuyển đến nhân viên."], 201);
