@@ -108,6 +108,7 @@ class danhsachkhachhang extends Controller
             $worksheet->duplicateStyle($style8, 'S' . $rowIndex);
             $worksheet->duplicateStyle($style8, 'T' . $rowIndex);
             $worksheet->duplicateStyle($style8, 'U' . $rowIndex);
+            $worksheet->duplicateStyle($style8, 'V' . $rowIndex);
 
 
             $worksheet->setCellValue('A' . $rowIndex, 'Hậu Giang');
@@ -152,12 +153,10 @@ class danhsachkhachhang extends Controller
             $worksheet->setCellValue('R' . $rowIndex, date("d/m/Y", strtotime($item['NGAYKETTHUCDONGCOC_CTPKS'])));
 
             // Chuyển đổi sang định dạng 'dd/MM/yyyy'
-            $worksheet->setCellValue('S' . $rowIndex, date("d/m/Y", strtotime($item['THOIGIANLAPDAT_CTPKS'])));
-            $worksheet->setCellValue('T' . $rowIndex, date("d/m/Y", strtotime($item['THOIGIANNGUNG_CTPKS'])));
-
-
-
-            $worksheet->setCellValue('U' . $rowIndex, $item['TEN_NV']);
+            $worksheet->setCellValue('S' . $rowIndex, $item['CAMNHANDICHVU_CTPKS']);
+            $worksheet->setCellValue('T' . $rowIndex, $item['CANNHANPHUCVU_CTPKS']);
+            $worksheet->setCellValue('U' . $rowIndex, date("d/m/Y", strtotime($item['NGAYTAO_CTPKS'])));
+            $worksheet->setCellValue('V' . $rowIndex, $item['TEN_NV']);
         }
 
         // Create a writer to save the spreadsheet to a temporary file

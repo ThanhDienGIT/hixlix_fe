@@ -77,7 +77,7 @@ function ServiceManagement() {
 
     const [maxPage, setMaxPage] = useState(0);
     const listPage = [5, 10, 15, 25, 50];
-    const [rowPage, setRowPage] = useState(5);
+    const [rowPage, setRowPage] = useState(10);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false)
     const nextPage = () => {
