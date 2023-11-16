@@ -16,7 +16,11 @@ class NhanVienController extends Controller
         if (!empty($request->keywords)) {
 
             $user = DB::table('nhan_vien')
-                ->where('TEN_NV', 'like', '%' . $request->keywords . '%');
+                ->where('TEN_NV', 'like', '%' . $request->keywords . '%')
+                ->orWhere('SDT_NV', 'like', '%' . $request->keywords . '%')
+                ->orWhere('DIACHI_NV', 'like', '%' . $request->keywords . '%')
+                ->orWhere('EMAIL_NV', 'like', '%' . $request->keywords . '%')
+                ->orWhere('TAIKHOAN_NV', 'like', '%' . $request->keywords . '%');
 
             if ($request->TRANGTHAI_NV !== 5) {
                 $user->where('nhan_vien.TRANGTHAI_NV', $request->TRANGTHAI_NV);
@@ -27,7 +31,7 @@ class NhanVienController extends Controller
             }
 
             $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
-            ->paginate($count);
+                ->paginate($count);
             return response()->json(['dsuser' => $user], 200);
         } else {
             $user = DB::table('nhan_vien');
@@ -41,7 +45,7 @@ class NhanVienController extends Controller
             }
 
             $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
-            ->paginate($count);
+                ->paginate($count);
             return response()->json(['dsuser' => $user], 200);
         }
     }

@@ -172,6 +172,7 @@ class danhsachkhachhang extends Controller
 
     public function filterreport($count, Request $request)
     {
+        $dateObject = date_create_from_format('d/m/Y', $request->keywords);
         $id_nv = auth()->user()->ID_NV;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
         if (!empty($request->keywords)) {
@@ -184,7 +185,18 @@ class danhsachkhachhang extends Controller
                     ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+                    ->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TEN_NCC', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TEN_DV', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TEN_NV', 'like', '%' . $request->keywords . '%');
+
+                if ($dateObject !== false) {
+                    $report->orWhere('NGAYBATDAUDONGCOC_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%')
+                        ->orWhere('NGAYKETTHUCDONGCOC_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%')
+                        ->orWhere('THOIGIANLAPDAT_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%')
+                        ->orWhere('THOIGIANNGUNG_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%');
+                }
 
                 if ($request->MAHUYEN_KH != 0) {
                     $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -243,7 +255,19 @@ class danhsachkhachhang extends Controller
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('phieu_khao_sat.id_nv', $id_nv)
-                    ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+                    ->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TEN_NCC', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TEN_DV', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('TEN_NV', 'like', '%' . $request->keywords . '%');
+
+
+                if ($dateObject !== false) {
+                    $report->orWhere('NGAYBATDAUDONGCOC_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%')
+                        ->orWhere('NGAYKETTHUCDONGCOC_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%')
+                        ->orWhere('THOIGIANLAPDAT_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%')
+                        ->orWhere('THOIGIANNGUNG_CTPKS', 'like', '%' . date_format($dateObject, 'Y-m-d') . '%');
+                }
 
                 if ($request->MAHUYEN_KH != 0) {
                     $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -424,7 +448,12 @@ class danhsachkhachhang extends Controller
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+                    ->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%');
 
                 if ($request->MAHUYEN_KH != 0) {
                     $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -440,13 +469,18 @@ class danhsachkhachhang extends Controller
                 }
 
                 $customers = $customers->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                ->paginate($count);
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
                     ->where('id_nv', $id_nv);
 
                 if ($request->MAHUYEN_KH != 0) {
@@ -463,7 +497,7 @@ class danhsachkhachhang extends Controller
                 }
 
                 $customers = $customers->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                ->paginate($count);
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             }
         } else {
@@ -486,7 +520,7 @@ class danhsachkhachhang extends Controller
                 }
 
                 $customers = $customers->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                ->paginate($count);
+                    ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             } else {
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
@@ -525,7 +559,13 @@ class danhsachkhachhang extends Controller
                     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+                    ->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
+
 
                 if ($request->MAHUYEN_KH != 0) {
                     $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -558,7 +598,12 @@ class danhsachkhachhang extends Controller
                     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('khach_hang.id_nv', $id_nv)
-                    ->where('ten_kh', 'like', '%' . $request->keywords . '%');
+                    ->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
+                    ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
 
                 if ($request->MAHUYEN_KH != 0) {
                     $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
