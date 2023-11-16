@@ -16,8 +16,12 @@ use Illuminate\Support\Facades\Validator;
 class testController extends Controller
 {
     public function test(){
-    
+
         return response()->json('test', 200);
+    }
+
+    public function checkToken(){
+        return response()->json('Success', 200);
     }
 
     public function SignIn(Request $request)
@@ -29,12 +33,12 @@ class testController extends Controller
             $user = NhanVien::whereRaw("LOWER(TAIKHOAN_NV) = LOWER(?)",strtolower($credentials['username']))
                 ->first();
 
-            
+
 
             if (!$user) {
                 return response()->json(['status' => 'failed', 'message' => 'Sai tên đăng nhập, vui lòng kiểm tra lại.'], 422);
             }
-            
+
 
             if (!password_verify($credentials['password'], $user->MATKHAU_NV)) {
                 return response()->json(['status' => 'failed', 'message' => 'Sai mật khẩu, vui lòng kiểm tra lại.'], 422);

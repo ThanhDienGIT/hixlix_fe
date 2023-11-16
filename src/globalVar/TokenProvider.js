@@ -1,5 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import jwt_decode from 'jwt-decode';
+import instance from '../axios/instance';
+
 
 
 export function TokenProvider({ children }) {
@@ -9,7 +11,20 @@ export function TokenProvider({ children }) {
         setToken(jwt_decode(ele))
     }
 
-       
+    const checktoken = () => {
+        if (localStorage.getItem('access_token') !== null) {
+            instance.get('/checktoken').then(res => {
+            console.log(console.log(res.data));
+          }
+          ).catch(err =>{
+            if(err.response.status === 401){
+              localStorage.removeItem('access_token')
+              window.location.href = '/'
+            }
+          })
+        }
+    }
+
     if(window.location.pathname !== '/login'){
         if(localStorage.getItem('access_token') === null){
             window.location.href='/login'
@@ -19,6 +34,7 @@ export function TokenProvider({ children }) {
     useEffect(() => {
         if (localStorage.getItem('access_token') !== null) {
             JWTToken(localStorage.getItem('access_token'))
+            checktoken()
         }
     }, [])
 
