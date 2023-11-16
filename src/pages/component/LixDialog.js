@@ -126,19 +126,19 @@ function LixDialog(props) {
         }));
     }
 
-    const onChangeDate3 = (e) => {
-        setService(prevService => ({
-            ...prevService,
-            ['THOIGIANLAPDAT_CTPKS']: format(e, 'yyyy-MM-dd')
-        }));
-    }
+    // const onChangeDate3 = (e) => {
+    //     setService(prevService => ({
+    //         ...prevService,
+    //         ['THOIGIANLAPDAT_CTPKS']: format(e, 'yyyy-MM-dd')
+    //     }));
+    // }
 
-    const onChangeDate4 = (e) => {
-        setService(prevService => ({
-            ...prevService,
-            ['THOIGIANNGUNG_CTPKS']: format(e, 'yyyy-MM-dd')
-        }));
-    }
+    // const onChangeDate4 = (e) => {
+    //     setService(prevService => ({
+    //         ...prevService,
+    //         ['THOIGIANNGUNG_CTPKS']: format(e, 'yyyy-MM-dd')
+    //     }));
+    // }
 
     const onChangeservice = (e) => {
         const { name, value } = e.target;
@@ -425,7 +425,7 @@ function LixDialog(props) {
                                     format="dd/MM/yyyy" />
                             </LocalizationProvider>
 
-                            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
+                            {/* <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
                                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
                                 <DatePicker
                                     inputProps={{ size: 'small' }}
@@ -452,7 +452,7 @@ function LixDialog(props) {
                                     onChange={(e) => { onChangeDate4(e) }} disabled={service.ID_DV !== 0 ? false : true} sx={{ marginTop: 2 }}
                                     slotProps={{ textField: { size: 'small' } }}
                                     format="dd/MM/yyyy" />
-                            </LocalizationProvider>
+                            </LocalizationProvider> */}
 
                             {/* <TextField label={'Ngày bắt đầu đặt cọc'} InputLabelProps={{
                                 shrink: true,
@@ -479,7 +479,7 @@ function LixDialog(props) {
                                 </Select>
                             </FormControl>
                             <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                <InputLabel>Đánh giá cảm nhận về chất lượng dịch vụ </InputLabel>
+                                <InputLabel>Đánh giá chất lượng phục vụ </InputLabel>
                                 <Select
                                     value={service.CANNHANPHUCVU_CTPKS}
                                     name="CANNHANPHUCVU_CTPKS"

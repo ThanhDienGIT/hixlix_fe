@@ -274,7 +274,7 @@ class Lix extends Controller
             } else {
                 $data = [
                     'id_kh' => $khachhang,
-                    'id_nv' => $idnhanvien,
+                    'id_nv' => auth()->user()->ID_NV,
                     'trangthai_pks' => 1,
                 ];
                 $result = PhieuKhaoSat::insert($data);
@@ -364,9 +364,9 @@ class Lix extends Controller
             }
         } else {
             $data = [
-                'id_kh' => $request->ID_KH,
-                'id_nv' => 1,
-                'trangthai_pks' => 1,
+                'ID_KH' => $request->ID_KH,
+                'ID_NV' => auth()->user()->ID_NV,
+                'TRANGTHAI_PKS' => 1,
             ];
             $create = PhieuKhaoSat::create($data);
             $data2 = [

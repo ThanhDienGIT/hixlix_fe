@@ -25,6 +25,12 @@ import { format, isValid } from 'date-fns';
 import Autocomplete from '@mui/material/Autocomplete';
 // import AnimateButton from 'components/@extended/AnimateButton';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+// import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
 
 
 function StatisticalReport() {
@@ -65,6 +71,7 @@ function StatisticalReport() {
   const [disabled, setDisabled] = useState(false);
   const [searchStatus, setSearchStatus] = useState(0)
   const [loadingSearch, setLoadingSearch] = useState(false)
+  const [display, setDisplay] = useState(0)
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -123,7 +130,7 @@ function StatisticalReport() {
 
   const [maxPage, setMaxPage] = useState(0);
   const listPage = [5, 10, 15, 25, 50];
-  const [rowPage, setRowPage] = useState(5);
+  const [rowPage, setRowPage] = useState(10);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false)
   const nextPage = () => {
@@ -298,22 +305,59 @@ function StatisticalReport() {
       });
   };
 
+  const onChangeSelectOption = (e) => {
+    setDisplay(Number(e.target.value))
+  }
 
+  // const resetFillterCondition = () => {
+  //   setQualityService(5)
+  //   setServeSurvey(5)
+  //   setSearchInput('')
+  //   setHuyen(0)
+  //   setXa(0)
+  //   setAp(0)
+  //   setSupplier(0)
+  //   setService(0)
+  //   setFromDate(formattedToday)
+  //   setToDate(formattedToday)
+  //   CallAPI()
+  // }
 
-
+  useEffect(() => {
+    if (display === 0) {
+      CallAPI()
+    }
+    else {
+      handleSearch()
+    }
+  }, [display])
 
 
   return (
     <ComponentSkeleton>
       <MainCard title="THỐNG KÊ & BÁO CÁO">
-        <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
+        <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} >
 
+          <FormControl>
+            <FormLabel id="demo-row-radio-buttons-group-label">Tùy chọn</FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+              onChange={(e) => onChangeSelectOption(e)}
+            >
+              <FormControlLabel checked={display === 0} value={0} control={<Radio />} label="Hiển thị tất cả" />
+              <FormControlLabel checked={display === 1} value={1} control={<Radio />} label="Bộ lọc" />
+            </RadioGroup>
+          </FormControl>
 
+          <Divider />
           <Box display={'flex'} flexWrap={'wrap'}>
 
             <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Quận/ huyện</InputLabel>
               <Select
+                disabled={display === 0}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 label="Quận/ huyện"
@@ -339,7 +383,7 @@ function StatisticalReport() {
                 id="demo-select-small"
                 label="Xã/ Phường"
                 name="MAXA_KH"
-                disabled={huyen === 0}
+                disabled={huyen === 0 || display === 0}
                 value={xa}
                 onChange={(e) => onchangeXa(e)}
               >
@@ -361,7 +405,7 @@ function StatisticalReport() {
                 id="demo-select-small"
                 label="Ấp/ Khu vực"
                 name="MAAP_KH"
-                disabled={xa === 0}
+                disabled={xa === 0 || display === 0}
                 value={ap}
                 onChange={(e) => setAp(e.target.value)}
               >
@@ -383,6 +427,7 @@ function StatisticalReport() {
             <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
               <Select
+                disabled={display === 0}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 label="Chất lượng dịch vụ"
@@ -400,6 +445,7 @@ function StatisticalReport() {
             <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Chất lượng phục vụ</InputLabel>
               <Select
+                disabled={display === 0}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 label="Chất lượng phục vụ"
@@ -418,6 +464,7 @@ function StatisticalReport() {
             <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Nhà cung cấp</InputLabel>
               <Select
+                disabled={display === 0}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 label="Chất lượng dịch vụ"
@@ -439,6 +486,7 @@ function StatisticalReport() {
             <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
               <InputLabel id="demo-select-small-label">Dịch vụ</InputLabel>
               <Select
+                disabled={display === 0}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 label="Dịch vụ"
@@ -460,6 +508,7 @@ function StatisticalReport() {
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
                 <DatePicker
+                  disabled={display === 0}
                   inputProps={{ size: 'small' }}
                   label='Từ ngày'
                   value={fromDate && new Date(fromDate)}
@@ -473,6 +522,7 @@ function StatisticalReport() {
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}>
                 <DatePicker
+                  disabled={display === 0}
                   inputProps={{ size: 'small' }}
                   label='Đến ngày'
                   value={toDate && new Date(toDate)}
@@ -483,7 +533,9 @@ function StatisticalReport() {
             </FormControl>
 
             <Autocomplete
+              disabled={display === 0}
               freeSolo
+              value={searchInput}
               id="free-solo-2-demo"
               disableClearable
               options={alloption.filter((option, index, self) =>
@@ -513,25 +565,35 @@ function StatisticalReport() {
             />
 
 
-            <Box display={'flex'} marginTop={2} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-              <Button sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={handleSearch}>
+            <Box display={'flex'} marginTop={2} flexWrap='wrap' sx={screenWidth > 720 ? "" : { width: '100%' }} >
+              <Button disabled={display === 0} sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={handleSearch}>
                 {loadingSearch ? <>
                   <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
                 </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
               </Button>
 
+            
               <Button disabled={disabled} sx={{ display: 'flex', width: 150 }} color={'success'} variant="outlined" onClick={exportDataToExcel}>
                 {loading ? <>
                   <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Xuất excel</Typography>
                 </> : <><SaveIcon /><Typography >Xuất excel</Typography></>}
               </Button>
 
+              {/* <Button disabled={display === 0} sx={screenWidth > 720 ? { display: 'flex', width: 150, ml: 1 } : { display: 'flex', width: 150, mt: 1 }}
+                color={'warning'} variant="outlined" onClick={resetFillterCondition}>
+                {loading ? <>
+                  <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Reset</Typography>
+                </> : <><RestartAltRoundedIcon /><Typography >Reset</Typography></>}
+              </Button> */}
+
 
 
             </Box>
 
           </Box>
-
+          <Box width={'100%'} display='flex' justifyContent={'flex-end'}>
+         
+          </Box>
 
 
 
@@ -554,15 +616,19 @@ function StatisticalReport() {
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Account </TableCell> */}
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhà cung cấp </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Dịch vụ </TableCell>
+                
                 {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Mức cước </TableCell>
                 <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Hình thức cước BRCĐ </TableCell> */}
                 <TableCell sx={{ color: 'white' }}> Tháng bắt đầu đặt cọc </TableCell>
                 <TableCell sx={{ color: 'white' }}> Tháng kết thúc đặt cọc </TableCell>
-                <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
-                <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell>
                 {/* <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
                 <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell> */}
-                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên thu cước </TableCell>
+                <TableCell sx={{ color: 'white' }}> Chất lượng dịch vụ </TableCell>
+                <TableCell sx={{ color: 'white' }}> Chất lượng phục vụ </TableCell>
+                <TableCell sx={{ color: 'white' }}> Ngày khảo sát </TableCell>
+                {/* <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
+                <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell> */}
+                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên khảo sát </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -611,6 +677,8 @@ function StatisticalReport() {
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_DV}
                     </TableCell>
+
+                    
                     {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                     </TableCell> */}
@@ -624,11 +692,20 @@ function StatisticalReport() {
                     <TableCell>
                       {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS)}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {formatDate(ele.THOIGIANLAPDAT_CTPKS)}
                     </TableCell>
                     <TableCell>
                       {formatDate(ele.THOIGIANNGUNG_CTPKS)}
+                    </TableCell> */}
+                    <TableCell align='center'>
+                      {ele.CAMNHANDICHVU_CTPKS}
+                    </TableCell>
+                    <TableCell align='center'>
+                      {ele.CANNHANPHUCVU_CTPKS}
+                    </TableCell>
+                    <TableCell>
+                      {formatDate(ele.NGAYTAO_CTPKS)}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {ele.TEN_NV}
