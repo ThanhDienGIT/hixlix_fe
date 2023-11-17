@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ComponentSkeleton from './ComponentSkeleton'
 import MainCard from 'components/MainCard'
-import { Box, Button, FormControl, IconButton, TextField, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
+import { Stack, Box, Button, FormControl, IconButton, TextField, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
 import DiaLogSuccess from 'pages/component/DiaLogSuccess'
 import DialogDeleteStaff from 'pages/component/DialogDeleteStaff'
 import AddIcon from '@mui/icons-material/Add';
@@ -39,6 +39,7 @@ function UserManagement() {
     const [role, setRole] = useState(5);
     const [status, setStatus] = useState(5);
     const [searchStatus, setSearchStatus] = useState(0)
+    const [loadingInitial, setLoadingInitial] = useState(false)
     // const [user, setUser] = useState({
     //     TEN_NV: '',
     //     SDT_NV: '',
@@ -108,10 +109,12 @@ function UserManagement() {
     }
 
     const CallAPI = async () => {
+        setLoadingInitial(true)
         await instance.get(`get_danhsachnguoidung/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
             setAlloption(res.data.data)
+            setLoadingInitial(false)
         }).catch(err => console.log(err))
     }
 
@@ -119,9 +122,9 @@ function UserManagement() {
     useEffect(() => {
         if (searchStatus === 0) {
             CallAPI()
-          } else {
+        } else {
             handleSearch()
-          }
+        }
     }, [page, rowPage]);
 
 
@@ -180,10 +183,18 @@ function UserManagement() {
     return (
         <ComponentSkeleton>
             <MainCard title="DANH MỤC NGƯỜI DÙNG">
-                <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
-                    <Box display={'flex'} flexWrap={'wrap'}>
+                {loadingInitial ?
+                    <Stack alignItems="center">
+                        <CircularProgress
+                            thickness={6}
+                            loading={loadingInitial} />
+                        <Typography sx={{ mt: 1 }}>Đang nạp dữ liệu...</Typography>
+                    </Stack> :
+                    <>
+                        <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
+                            <Box display={'flex'} flexWrap={'wrap'}>
 
-                        {/* <Autocomplete
+                                {/* <Autocomplete
                             id="free-solo-demo"
                             freeSolo
                             open={isOpen || (searchInput && searchInput.length > 0)}
@@ -207,193 +218,196 @@ function UserManagement() {
                             )}
                         /> */}
 
-                        <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
-                            <InputLabel id="demo-select-small-label">Chức vụ</InputLabel>
-                            <Select
-                                labelId="demo-select-small-label"
-                                id="demo-select-small"
-                                label="Chức vụ"
-                                name='CHUCVU_NV'
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                            >
-                                <MenuItem value={5}>
-                                    Tất cả
-                                </MenuItem>
-                                <MenuItem value={0}>
-                                    Nhân viên quản lý
-                                </MenuItem>
-                                <MenuItem value={1}>
-                                    Nhân viên
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
+                                <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
+                                    <InputLabel id="demo-select-small-label">Chức vụ</InputLabel>
+                                    <Select
+                                        labelId="demo-select-small-label"
+                                        id="demo-select-small"
+                                        label="Chức vụ"
+                                        name='CHUCVU_NV'
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value)}
+                                    >
+                                        <MenuItem value={5}>
+                                            Tất cả
+                                        </MenuItem>
+                                        <MenuItem value={0}>
+                                            Nhân viên quản lý
+                                        </MenuItem>
+                                        <MenuItem value={1}>
+                                            Nhân viên
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                        <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
-                            <InputLabel id="demo-select-small-label">Trạng thái</InputLabel>
-                            <Select
-                                labelId="demo-select-small-label"
-                                id="demo-select-small"
-                                label="Trạng thái"
-                                name='TRANGTHAI_NV'
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value)}
-                            >
-                                <MenuItem value={5}>
-                                    Tất cả
-                                </MenuItem>
-                                <MenuItem value={1}>
-                                    Đang hoạt động
-                                </MenuItem>
-                                <MenuItem value={0}>
-                                    Đã khóa
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
+                                <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
+                                    <InputLabel id="demo-select-small-label">Trạng thái</InputLabel>
+                                    <Select
+                                        labelId="demo-select-small-label"
+                                        id="demo-select-small"
+                                        label="Trạng thái"
+                                        name='TRANGTHAI_NV'
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                    >
+                                        <MenuItem value={5}>
+                                            Tất cả
+                                        </MenuItem>
+                                        <MenuItem value={1}>
+                                            Đang hoạt động
+                                        </MenuItem>
+                                        <MenuItem value={0}>
+                                            Đã khóa
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                        <Autocomplete
-                            freeSolo
-                            id="free-solo-2-demo"
-                            disableClearable
-                            options={alloption.filter((option) => option.CHUCVU_NV !== 2 && option.CHUCVU_NV !== 0).map((option) => option.TEN_NV)}
-                            onChange={(event, value) => {
-                                handleAutocompleteChange(event, value);
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label='Tìm kiếm...'
-                                    size="small"
-                                    sx={{ marginRight: 1, marginTop: 0.8, width: 310 }}
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                    onInputChange={(e, value) => {
-                                        setSearchInput(value);
+                                <Autocomplete
+                                    freeSolo
+                                    id="free-solo-2-demo"
+                                    disableClearable
+                                    options={alloption.filter((option) => option.CHUCVU_NV !== 2 && option.CHUCVU_NV !== 0).map((option) => option.TEN_NV)}
+                                    onChange={(event, value) => {
+                                        handleAutocompleteChange(event, value);
                                     }}
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        type: 'search',
-                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label='Tìm kiếm...'
+                                            size="small"
+                                            sx={{ marginRight: 1, marginTop: 0.8, width: 310 }}
+                                            onChange={(e) => setSearchInput(e.target.value)}
+                                            onInputChange={(e, value) => {
+                                                setSearchInput(value);
+                                            }}
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                type: 'search',
+                                            }}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
 
-                    </Box>
+                            </Box>
 
-                    <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
-                        <AnimateButton>
-                            <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} color={'info'} variant="outlined" onClick={handleSearch}>
-                                {loading ? <>
-                                    <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
-                                </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
-                            </Button>
-                        </AnimateButton>
-                        <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={openDialogStaff}>
-                            <AddIcon /><Typography >Thêm</Typography>
-                        </Button>
-                    </Box>
-                </Box>
-                <TableContainer component={Paper}>
-                    <Table size='small'>
-                        <TableHead sx={{ backgroundColor: '#0099ff' }} >
-                            <TableRow>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên người dùng </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Email </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên tài khoản </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Chức vụ </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Trạng thái </TableCell>
-                                <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thao tác </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.filter((ele) => ele.ID_NV !== user.id_nv && ele.CHUCVU_NV !== 2).map((ele, index) => {
-                                return (
-                                    <TableRow key={index}>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.TEN_NV}
-                                        </TableCell>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.SDT_NV}
-                                        </TableCell>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.DIACHI_NV}
-                                        </TableCell>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.EMAIL_NV}
-                                        </TableCell>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.TAIKHOAN_NV}
-                                        </TableCell>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            {ele.CHUCVU_NV === 0 ? 'Nhân viên quản lý' : ''}
-                                            {ele.CHUCVU_NV === 1 ? 'Nhân viên' : ''}
-                                            {ele.CHUCVU_NV === 2 ? 'Admin' : ''}
-                                        </TableCell>
-                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                {ele.TRANGTHAI_NV === 0 ? (
-                                                    <>
-                                                        <Dot color={"error"} />
-                                                        <span style={{ marginLeft: 2 }}>Đã khóa</span>
-                                                    </>
-                                                ) : ''}
-
-                                                {ele.TRANGTHAI_NV === 1 ? (
-                                                    <>
-                                                        <Dot color={"success"} />
-                                                        <span style={{ marginLeft: 2 }}>Đang hoạt động</span>
-                                                    </>
-                                                ) : ''}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Tooltip title="Cập nhật người dùng">
-                                                <IconButton>
-                                                    <DriveFileRenameOutlineIcon color='info' onClick={() => { openDialogEditKH(ele.ID_NV) }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Xóa người dùng">
-                                                <IconButton>
-                                                    <DeleteIcon color='error' onClick={() => { openDialogError(ele.ID_NV) }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </TableCell>
+                            <Box display={'flex'} marginTop={1} sx={screenWidth > 720 ? "" : { width: '100%' }} >
+                                <AnimateButton>
+                                    <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} color={'info'} variant="outlined" onClick={handleSearch}>
+                                        {loading ? <>
+                                            <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
+                                        </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
+                                    </Button>
+                                </AnimateButton>
+                                <Button size="small" sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={openDialogStaff}>
+                                    <AddIcon /><Typography >Thêm</Typography>
+                                </Button>
+                            </Box>
+                        </Box>
+                        <TableContainer component={Paper}>
+                            <Table size='small'>
+                                <TableHead sx={{ backgroundColor: '#0099ff' }} >
+                                    <TableRow>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên người dùng </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Email </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên tài khoản </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Chức vụ </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Trạng thái </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thao tác </TableCell>
                                     </TableRow>
-                                )
-                            })}
+                                </TableHead>
+                                <TableBody>
+                                    {data.filter((ele) => ele.ID_NV !== user.id_nv && ele.CHUCVU_NV !== 2).map((ele, index) => {
+                                        return (
+                                            <TableRow key={index}>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.TEN_NV}
+                                                </TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.SDT_NV}
+                                                </TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.DIACHI_NV}
+                                                </TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.EMAIL_NV}
+                                                </TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.TAIKHOAN_NV}
+                                                </TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.CHUCVU_NV === 0 ? 'Nhân viên quản lý' : ''}
+                                                    {ele.CHUCVU_NV === 1 ? 'Nhân viên' : ''}
+                                                    {ele.CHUCVU_NV === 2 ? 'Admin' : ''}
+                                                </TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        {ele.TRANGTHAI_NV === 0 ? (
+                                                            <>
+                                                                <Dot color={"error"} />
+                                                                <span style={{ marginLeft: 2 }}>Đã khóa</span>
+                                                            </>
+                                                        ) : ''}
 
-                        </TableBody>
-                    </Table>
-                    <Box display="flex" alignItems={'center'} justifyContent={'flex-end'} marginRight={2} padding={2}>
-                        <FormControl sx={{ width: 80 }}>
-                            <InputLabel id="demo-simple-select-label">Số dòng</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                label={'Số dòng'}
-                                value={rowPage}
-                                onChange={(e) => { changeRowPage(e) }}
-                            >
-                                {listPage.length > 0 && listPage.map(ele => (
-                                    <MenuItem key={ele} value={ele}>{ele}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <Tooltip title={'Chuyển về trang trước'} sx={{ marginRight: 1 }}>
-                            <IconButton onClick={revertPage}>
-                                <KeyboardArrowLeftIcon />
-                            </IconButton>
-                        </Tooltip>
-                        <Typography>{page * rowPage - rowPage + 1 + " - " + page * rowPage}</Typography>
-                        <Tooltip title={'Chuyển tới trang sau'} sx={{ marginLeft: 1 }}>
-                            <IconButton onClick={nextPage}>
-                                <KeyboardArrowRightIcon />
-                            </IconButton>
-                        </Tooltip>
-                        <Typography>{'Tổng trang: ' + maxPage}</Typography>
-                    </Box>
-                </TableContainer>
+                                                        {ele.TRANGTHAI_NV === 1 ? (
+                                                            <>
+                                                                <Dot color={"success"} />
+                                                                <span style={{ marginLeft: 2 }}>Đang hoạt động</span>
+                                                            </>
+                                                        ) : ''}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Tooltip title="Cập nhật người dùng">
+                                                        <IconButton>
+                                                            <DriveFileRenameOutlineIcon color='info' onClick={() => { openDialogEditKH(ele.ID_NV) }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Xóa người dùng">
+                                                        <IconButton>
+                                                            <DeleteIcon color='error' onClick={() => { openDialogError(ele.ID_NV) }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
+
+                                </TableBody>
+                            </Table>
+                            <Box display="flex" alignItems={'center'} justifyContent={'flex-end'} marginRight={2} padding={2}>
+                                <FormControl sx={{ width: 80 }}>
+                                    <InputLabel id="demo-simple-select-label">Số dòng</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        label={'Số dòng'}
+                                        value={rowPage}
+                                        onChange={(e) => { changeRowPage(e) }}
+                                    >
+                                        {listPage.length > 0 && listPage.map(ele => (
+                                            <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <Tooltip title={'Chuyển về trang trước'} sx={{ marginRight: 1 }}>
+                                    <IconButton onClick={revertPage}>
+                                        <KeyboardArrowLeftIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Typography>{page * rowPage - rowPage + 1 + " - " + page * rowPage}</Typography>
+                                <Tooltip title={'Chuyển tới trang sau'} sx={{ marginLeft: 1 }}>
+                                    <IconButton onClick={nextPage}>
+                                        <KeyboardArrowRightIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Typography>{'Tổng trang: ' + maxPage}</Typography>
+                            </Box>
+                        </TableContainer>
+                    </>
+                }
+
             </MainCard>
             <AddStaff
                 open={dialogstaff}
