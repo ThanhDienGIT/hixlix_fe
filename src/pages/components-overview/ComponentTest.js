@@ -56,6 +56,7 @@ function ComponentTest() {
     const [searchStatus, setSearchStatus] = useState(0)
     const [loading, setLoading] = useState(false)
     const [loadingInitial, setLoadingInitial] = useState(false)
+    const [startIndex, setStartIndex] = useState(1);
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -150,6 +151,20 @@ function ComponentTest() {
         setRowPage(ele.target.value)
     }
 
+
+
+
+    const CallAPIPage = () => {
+        instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+            setMaxPage(res.data.last_page)
+            setData(res.data.data)
+            setAlloption(res.data.data)
+            // Tính toán số TT của trang hiện tại dựa trên số TT toàn cục và startIndex
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
+        }).catch(err => console.log(err))
+    }
+
     const CallAPI = () => {
         setLoadingInitial(true)
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
@@ -157,8 +172,32 @@ function ComponentTest() {
             setData(res.data.data)
             setAlloption(res.data.data)
             setLoadingInitial(false)
+            // Tính toán số TT của trang hiện tại dựa trên số TT toàn cục và startIndex
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
         }).catch(err => console.log(err))
+
+
     }
+
+    const CallAPIProps = () => {
+        if (searchStatus > 0) {
+            handleSearch()
+        }
+        else {
+
+            instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                // Tính toán số TT của trang hiện tại dựa trên số TT toàn cục và startIndex
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        }
+
+    }
+
     const getAllQuanHuyen = async () => {
         const response = await instance.get('getallquanhuyen');
 
@@ -175,7 +214,7 @@ function ComponentTest() {
 
     useEffect(() => {
         if (searchStatus === 0) {
-            CallAPI()
+            CallAPIPage()
         } else {
             handleSearch()
         }
@@ -188,6 +227,7 @@ function ComponentTest() {
         if (response.status === 200) {
             setXaphuong(response.data.xaphuong)
             setXa(0)
+            setAp(0)
         }
     }
 
@@ -202,6 +242,7 @@ function ComponentTest() {
 
 
     useEffect(() => {
+        CallAPI()
         getAllQuanHuyen()
         callAPIServiceList()
         callAPISupplier()
@@ -254,6 +295,8 @@ function ComponentTest() {
                 setAlloption(res.data.dskh.data)
                 setSearchStatus(1)
                 setLoading(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
             })
     }
 
@@ -407,6 +450,7 @@ function ComponentTest() {
                             <Table size='small'>
                                 <TableHead sx={{ backgroundColor: '#0099ff' }} >
                                     <TableRow>
+                                        <TableCell sx={{ color: 'white' }}>STT </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell>
                                         {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell> */}
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số điện thoại </TableCell>
@@ -425,6 +469,9 @@ function ComponentTest() {
                                     {data && data.length > 0 ? data.map((ele, index) => {
                                         return (
                                             <TableRow key={index}>
+                                                <TableCell>
+                                                    {startIndex + index}
+                                                </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.TEN_KH}
                                                 </TableCell>
@@ -538,7 +585,7 @@ function ComponentTest() {
                 wards={wards}
                 servicePointList={servicePointList}
                 idCustomer={idKhaoSat}
-                reloadApi={CallAPI}
+                reloadApi={CallAPIProps}
             />
             <AssignmentCustomer
                 open={dialogPhanCong}
@@ -549,14 +596,14 @@ function ComponentTest() {
                 handleClose={closeDialogCustomer}
                 district={quanhuyen}
                 wards={wards}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
             />
             <EditCustomer
                 open={dialogEdit}
                 handleClose={closeDialogEdit}
                 district={quanhuyen}
                 wards={wards}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 idkhachhang={idKhachHang}
             />
             <DiaLogSuccess
@@ -566,7 +613,7 @@ function ComponentTest() {
                 open={dialogError}
                 handleClose={closeDialogError}
                 idkhachhang={idKhachHang}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 content={"Xác nhận xóa khách hàng này ?"}
             />
             <DetailCustomer

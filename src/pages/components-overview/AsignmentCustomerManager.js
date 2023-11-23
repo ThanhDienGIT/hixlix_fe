@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ComponentSkeleton from './ComponentSkeleton'
 import MainCard from 'components/MainCard'
-import { Stack ,Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
+import { Stack, Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '../../../node_modules/@mui/material/index'
 import LixDialog from 'pages/component/LixDialog'
 import AddCustomer from 'pages/component/AddCustomer'
 import EditCustomer from 'pages/component/EditCustomer'
@@ -60,6 +60,7 @@ function AssignmentCustomerManager() {
     const [searchStatus, setSearchStatus] = useState(0)
     const [loading, setLoading] = useState(false)
     const [loadingInitial, setLoadingInitial] = useState(false)
+    const [startIndex, setStartIndex] = useState(1);
 
 
     const callAPIServiceList = () => {
@@ -150,14 +151,44 @@ function AssignmentCustomerManager() {
         setRowPage(ele.target.value)
     }
 
-    const CallAPI = () => {
-        setLoadingInitial(true)
+    const CallAPIPage = () => {
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
             setAlloption(res.data.data)
-            setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
         }).catch(err => console.log(err))
+    }
+
+    const CallAPI = () => {
+            setLoadingInitial(true)
+            instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                setLoadingInitial(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        
+
+    }
+
+    const CallAPIProps = () => {
+        if (searchStatus > 0) {
+            handleSearch()
+        }
+        else {
+            instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        }
+
     }
 
     const getNV = () => {
@@ -181,7 +212,7 @@ function AssignmentCustomerManager() {
 
     useEffect(() => {
         if (searchStatus === 0) {
-            CallAPI()
+            CallAPIPage()
         } else {
             handleSearch()
         }
@@ -194,6 +225,7 @@ function AssignmentCustomerManager() {
         if (response.status === 200) {
             setXaphuong(response.data.xaphuong)
             setXa(0)
+            setAp(0)
         }
     }
 
@@ -208,6 +240,7 @@ function AssignmentCustomerManager() {
 
 
     useEffect(() => {
+        CallAPI()
         getAllQuanHuyen()
         callAPIServiceList()
         setProvider([
@@ -288,6 +321,8 @@ function AssignmentCustomerManager() {
                 setAlloption(res.data.dskh.data)
                 setSearchStatus(1)
                 setLoading(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
             })
     }
 
@@ -464,6 +499,7 @@ function AssignmentCustomerManager() {
                                             onChange={handleSelectAll}
                                             color="secondary"
                                         /></TableCell>
+                                        <TableCell sx={{ color: 'white' }}> STT </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên khách hàng </TableCell>
                                         {/* <TableCell sx={{ color: 'white' }}> Tên khách hàng </TableCell> */}
                                         {/* <TableCell sx={{ color: 'white'}}> Số điện thoại </TableCell> */}
@@ -489,6 +525,11 @@ function AssignmentCustomerManager() {
                                                         checked={selectedRows.includes(ele.ID_KH)} // Kiểm tra nếu id_kh đã được chọn
                                                         onChange={() => handleCheckboxChange(ele.ID_KH)} // Sử dụng hàm xử lý khi checkbox thay đổi
                                                         color="secondary" />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableCell>
+                                                        {startIndex + index}
+                                                    </TableCell>
                                                 </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.TEN_KH}
@@ -592,21 +633,21 @@ function AssignmentCustomerManager() {
                 handleClose={closeDialogPhanCong}
                 phancong={selectedRows}
                 nv={nv}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
             />
             <AddCustomer
                 open={dialogCustomer}
                 handleClose={closeDialogCustomer}
                 district={quanhuyen}
                 wards={wards}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
             />
             <EditCustomer
                 open={dialogEdit}
                 handleClose={closeDialogEdit}
                 district={quanhuyen}
                 wards={wards}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 idkhachhang={idKhachHang}
             />
             <DiaLogSuccess
@@ -616,7 +657,7 @@ function AssignmentCustomerManager() {
                 open={dialogError}
                 handleClose={closeDialogError}
                 idkhachhang={idKhachHang}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 content={"Xác nhận xóa khách hàng này ?"}
             />
             <DetailCustomer
