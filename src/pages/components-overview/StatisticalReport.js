@@ -73,6 +73,7 @@ function StatisticalReport() {
   const [loadingSearch, setLoadingSearch] = useState(false)
   const [display, setDisplay] = useState(0)
   const [loadingInitial, setLoadingInitial] = useState(false)
+  const [startIndex, setStartIndex] = useState(1);
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -149,6 +150,15 @@ function StatisticalReport() {
   const changeRowPage = (ele) => {
     setRowPage(ele.target.value)
   }
+  const CallAPIPage = () => {
+    instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
+      setMaxPage(res.data.last_page)
+      setData(res.data.data)
+      setAlloption(res.data.data)
+      const newStartIndex = (page - 1) * rowPage + 1;
+      setStartIndex(newStartIndex);
+    }).catch(err => console.log(err))
+  }
 
   const CallAPI = () => {
     setLoadingInitial(true)
@@ -157,6 +167,8 @@ function StatisticalReport() {
       setData(res.data.data)
       setAlloption(res.data.data)
       setLoadingInitial(false)
+      const newStartIndex = (page - 1) * rowPage + 1;
+      setStartIndex(newStartIndex);
     }).catch(err => console.log(err))
   }
   const getAllQuanHuyen = async () => {
@@ -175,7 +187,7 @@ function StatisticalReport() {
 
   useEffect(() => {
     if (searchStatus === 0) {
-      CallAPI()
+      CallAPIPage()
     } else {
       handleSearch()
     }
@@ -187,6 +199,7 @@ function StatisticalReport() {
     if (response.status === 200) {
       setXaphuong(response.data.xaphuong)
       setXa(0)
+      setAp(0)
     }
   }
 
@@ -201,6 +214,7 @@ function StatisticalReport() {
 
 
   useEffect(() => {
+    CallAPI()
     getAllQuanHuyen()
     callAPIServiceList()
     setProvider([
@@ -279,6 +293,8 @@ function StatisticalReport() {
         setAlloption(res.data.dstk.data)
         setSearchStatus(1)
         setLoadingSearch(false)
+        const newStartIndex = (page - 1) * rowPage + 1;
+        setStartIndex(newStartIndex);
       })
   }
 
@@ -614,6 +630,7 @@ function StatisticalReport() {
               <Table size='small'>
                 <TableHead sx={{ backgroundColor: '#0099ff' }} >
                   <TableRow>
+                    <TableCell sx={{ color: 'white' }}>STT </TableCell>
                     {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tỉnh </TableCell>
       <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Quận/ Huyện </TableCell>
       <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
@@ -624,6 +641,7 @@ function StatisticalReport() {
       <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Số nhân khẩu </TableCell>
       <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> CCCD </TableCell> */}
                     <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Người đứng tên hợp đồng </TableCell>
+                    <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
                     {/* <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT người đứng tên HĐ </TableCell>
       <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Account </TableCell> */}
                     <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhà cung cấp </TableCell>
@@ -647,6 +665,9 @@ function StatisticalReport() {
                   {data.map((ele, index) => {
                     return (
                       <TableRow key={index}>
+                        <TableCell>
+                          {startIndex + index}
+                        </TableCell>
                         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
             Hậu Giang
           </TableCell>
@@ -676,6 +697,9 @@ function StatisticalReport() {
           </TableCell> */}
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
                           {ele.TENKHACHHANGDAIDIEN_CTPKS}
+                        </TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                          {ele.DIACHI_KH}
                         </TableCell>
                         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
             {ele.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS}

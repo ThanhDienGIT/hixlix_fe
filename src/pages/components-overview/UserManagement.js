@@ -40,6 +40,7 @@ function UserManagement() {
     const [status, setStatus] = useState(5);
     const [searchStatus, setSearchStatus] = useState(0)
     const [loadingInitial, setLoadingInitial] = useState(false)
+    const [startIndex, setStartIndex] = useState(1);
     // const [user, setUser] = useState({
     //     TEN_NV: '',
     //     SDT_NV: '',
@@ -108,20 +109,50 @@ function UserManagement() {
         setRowPage(ele.target.value)
     }
 
-    const CallAPI = async () => {
+    const CallAPIPage = async () => {
         setLoadingInitial(true)
         await instance.get(`get_danhsachnguoidung/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
             setAlloption(res.data.data)
             setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
         }).catch(err => console.log(err))
+    }
+
+    const CallAPI = async () => {
+            setLoadingInitial(true)
+            await instance.get(`get_danhsachnguoidung/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                setLoadingInitial(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+    }
+
+    const CallAPIProps = async () => {
+        if (searchStatus > 0) {
+            handleSearch()
+        }
+        else {
+            await instance.get(`get_danhsachnguoidung/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        }
+
     }
 
 
     useEffect(() => {
         if (searchStatus === 0) {
-            CallAPI()
+            CallAPIPage()
         } else {
             handleSearch()
         }
@@ -129,6 +160,7 @@ function UserManagement() {
 
 
     useEffect(() => {
+        CallAPI();
     }, []);
 
 
@@ -155,6 +187,8 @@ function UserManagement() {
                 setAlloption(res.data.dsuser.data)
                 setSearchStatus(1)
                 setLoading(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
             })
     }
 
@@ -307,6 +341,7 @@ function UserManagement() {
                             <Table size='small'>
                                 <TableHead sx={{ backgroundColor: '#0099ff' }} >
                                     <TableRow>
+                                        <TableCell sx={{ color: 'white' }}> STT</TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên người dùng </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
@@ -321,6 +356,9 @@ function UserManagement() {
                                     {data.filter((ele) => ele.ID_NV !== user.id_nv && ele.CHUCVU_NV !== 2).map((ele, index) => {
                                         return (
                                             <TableRow key={index}>
+                                                <TableCell>
+                                                    {startIndex + index}
+                                                </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.TEN_NV}
                                                 </TableCell>
@@ -412,12 +450,12 @@ function UserManagement() {
             <AddStaff
                 open={dialogstaff}
                 handleClose={closeDialogStaff}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
             />
             <EditStaff
                 open={dialogEdit}
                 handleClose={closeDialogEdit}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 idstaff={idstaff}
             />
             <DiaLogSuccess
@@ -427,7 +465,7 @@ function UserManagement() {
                 open={dialogError}
                 handleClose={closeDialogError}
                 idstaff={idstaff}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 content={"Xác nhận xóa tài khoản của người dùng này?"}
             />
 

@@ -35,6 +35,8 @@ function SupplierManagement() {
     const [alloption, setAlloption] = useState([]);
     const [searchStatus, setSearchStatus] = useState(0)
     const [loadingInitial, setLoadingInitial] = useState(false)
+    const [startIndex, setStartIndex] = useState(1);
+
 
 
 
@@ -89,21 +91,54 @@ function SupplierManagement() {
     const changeRowPage = (ele) => {
         setRowPage(ele.target.value)
     }
-
-    const CallAPI = async () => {
+    const CallAPIPage = async () => {
         setLoadingInitial(true)
         await instance.get(`get_danhsachnhacungcap/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
             setAlloption(res.data.data)
             setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
         }).catch(err => console.log(err))
+    }
+
+    const CallAPI = async () => {
+
+            setLoadingInitial(true)
+            await instance.get(`get_danhsachnhacungcap/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                setLoadingInitial(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        
+
+    }
+
+    const CallAPIProps = async () => {
+        if (searchStatus > 0) {
+            handleSearch()
+        }
+        else {
+           
+            await instance.get(`get_danhsachnhacungcap/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        }
+
     }
 
 
     useEffect(() => {
         if (searchStatus === 0) {
-            CallAPI()
+            CallAPIPage()
         } else {
             handleSearch()
         }
@@ -111,6 +146,7 @@ function SupplierManagement() {
 
 
     useEffect(() => {
+        CallAPI()
         setSearchInput('')
     }, []);
 
@@ -135,6 +171,8 @@ function SupplierManagement() {
                 setAlloption(res.data.dsspl.data)
                 setSearchStatus(1)
                 setLoading(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
             })
     }
 
@@ -247,6 +285,7 @@ function SupplierManagement() {
                             <Table size='small'>
                                 <TableHead sx={{ backgroundColor: '#0099ff' }} >
                                     <TableRow>
+                                        <TableCell sx={{ color: 'white' }}> STT </TableCell>
                                         <TableCell sx={{ color: 'white' }}> Tên nhà cung cấp </TableCell>
                                         <TableCell sx={{ color: 'white' }}> Ghi chú </TableCell>
                                         <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
@@ -256,6 +295,9 @@ function SupplierManagement() {
                                     {data.map((ele, index) => {
                                         return (
                                             <TableRow key={index}>
+                                                <TableCell>
+                                                    {startIndex + index}
+                                                </TableCell>
                                                 <TableCell>
                                                     {ele.TEN_NCC}
                                                 </TableCell>
@@ -315,12 +357,12 @@ function SupplierManagement() {
             <AddSupplier
                 open={dialogSupplier}
                 handleClose={closeDialogSupplier}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
             />
             <EditSupplier
                 open={dialogEdit}
                 handleClose={closeDialogEdit}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 idsupplier={idsupplier}
             />
             <DiaLogSuccess
@@ -330,7 +372,7 @@ function SupplierManagement() {
                 open={dialogError}
                 handleClose={closeDialogError}
                 idsupplier={idsupplier}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 content={"Xác nhận xóa danh mục nhà cung cấp này?"}
             />
 

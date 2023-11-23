@@ -37,6 +37,7 @@ function ServiceManagement() {
     const [service, setService] = useState(0);
     const [searchStatus, setSearchStatus] = useState(0)
     const [loadingInitial, setLoadingInitial] = useState(false)
+    const [startIndex, setStartIndex] = useState(1);
 
     const callAPIServiceList = () => {
         instance.get('dichvu')
@@ -97,14 +98,44 @@ function ServiceManagement() {
         setRowPage(ele.target.value)
     }
 
-    const CallAPI = async () => {
-        setLoadingInitial(true)
+    const CallAPIPage = async () => {
         await instance.get(`get_danhsachdichvu/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
             setAlloption(res.data.data)
-            setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
         }).catch(err => console.log(err))
+    }
+
+    const CallAPI = async () => {
+            setLoadingInitial(true)
+            await instance.get(`get_danhsachdichvu/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                setLoadingInitial(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        
+
+    }
+
+    const CallAPIProps = async () => {
+        if (searchStatus > 0) {
+            handleSearch()
+        }
+        else {
+            await instance.get(`get_danhsachdichvu/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
+            }).catch(err => console.log(err))
+        }
+
     }
     const CallAPIGetServiceType = async () => {
         await instance.get(`getServiceType`).then(res => {
@@ -114,7 +145,7 @@ function ServiceManagement() {
 
     useEffect(() => {
         if (searchStatus === 0) {
-            CallAPI()
+            CallAPIPage()
         } else {
             handleSearch()
         }
@@ -122,6 +153,7 @@ function ServiceManagement() {
 
 
     useEffect(() => {
+        CallAPI()
         callAPIServiceList()
         CallAPIGetServiceType()
     }, []);
@@ -148,6 +180,8 @@ function ServiceManagement() {
                 setAlloption(res.data.dsdv.data)
                 setSearchStatus(1)
                 setLoading(false)
+                const newStartIndex = (page - 1) * rowPage + 1;
+                setStartIndex(newStartIndex);
             })
     }
 
@@ -258,6 +292,7 @@ function ServiceManagement() {
                                 <Table size='small'>
                                     <TableHead sx={{ backgroundColor: '#0099ff' }} >
                                         <TableRow>
+                                            <TableCell sx={{ color: 'white' }}> STT </TableCell>
                                             <TableCell sx={{ color: 'white' }}> Tên dịch vụ </TableCell>
                                             <TableCell sx={{ color: 'white' }}> Loại dịch vụ </TableCell>
                                             <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
@@ -267,6 +302,9 @@ function ServiceManagement() {
                                         {data.map((ele, index) => {
                                             return (
                                                 <TableRow key={index}>
+                                                    <TableCell>
+                                                        {startIndex + index}
+                                                    </TableCell>
                                                     <TableCell>
                                                         {ele.TEN_DV}
                                                     </TableCell>
@@ -327,13 +365,13 @@ function ServiceManagement() {
             <AddService
                 open={dialogService}
                 handleClose={closeDialogService}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 servicetype={defaultService}
             />
             <EditService
                 open={dialogEdit}
                 handleClose={closeDialogEdit}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 idservice={idservice}
                 servicetype={defaultService}
             />
@@ -344,7 +382,7 @@ function ServiceManagement() {
                 open={dialogError}
                 handleClose={closeDialogError}
                 idservice={idservice}
-                callApi={CallAPI}
+                callApi={CallAPIProps}
                 content={"Xác nhận xóa danh mục dịch vụ này?"}
             />
 
