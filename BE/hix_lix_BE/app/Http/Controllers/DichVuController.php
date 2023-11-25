@@ -223,7 +223,7 @@ class DichVuController extends Controller
             ]);
         return response()->json(['status' => 'success', 'message' => 'Xóa nhà cung cấp thành công'], 201);
     }
-    
+
 
     public function getAllServices($count)
     {
@@ -244,6 +244,15 @@ class DichVuController extends Controller
                 0
             )
             ->paginate($count);
+        return response()->json($result, 200);
+    }
+    public function get_danhsachnhacungcapapi()
+    {
+        $result = DB::table('nha_cung_cap')
+            ->where(
+                'is_deleted',
+                0
+            )->get();
         return response()->json($result, 200);
     }
     public function getServiceType()

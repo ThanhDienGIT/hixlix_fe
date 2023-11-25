@@ -36,6 +36,7 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/get_danhsachbaocaophieu/{count}', [danhsachkhachhang::class, 'get_danhsachbaocaophieu']);
         Route::get('/get_danhsachdichvu/{count}', [DichVuController::class, 'getAllServices']);
         Route::get('/get_danhsachnhacungcap/{count}', [DichVuController::class, 'get_danhsachnhacungcap']);
+        Route::get('/get_danhsachnhacungcapapi', [DichVuController::class, 'get_danhsachnhacungcapapi']);
 
         Route::get('/getServiceType', [DichVuController::class, 'getServiceType']);
         Route::post('/search-dv/{count}', [DichVuController::class, 'search']);
