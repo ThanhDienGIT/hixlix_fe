@@ -212,25 +212,35 @@ function StatisticalReport() {
     }
   }
 
+  const getDSNhaCungCap = async () => {
+    const response = await instance.get('get_danhsachnhacungcapapi');
+
+    if (response.status === 200) {
+      setProvider(response.data)
+    }
+  }
+
+
 
   useEffect(() => {
     CallAPI()
     getAllQuanHuyen()
     callAPIServiceList()
-    setProvider([
-      {
-        ID_NHACUNGCAP: 1,
-        TEN_NHACUNGCAP: "Viettel",
-      },
-      {
-        ID_NHACUNGCAP: 2,
-        TEN_NHACUNGCAP: "VNPT",
-      },
-      {
-        ID_NHACUNGCAP: 3,
-        TEN_NHACUNGCAP: "FPT",
-      },
-    ])
+    getDSNhaCungCap()
+    // setProvider([
+    //   {
+    //     ID_NHACUNGCAP: 1,
+    //     TEN_NHACUNGCAP: "Viettel",
+    //   },
+    //   {
+    //     ID_NHACUNGCAP: 2,
+    //     TEN_NHACUNGCAP: "VNPT",
+    //   },
+    //   {
+    //     ID_NHACUNGCAP: 3,
+    //     TEN_NHACUNGCAP: "FPT",
+    //   },
+    // ])
     setWards([
       {
         ID_DVHC: 1,
@@ -503,9 +513,9 @@ function StatisticalReport() {
                     <MenuItem value={0}>
                       Tất cả
                     </MenuItem>
-                    {provider && provider.filter(x => x.TEN_NHACUNGCAP !== null).map(ele => {
+                    {provider && provider.filter(x => x.TEN_NCC !== null).map(ele => {
                       return (
-                        <MenuItem key={ele.ID_NHACUNGCAP} value={ele.ID_NHACUNGCAP}>{ele.TEN_NHACUNGCAP}</MenuItem>
+                        <MenuItem key={ele.ID_NCC} value={ele.ID_NCC}>{ele.TEN_NCC}</MenuItem>
                       )
                     })}
                   </Select>

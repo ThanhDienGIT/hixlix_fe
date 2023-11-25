@@ -15,20 +15,28 @@ class NhanVienController extends Controller
     {
         if (!empty($request->keywords)) {
 
+
+
             $user = DB::table('nhan_vien')
-                ->where('TEN_NV', 'like', '%' . $request->keywords . '%')
-                ->orWhere('SDT_NV', 'like', '%' . $request->keywords . '%')
-                ->orWhere('DIACHI_NV', 'like', '%' . $request->keywords . '%')
-                ->orWhere('EMAIL_NV', 'like', '%' . $request->keywords . '%')
-                ->orWhere('TAIKHOAN_NV', 'like', '%' . $request->keywords . '%');
+                ->where(function ($query) use ($request) {
+                    $query->where('TEN_NV', 'like', '%' . $request->keywords . '%')
+                        ->orWhere('SDT_NV', 'like', '%' . $request->keywords . '%')
+                        ->orWhere('DIACHI_NV', 'like', '%' . $request->keywords . '%')
+                        ->orWhere('EMAIL_NV', 'like', '%' . $request->keywords . '%')
+                        ->orWhere('TAIKHOAN_NV', 'like', '%' . $request->keywords . '%');
+                })
+                ->where(function ($query) use ($request) {
+                    if ($request->TRANGTHAI_NV !== 5) {
+                        $query->where('nhan_vien.TRANGTHAI_NV', $request->TRANGTHAI_NV);
+                    }
 
-            if ($request->TRANGTHAI_NV !== 5) {
-                $user->where('nhan_vien.TRANGTHAI_NV', $request->TRANGTHAI_NV);
-            }
+                    if ($request->CHUCVU_NV !== 5) {
+                        $query->where('nhan_vien.CHUCVU_NV', $request->CHUCVU_NV);
+                    }
+                });
 
-            if ($request->CHUCVU_NV !== 5) {
-                $user->where('nhan_vien.CHUCVU_NV', $request->CHUCVU_NV);
-            }
+
+
 
             $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
                 ->paginate($count);
