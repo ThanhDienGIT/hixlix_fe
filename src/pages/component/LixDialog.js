@@ -4,7 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
+import { Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography, Checkbox, FormControlLabel } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { format } from 'date-fns';
@@ -25,7 +25,7 @@ function LixDialog(props) {
     const [typeService, setTypeService] = useState([])
     const [serviceList, setServiceList] = useState([])
     const [idTypeService, setIdTypeService] = useState(0)
-
+    const [statusBO, setStatusBO] = useState(false)
     const alertError = (string) => {
         setContenNotifi(string)
         setOpenAlertError(true)
@@ -154,15 +154,15 @@ function LixDialog(props) {
         reloadDataBack()
         setIdTypeService(e.target.value);
         await instance.get('getAllSVById/' + e.target.value)
-        .then((res) => {
-            setServiceList(res.data)
-        })
-        .catch(err => console.log(err))
-       
+            .then((res) => {
+                setServiceList(res.data)
+            })
+            .catch(err => console.log(err))
+
     };
 
 
-    
+
 
 
     const getInfoCustomer = (id) => {
@@ -171,10 +171,10 @@ function LixDialog(props) {
 
     const getTypeOfService = async () => {
         await instance.get('getServiceType')
-        .then((res) => {
-            setTypeService(res.data)
-        })
-        .catch(err => console.log(err))
+            .then((res) => {
+                setTypeService(res.data)
+            })
+            .catch(err => console.log(err))
     }
 
     useEffect(() => {
@@ -258,7 +258,7 @@ function LixDialog(props) {
         })
         setIdTypeService(0)
     }
-
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
     const callAPI = () => {
         instance.get(`getLix_By_IdCustomer_and_IdService/${props.idCustomer}/${service.ID_DV}/${1}`)
@@ -494,6 +494,34 @@ function LixDialog(props) {
                                 </Select>
                             </FormControl>
                             <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+
+                            <FormControlLabel
+                                label="Phiếu BO"
+                                size={'large'}
+                                disabled={service.ID_DV !== 0 ? false : true}
+                                {...label}
+                                control={<Checkbox checked={statusBO} onChange={(e) => { setStatusBO(e.target.checked) }} />}
+                            />
+                            {statusBO ? 
+                            <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                <InputLabel>Đánh giá BO </InputLabel>
+                                <Select
+                                    value={service.CANNHANPHUCVU_CTPKS}
+                                    name="CANNHANPHUCVU_CTPKS"
+                                    onChange={(e) => { onChangeservice(e) }}
+                                    disabled={service.ID_DV !== 0 ? false : true}
+                                >
+                                    {props.servicePointList && props.servicePointList.map(ele => {
+                                        return (
+                                            <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl> 
+                            : ""}
+                           
+
+
                         </CardContent>
                     </Card>
                 </Box>
