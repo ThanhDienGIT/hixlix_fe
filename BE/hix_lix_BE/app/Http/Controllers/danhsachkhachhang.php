@@ -195,12 +195,12 @@ class danhsachkhachhang extends Controller
                             ->orWhere('CAMNHANDICHVU_CTPKS', intval($request->keywords))
                             ->orWhere('CANNHANPHUCVU_CTPKS', intval($request->keywords));
 
-                            // ->orWhere(function ($query) use ($request) {
-                            //     if (is_numeric($request->keywords)) {
-                            //         $query->where('CAMNHANDICHVU_CTPKS', intval($request->keywords))
-                            //             ->orWhere('CANNHANPHUCVU_CTPKS', intval($request->keywords));
-                            //     }
-                            // });
+                        // ->orWhere(function ($query) use ($request) {
+                        //     if (is_numeric($request->keywords)) {
+                        //         $query->where('CAMNHANDICHVU_CTPKS', intval($request->keywords))
+                        //             ->orWhere('CANNHANPHUCVU_CTPKS', intval($request->keywords));
+                        //     }
+                        // });
                         if ($dateObject != false) {
                             $formatDate = $dateObject->format('Y/m/d');
                             $query->orWhere(function ($query) use ($formatDate) {
@@ -243,6 +243,9 @@ class danhsachkhachhang extends Controller
                         if ($request->DICHVU !== 0) {
                             $query->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
                         }
+                        if ($request->NHANVIEN !== 0) {
+                            $query->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                        }
                         if ($request->TUNGAY !== '' && $request->DENNGAY != '') {
                             // Chuyển đổi định dạng ngày
                             $startDate = str_replace('/', '-', $request->TUNGAY);
@@ -259,7 +262,7 @@ class danhsachkhachhang extends Controller
 
                     ->select('nhan_vien.ID_NV', 'nhan_vien.TEN_NV', 'chi_tiet_phieu_khao_sat_lix.*', 'phieu_khao_sat.*', 'nha_cung_cap.*', 'khach_hang.*', 'dich_vu.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
                     ->paginate($count);
-                
+
 
                 // Thực hiện truy vấn ở đây
 
@@ -287,12 +290,12 @@ class danhsachkhachhang extends Controller
                             ->orWhere('CAMNHANDICHVU_CTPKS', intval($request->keywords))
                             ->orWhere('CANNHANPHUCVU_CTPKS', intval($request->keywords));
 
-                            // ->orWhere(function ($query) use ($request) {
-                            //     if (is_numeric($request->keywords)) {
-                            //         $query->where('CAMNHANDICHVU_CTPKS', intval($request->keywords))
-                            //             ->orWhere('CANNHANPHUCVU_CTPKS', intval($request->keywords));
-                            //     }
-                            // });
+                        // ->orWhere(function ($query) use ($request) {
+                        //     if (is_numeric($request->keywords)) {
+                        //         $query->where('CAMNHANDICHVU_CTPKS', intval($request->keywords))
+                        //             ->orWhere('CANNHANPHUCVU_CTPKS', intval($request->keywords));
+                        //     }
+                        // });
                         if ($dateObject != false) {
                             $formatDate = $dateObject->format('Y/m/d');
                             $query->orWhere(function ($query) use ($formatDate) {
@@ -334,6 +337,9 @@ class danhsachkhachhang extends Controller
                         }
                         if ($request->DICHVU !== 0) {
                             $query->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                        }
+                        if ($request->NHANVIEN !== 0) {
+                            $query->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
                         }
                         if ($request->TUNGAY !== '' && $request->DENNGAY != '') {
                             // Chuyển đổi định dạng ngày
@@ -396,6 +402,9 @@ class danhsachkhachhang extends Controller
                 if ($request->DICHVU !== 0) {
                     $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
                 }
+                if ($request->NHANVIEN !== 0) {
+                    $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                }
                 if ($request->TUNGAY !== '' && $request->DENNGAY != '') {
                     // Chuyển đổi định dạng ngày
                     $startDate = str_replace('/', '-', $request->TUNGAY);
@@ -453,6 +462,9 @@ class danhsachkhachhang extends Controller
                 }
                 if ($request->DICHVU !== 0) {
                     $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+                if ($request->NHANVIEN !== 0) {
+                    $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
                 }
                 if ($request->TUNGAY !== '' && $request->DENNGAY != '') {
                     // Chuyển đổi định dạng ngày

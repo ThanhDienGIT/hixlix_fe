@@ -21,7 +21,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
-import { format, isValid } from 'date-fns';
+import { format, isValid, startOfMonth } from 'date-fns';
 import Autocomplete from '@mui/material/Autocomplete';
 // import AnimateButton from 'components/@extended/AnimateButton';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -37,6 +37,7 @@ function StatisticalReport() {
 
   const today = new Date();
   const formattedToday = format(today, 'yyyy/MM/dd');
+  const formattedFirstDateOfMonth = format(startOfMonth(new Date()), 'yyyy/MM/dd');
 
   const { token } = useContext(TokenContext);
   token
@@ -66,7 +67,8 @@ function StatisticalReport() {
   const [ap, setAp] = useState(0)
   const [supplier, setSupplier] = useState(0);
   const [service, setService] = useState(0);
-  const [fromDate, setFromDate] = useState(formattedToday);
+  const [chooseNv, setChooseNv] = useState(0);
+  const [fromDate, setFromDate] = useState(formattedFirstDateOfMonth);
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
   const [searchStatus, setSearchStatus] = useState(0)
@@ -74,6 +76,7 @@ function StatisticalReport() {
   const [display, setDisplay] = useState(0)
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
+  const [nv, setNv] = useState([])
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -292,6 +295,7 @@ function StatisticalReport() {
       MAAP_KH: ap,
       NHACUNGCAP: supplier,
       DICHVU: service,
+      NHANVIEN: chooseNv,
       TUNGAY: fromDate,
       DENNGAY: toDate
     }
@@ -352,9 +356,16 @@ function StatisticalReport() {
   //   CallAPI()
   // }
 
+  const getNV = () => {
+    instance.get(`getNV`).then(res => {
+      setNv(res.data.dsnv)
+    }).catch(err => console.log(err))
+  }
+
   useEffect(() => {
     if (display === 0) {
       CallAPI()
+      getNV()
     }
     else {
       handleSearch()
@@ -541,6 +552,29 @@ function StatisticalReport() {
                     })}
                   </Select>
                 </FormControl>
+
+                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                  <InputLabel id="demo-select-small-label">Nhân viên khảo sát</InputLabel>
+                  <Select
+                    disabled={display === 0}
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    label="Nhân viên khảo sát"
+                    value={chooseNv}
+                    onChange={(e) => setChooseNv(e.target.value)}
+                  >
+                    <MenuItem value={0}>
+                      Tất cả
+                    </MenuItem>
+                    {nv && nv.filter(x => x.TEN_NV !== null && (x.CHUCVU_NV !== 0 && x.CHUCVU_NV !== 2)).map(ele => {
+                      return (
+                        <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
+                      )
+                    })}
+                  </Select>
+                </FormControl>
+
+
 
                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}

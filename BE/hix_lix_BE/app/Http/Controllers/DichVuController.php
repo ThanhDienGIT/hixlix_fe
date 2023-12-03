@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class DichVuController extends Controller
 {
+    public function getTypeOfPay()
+    {
+        $hinhthucdong = DB::table('hinh_thuc_dong')->get();
+        return response()->json($hinhthucdong);
+    }
     public function dsnhacungcap()
     {
         $dsnhacungcap = DB::table('nha_cung_cap')->get();
