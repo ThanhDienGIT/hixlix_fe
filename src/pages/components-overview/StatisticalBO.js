@@ -459,12 +459,12 @@ function StatisticalBO() {
 
 
                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
-                  <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
+                  <InputLabel id="demo-select-small-label">Thang điểm BO</InputLabel>
                   <Select
                     disabled={display === 0}
                     labelId="demo-select-small-label"
                     id="demo-select-small"
-                    label="Chất lượng dịch vụ"
+                    label="Thang điểm BO"
                     value={qualityService}
                     onChange={(e) => setQualityService(e.target.value)}
                   >
