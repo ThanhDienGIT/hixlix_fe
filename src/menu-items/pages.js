@@ -58,7 +58,7 @@ const pages = {
       url: '/user-management',
       icon: ManageAccountsRoundedIcon,
       breadcrumbs: false,
-      role: [2, 0]
+      role: [2,0]
     }
   ]
 };

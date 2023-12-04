@@ -35,7 +35,7 @@ const dashboard = {
       url: '/table',
       icon: icons2.SolutionOutlined,
       breadcrumbs: false,
-      role: [1, 0, 2]
+      role: [1, 2]
     },
     // {
     //   id: 'surveyform',
@@ -50,6 +50,15 @@ const dashboard = {
       title: 'Thống kê & Báo cáo',
       type: 'item',
       url: '/statistical-report',
+      icon: BarChartRoundedIcon,
+      breadcrumbs: false,
+      role: [1, 0, 2]
+    },
+    {
+      id: 'statisticalBO',
+      title: 'Thống kê & Báo cáo (BO)',
+      type: 'item',
+      url: '/statistical-bo',
       icon: BarChartRoundedIcon,
       breadcrumbs: false,
       role: [1, 0, 2]

@@ -30,7 +30,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::group(['middleware' => 'jwt.auth'], function () {
         // Các route yêu cầu xác thực
         Route::get('/test', [testController::class, 'test']);
-
+        Route::get('/checktoken', [testController::class, 'checktoken']);
         //khach hang
         Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
         Route::get('/get_danhsachbaocaophieu/{count}', [danhsachkhachhang::class, 'get_danhsachbaocaophieu']);
