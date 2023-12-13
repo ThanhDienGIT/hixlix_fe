@@ -151,14 +151,14 @@ function DetailLix(props) {
                             <Grid item xs={6}>
                                 <Typography ><b>Tháng kết thúc đặt cọc:</b> <br /> {detail.NGAYKETTHUCDONGCOC_CTPKS && formatDate(detail.NGAYKETTHUCDONGCOC_CTPKS)}</Typography>
                             </Grid>
-                            <Grid item xs={6}>
+                            {/* <Grid item xs={6}>
                                 <Typography ><b>Thời gian lắp đặt:</b> <br /> {detail.THOIGIANLAPDAT_CTPKS && formatDate(detail.THOIGIANLAPDAT_CTPKS)}</Typography>
                             </Grid>
                             <Grid item xs={6}>
                                 <Typography ><b>Thời gian ngưng:</b> <br /> {detail.THOIGIANNGUNG_CTPKS && formatDate(detail.THOIGIANNGUNG_CTPKS)}</Typography>
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={6}>
-                                <Typography ><b>Nhân viên thu cước:</b> <br /> {detail.TEN_NV}</Typography>
+                                <Typography ><b>Nhân viên khảo sát:</b> <br /> {detail.TEN_NV}</Typography>
                             </Grid>
                         </Grid>
                     </Card>

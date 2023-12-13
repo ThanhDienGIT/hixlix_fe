@@ -5,6 +5,7 @@ import {
 //import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 // icons
 // const icons = {
 //   DashboardOutlined,FormatListBulletedIcon
@@ -51,6 +52,15 @@ const dashboard = {
       type: 'item',
       url: '/statistical-report',
       icon: BarChartRoundedIcon,
+      breadcrumbs: false,
+      role: [1, 0, 2]
+    },
+    {
+      id: 'statisticalBO',
+      title: 'Thống kê & Báo cáo (BO)',
+      type: 'item',
+      url: '/statistical-bo',
+      icon: InsightsRoundedIcon,
       breadcrumbs: false,
       role: [1, 0, 2]
     },

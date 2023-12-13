@@ -265,7 +265,8 @@ class Lix extends Controller
             if ($phieukhaosat) {
                 $dichvu = chi_tiet_phieu_khao_sat_lix::join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
                 ->join('loai_dich_vu', 'loai_dich_vu.ID_LDV', '=', 'dich_vu.ID_LDV')
-                ->where("ID_PKS", $phieukhaosat->ID_PKS)->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $Service)->first();
+                ->where("ID_PKS", $phieukhaosat->ID_PKS)->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $Service)
+                ->first();
                 if ($dichvu) {
                     return response()->json($dichvu, 200);
                 } else {
@@ -316,6 +317,8 @@ class Lix extends Controller
                     'THOIGIANLAPDAT_CTPKS'=> $request['THOIGIANLAPDAT_CTPKS'],
                     'THOIGIANNGUNG_CTPKS'=> $request['THOIGIANNGUNG_CTPKS'],
                     'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                    'BO' => $request['BO'],
+                    'DIEM_BO' => $request['DIEM_BO'],
                     'DIEMHAILONG_CTPKS' => $request['DIEMHAILONG_CTPKS'],
                     'CAMNHANDICHVU_CTPKS' => $request['CAMNHANDICHVU_CTPKS'],
                     'CANNHANPHUCVU_CTPKS' => $request['CANNHANPHUCVU_CTPKS'],
@@ -340,6 +343,8 @@ class Lix extends Controller
                     'THOIGIANNGUNG_CTPKS'=> $request->THOIGIANNGUNG_CTPKS,
                     'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
                     'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
+                    'BO' => $request->BO,
+                    'DIEM_BO' => $request->DIEM_BO,
                     'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
                     'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
                     'YKIENKHAC' => $request->YKIENKHAC,
@@ -383,6 +388,7 @@ class Lix extends Controller
                 'THOIGIANNGUNG_CTPKS'=> $request->THOIGIANNGUNG_CTPKS,
                 'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
                 'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
+                'DIEM_BO' => $request->DIEM_BO,
                 'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
                 'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
                 'YKIENKHAC' => $request->YKIENKHAC,

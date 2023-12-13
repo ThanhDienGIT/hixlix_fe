@@ -4,7 +4,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
+import { FormHelperText, Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
+import { Checkbox, FormControlLabel } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { format } from 'date-fns';
@@ -25,6 +26,10 @@ function LixEdit(props) {
     const [typeService, setTypeService] = useState([])
     const [serviceList, setServiceList] = useState([])
     const [idTypeService, setIdTypeService] = useState(0)
+    const [typeOfPay, setTypeOfPay] = useState([])
+    const [isError, setIsError] = useState(false)
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+
 
     const alertError = (string) => {
         setContenNotifi(string)
@@ -84,6 +89,8 @@ function LixEdit(props) {
         THOIGIANLAPDAT_CTPKS: "",
         THOIGIANNGUNG_CTPKS: "",
         NHACUNGCAP_CTPKS: 0,
+        BO: 0,
+        DIEM_BO: 0,
         DIEMHAILONG_CTPKS: 0,
         CAMNHANDICHVU_CTPKS: 0,
         CANNHANPHUCVU_CTPKS: 0,
@@ -150,6 +157,17 @@ function LixEdit(props) {
         }));
     };
 
+    const onChangeTypeOfPay = (e) => {
+        const { name, value } = e.target;
+
+        setService(prevTypeOfPay => ({
+            ...prevTypeOfPay,
+            [name]: value
+        }));
+    };
+
+
+
     const onChangeTypeOfservice = async (e) => {
         reloadDataBack()
         setIdTypeService(e.target.value);
@@ -174,18 +192,46 @@ function LixEdit(props) {
             .catch(err => console.log(err))
     }
 
+    const getTypeOfPay = async () => {
+        await instance.get('getTypeOfPay')
+            .then((res) => {
+                setTypeOfPay(res.data)
+            })
+            .catch(err => console.log(err))
+    }
+
+
     const getInitialData = async (id) => {
         await instance.get('getAllSVById/' + id)
-        .then((res) => {
-            setServiceList(res.data)
-        })
-        .catch(err => console.log(err))
+            .then((res) => {
+                setServiceList(res.data)
+            })
+            .catch(err => console.log(err))
     }
+
+    const onChangeBo = (e) => {
+        const { name } = e.target;
+        if (e.target.checked === false) {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 0
+            }));
+        }
+        else {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 1
+            }));
+        }
+
+    };
 
     useEffect(() => {
         if (props.idCustomer !== 0) {
             getInfoCustomer(props.idCustomer)
             getTypeOfService()
+            getTypeOfPay()
+            setIsError(false)
         }
     }, [props.idCustomer])
 
@@ -197,16 +243,44 @@ function LixEdit(props) {
 
     const createSurvey = () => {
         if (service.ID_DV !== 0) {
-            instance.post('AddEditLix', service)
-                .then(res => {
-                    alertSuccess(res.data);
-                    callAPI()
-                    props.reloadService(props.idCustomer)
-                })
-                .catch(err => {
-                    alertError(err)
-                    console.log(err)
-                })
+            if (service.NHACUNGCAP_CTPKS === 1) {
+                if (Number(service.HINHTHUCDONG_CTPKS) === 0 || service.TENKHACHHANGDAIDIEN_CTPKS === null
+                    || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null || service.ACCOUNTKHACHHANG_CTPKS === null
+                    || service.NGAYBATDAUDONGCOC_CTPKS === null || service.NGAYKETTHUCDONGCOC_CTPKS === null) {
+                    Number(service.NHACUNGCAP_CTPKS) === 1 ? setIsError(true) : setIsError(true)
+                }
+                else {
+                    instance.post('AddEditLix', service)
+                        .then(res => {
+                            alertSuccess(res.data);
+                            callAPI()
+                            props.reloadService(props.idCustomer)
+                        })
+                        .catch(err => {
+                            alertError(err)
+                            console.log(err)
+                        })
+                }
+            }
+            else {
+                if (Number(service.HINHTHUCDONG_CTPKS) === 0 || service.TENKHACHHANGDAIDIEN_CTPKS === null
+                    || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null) {
+                    Number(service.NHACUNGCAP_CTPKS) === 1 ? setIsError(true) : setIsError(true)
+                }
+                else {
+                    instance.post('AddEditLix', service)
+                        .then(res => {
+                            alertSuccess(res.data);
+                            callAPI()
+                            props.reloadService(props.idCustomer)
+                        })
+                        .catch(err => {
+                            alertError(err)
+                            console.log(err)
+                        })
+                }
+            }
+
         } else {
             alertError('Xin vui lòng chọn dịch vụ khảo sát')
         }
@@ -231,6 +305,8 @@ function LixEdit(props) {
             THOIGIANLAPDAT_CTPKS: "",
             THOIGIANNGUNG_CTPKS: "",
             NHACUNGCAP_CTPKS: 0,
+            BO: 0,
+            DIEM_BO: 0,
             DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
@@ -259,6 +335,8 @@ function LixEdit(props) {
             THOIGIANLAPDAT_CTPKS: "",
             THOIGIANNGUNG_CTPKS: "",
             NHACUNGCAP_CTPKS: 0,
+            BO: 0,
+            DIEM_BO: 0,
             DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
@@ -274,6 +352,7 @@ function LixEdit(props) {
 
 
     const callAPI = () => {
+        // alert(props.idctpks)
         instance.get(`getLix_By_IdCustomer_and_IdService/${props.idCustomer}/${service.ID_DV}/${1}`)
             .then(res => {
                 console.log(res.data)
@@ -294,6 +373,8 @@ function LixEdit(props) {
                         THOIGIANLAPDAT_CTPKS: "",
                         THOIGIANNGUNG_CTPKS: "",
                         NHACUNGCAP_CTPKS: 0,
+                        BO: 0,
+                        DIEM_BO: 0,
                         DIEMHAILONG_CTPKS: 0,
                         CAMNHANDICHVU_CTPKS: 0,
                         CANNHANPHUCVU_CTPKS: 0,
@@ -315,6 +396,16 @@ function LixEdit(props) {
     }
 
     useEffect(() => {
+        if (props.iddv && props.iddv !== 0) {
+            setService(prevService => ({
+                ...prevService,
+                ['ID_DV']: props.iddv
+            }));
+        }
+
+    }, [props.iddv])
+
+    useEffect(() => {
         if (props.idCustomer !== 0 && service.ID_DV !== 0) {
             callAPI()
             console.log(serviceList)
@@ -327,20 +418,23 @@ function LixEdit(props) {
     }, [service.ID_DV])
 
 
-    useEffect(() => {
-        if (props.iddv && props.iddv !== 0) {
-            setService(prevService => ({
-                ...prevService,
-                ['ID_DV']: props.iddv
-            }));
-        }
-
-    }, [props.iddv])
+    // useEffect(() => {
+    //     if (props.open === true)
+    //     {
+    //         callAPI()
+    //     }
+        
+    // }, [props.open])
 
 
 
 
-    console.log(service)
+    
+
+
+
+
+    console.log(props.open)
 
     return (
         <Dialog
@@ -382,8 +476,6 @@ function LixEdit(props) {
                                 </Select>
                             </FormControl>
 
-
-
                             <FormControl fullwidth sx={{ marginTop: 2 }}>
                                 <InputLabel>Dịch vụ</InputLabel>
                                 <Select
@@ -409,6 +501,7 @@ function LixEdit(props) {
                                     onChange={(e) => { onChangeservice(e) }}
                                     label='Nhà cung cấp'
                                     disabled={service.ID_DV !== 0 ? false : true}
+                                    {...(service.NHACUNGCAP_CTPKS === 0 ? { error: isError } : {})}
                                 >
                                     <MenuItem value={0}>Chọn nhà cung cấp</MenuItem>
                                     {props.provider && props.provider.map(ele => {
@@ -418,12 +511,37 @@ function LixEdit(props) {
                                     })}
 
                                 </Select>
+                                <FormHelperText sx={{ color: 'red' }}>{isError && service.NHACUNGCAP_CTPKS === 0 && 'Vui lòng chọn nhà cung cấp dịch vụ'}</FormHelperText>
                             </FormControl>
-                            <TextField label="Mức cước/tháng" type={'number'} sx={{ marginTop: 2 }} value={service.MUCCUOC_CTPKS} name={'MUCCUOC_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                            <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} value={service.HINHTHUCDONG_CTPKS} name={'HINHTHUCDONG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                            <TextField label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.TENKHACHHANGDAIDIEN_CTPKS} name={'TENKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                            <TextField label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} name={'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                            <TextField label="Account BRCĐ" sx={{ marginTop: 2 }} value={service.ACCOUNTKHACHHANG_CTPKS} name={'ACCOUNTKHACHHANG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            <TextField {...(isError && (service.MUCCUOC_CTPKS === '' || service.MUCCUOC_CTPKS === null) ? { error: true, helperText: 'Vui lòng nhập mức cước' } : {})} label="Mức cước" type={'number'} sx={{ marginTop: 2 }} value={service.MUCCUOC_CTPKS} name={'MUCCUOC_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            {/* <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} value={service.HINHTHUCDONG_CTPKS} name={'HINHTHUCDONG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} /> */}
+                            <FormControl sx={{ marginTop: 2 }}>
+                                <InputLabel>Hình thức đóng</InputLabel>
+                                <Select
+                                    {...(isError ? { error: true } : {})}
+                                    value={service.HINHTHUCDONG_CTPKS}
+                                    name="HINHTHUCDONG_CTPKS"
+                                    onChange={(e) => { onChangeTypeOfPay(e) }}
+                                    label='Hình thức đóng'
+                                    disabled={service.ID_DV !== 0 ? false : true}
+                                    {...(Number(service.HINHTHUCDONG_CTPKS) === 0 ? { error: isError } : { error: false })}
+                                >
+                                    <MenuItem selected value={0}>Chọn hình thước đóng cước</MenuItem>
+                                    {typeOfPay && typeOfPay.map(ele => {
+                                        return (
+                                            <MenuItem key={ele.ID} value={ele.TEN_HINH_THUC}>{ele.TEN_HINH_THUC}</MenuItem>
+                                        )
+                                    })}
+
+                                </Select>
+                                <FormHelperText sx={{ color: 'red' }}>{isError && (Number(service.HINHTHUCDONG_CTPKS) === 0 || service.HINHTHUCDONG_CTPKS === '') && 'Vui lòng chọn hình thức đóng cước'}</FormHelperText>
+                            </FormControl>
+                            <TextField {...(isError && (service.TENKHACHHANGDAIDIEN_CTPKS === '' || service.TENKHACHHANGDAIDIEN_CTPKS === null) ? { error: true, helperText: 'Vui lòng nhập tên khách hàng đại diện' } : {})} label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.TENKHACHHANGDAIDIEN_CTPKS} name={'TENKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            <TextField {...(isError && (service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null) ? { error: true, helperText: 'Vui lòng nhập SĐT khách hàng đại diện' } : {})} label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} name={'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            <TextField
+                                {...(service.NHACUNGCAP_CTPKS === 1 && (service.ACCOUNTKHACHHANG_CTPKS === '' || service.ACCOUNTKHACHHANG_CTPKS === null) ? { error: isError, helperText: isError ? 'Vui lòng nhập Account BRCĐ khách hàng đại diện' : '' } : {})}
+
+                                label="Account BRCĐ" sx={{ marginTop: 2 }} value={service.ACCOUNTKHACHHANG_CTPKS} name={'ACCOUNTKHACHHANG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
 
                             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
@@ -437,8 +555,15 @@ function LixEdit(props) {
                                     label={'Ngày bắt đầu đặt cọc'}
                                     name={'NGAYBATDAUDONGCOC_CTPKS'}
                                     onChange={(e) => { onChangeDate1(e) }} disabled={service.ID_DV !== 0 ? false : true} sx={{ marginTop: 2 }}
-                                    slotProps={{ textField: { size: 'small' } }}
+                                    slotProps={{
+                                        textField: {
+                                            size: 'small',
+                                            error: service.NHACUNGCAP_CTPKS === 1 && service.NGAYBATDAUDONGCOC_CTPKS === null ? isError : '',
+                                            helperText: isError && service.NGAYBATDAUDONGCOC_CTPKS === null ? 'Vui lòng chọn ngày bắt đầu đặt cọc' : ''
+                                        }
+                                    }}
                                     format="dd/MM/yyyy" />
+
                             </LocalizationProvider>
 
                             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
@@ -451,7 +576,13 @@ function LixEdit(props) {
                                     value={new Date(service.NGAYKETTHUCDONGCOC_CTPKS)}
                                     name={'NGAYKETTHUCDONGCOC_CTPKS'}
                                     onChange={(e) => { onChangeDate2(e) }} disabled={service.ID_DV !== 0 ? false : true} sx={{ marginTop: 2 }}
-                                    slotProps={{ textField: { size: 'small' } }}
+                                    slotProps={{
+                                        textField: {
+                                            size: 'small',
+                                            error: service.NHACUNGCAP_CTPKS === 1 && service.NGAYKETTHUCDONGCOC_CTPKS === null ? isError : '',
+                                            helperText: isError && service.NGAYKETTHUCDONGCOC_CTPKS === null ? 'Vui lòng chọn ngày kết thúc đặt cọc' : ''
+                                        }
+                                    }}
                                     format="dd/MM/yyyy" />
                             </LocalizationProvider>
 
@@ -523,14 +654,44 @@ function LixEdit(props) {
                                     })}
                                 </Select>
                             </FormControl>
-                            <TextField label="ý kiến khác" multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+
+
+                            <FormControlLabel
+                                name="BO"
+                                label="Phiếu BO"
+                                size={'large'}
+                                disabled={service.ID_DV !== 0 ? false : true}
+                                {...label}
+                                control={<Checkbox checked={service.BO} onChange={(e) => { onChangeBo(e) }} />}
+                            />
+                            {service.BO ?
+                                <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                    <InputLabel>Đánh giá BO </InputLabel>
+                                    <Select
+                                        value={service.DIEM_BO}
+                                        name="DIEM_BO"
+                                        onChange={(e) => { onChangeservice(e) }}
+                                        disabled={service.ID_DV !== 0 ? false : true}
+                                    >
+                                        {props.servicePointList && props.servicePointList.map(ele => {
+                                            return (
+                                                <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+                                : ""}
+
                         </CardContent>
                     </Card>
                 </Box>
 
             </DialogContent>
             <DialogActions>
-                <Button variant={'outlined'} color={'primary'} onClick={createSurvey} autoFocus>
+                <Button
+                    disabled={service.ID_DV !== 0 ? false : true}
+                    variant={'outlined'} color={'primary'} onClick={createSurvey} autoFocus>
                     Lưu khảo sát
                 </Button>
                 <Button variant={'outlined'} color={'error'} onClick={

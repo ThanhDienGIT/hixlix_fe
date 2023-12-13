@@ -33,7 +33,7 @@ import FormLabel from '@mui/material/FormLabel';
 // import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
 
 
-function StatisticalReport() {
+function StatisticalBO() {
 
   const today = new Date();
   const formattedToday = format(today, 'yyyy/MM/dd');
@@ -54,20 +54,19 @@ function StatisticalReport() {
   const [provider, setProvider] = useState([])
   const [wards, setWards] = useState([])
   const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  // const [statusSurvey, setStatusSurvey] = useState('');
-  const [serveSurvey, setServeSurvey] = useState(5);
+//  const [statusSurvey, setStatusSurvey] = useState('');
+//  const [serveSurvey, setServeSurvey] = useState(5);
   const [qualityService, setQualityService] = useState(5);
   const [searchInput, setSearchInput] = useState('');
   const [alloption, setAlloption] = useState([]);
   const [quanhuyen, setQuanhuyen] = useState([]);
-  const [xaphuong, setXaphuong] = useState([]);
-  const [apKV, setApKV] = useState([]);
-  const [huyen, setHuyen] = useState(0)
-  const [xa, setXa] = useState(0)
-  const [ap, setAp] = useState(0)
-  const [supplier, setSupplier] = useState(0);
-  const [service, setService] = useState(0);
-  const [chooseNv, setChooseNv] = useState(0);
+//   const [xaphuong, setXaphuong] = useState([]);
+//   const [apKV, setApKV] = useState([]);
+//  const [huyen, setHuyen] = useState(0)
+//   const [xa, setXa] = useState(0)
+//   const [ap, setAp] = useState(0)
+//   const [supplier, setSupplier] = useState(0);
+//   const [service, setService] = useState(0);
   const [fromDate, setFromDate] = useState(formattedFirstDateOfMonth);
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
@@ -76,7 +75,8 @@ function StatisticalReport() {
   const [display, setDisplay] = useState(0)
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
-  const [nv, setNv] = useState([])
+
+  
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -154,7 +154,7 @@ function StatisticalReport() {
     setRowPage(ele.target.value)
   }
   const CallAPIPage = () => {
-    instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
+    instance.get(`get_danhsachbaocaophieuBO/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
       setAlloption(res.data.data)
@@ -165,7 +165,7 @@ function StatisticalReport() {
 
   const CallAPI = () => {
     setLoadingInitial(true)
-    instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
+    instance.get(`get_danhsachbaocaophieuBO/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
       setAlloption(res.data.data)
@@ -196,24 +196,24 @@ function StatisticalReport() {
     }
   }, [page, rowPage]);
 
-  const onchangeHuyen = async (e) => {
-    setHuyen(e.target.value)
-    const response = await instance.get('getAllXaPhuong/' + e.target.value);
-    if (response.status === 200) {
-      setXaphuong(response.data.xaphuong)
-      setXa(0)
-      setAp(0)
-    }
-  }
+//   const onchangeHuyen = async (e) => {
+//     setHuyen(e.target.value)
+//     const response = await instance.get('getAllXaPhuong/' + e.target.value);
+//     if (response.status === 200) {
+//       setXaphuong(response.data.xaphuong)
+//       setXa(0)
+//       setAp(0)
+//     }
+//   }
 
-  const onchangeXa = async (e) => {
-    setXa(e.target.value)
-    const response = await instance.get('getAllAp/' + e.target.value);
-    if (response.status === 200) {
-      setApKV(response.data.ap)
-      setAp(0)
-    }
-  }
+//   const onchangeXa = async (e) => {
+//     setXa(e.target.value)
+//     const response = await instance.get('getAllAp/' + e.target.value);
+//     if (response.status === 200) {
+//       setApKV(response.data.ap)
+//       setAp(0)
+//     }
+//   }
 
   const getDSNhaCungCap = async () => {
     const response = await instance.get('get_danhsachnhacungcapapi');
@@ -264,8 +264,6 @@ function StatisticalReport() {
 
   }, []);
 
-
-
   const screenWidth = window.innerWidth
 
   const handleAutocompleteChange = (event, value) => {
@@ -281,32 +279,23 @@ function StatisticalReport() {
     setToDate(format(date, 'yyyy-MM-dd'))
   }
 
-
-
-
   const handleSearch = async () => {
-    setLoadingSearch(true)
+     setLoadingSearch(true)
     const objectSend = {
       quality_survey: qualityService,
-      CHATLUONG_PV: serveSurvey,
       keywords: searchInput,
-      MAHUYEN_KH: huyen,
-      MAXA_KH: xa,
-      MAAP_KH: ap,
-      NHACUNGCAP: supplier,
-      DICHVU: service,
-      NHANVIEN: chooseNv,
       TUNGAY: fromDate,
       DENNGAY: toDate
     }
-    await instance.post(`filter-report/${rowPage}?page=${page}`, objectSend)
+    await instance.post(`filter-report-BO/${rowPage}?page=${page}`, objectSend)
       .then((res) => {
         console.log(res)
         setData(res.data.dstk.data)
         setMaxPage(res.data.dstk.last_page)
         setAlloption(res.data.dstk.data)
         setSearchStatus(1)
-        setLoadingSearch(false)
+         setSearchStatus()
+         setLoadingSearch(false)
         const newStartIndex = (page - 1) * rowPage + 1;
         setStartIndex(newStartIndex);
       })
@@ -356,16 +345,9 @@ function StatisticalReport() {
   //   CallAPI()
   // }
 
-  const getNV = () => {
-    instance.get(`getNV`).then(res => {
-      setNv(res.data.dsnv)
-    }).catch(err => console.log(err))
-  }
-
   useEffect(() => {
     if (display === 0) {
       CallAPI()
-      getNV()
     }
     else {
       handleSearch()
@@ -375,7 +357,7 @@ function StatisticalReport() {
 
   return (
     <ComponentSkeleton>
-      <MainCard title="THỐNG KÊ & BÁO CÁO">
+      <MainCard title="THỐNG KÊ & BÁO CÁO (BO)">
         {loadingInitial ?
           <Stack alignItems="center">
             <CircularProgress
@@ -385,7 +367,7 @@ function StatisticalReport() {
           </Stack>
           :
           <>
-            <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} >
+            <Box display={'flex'} sx={{ alignItems: 'flex-start', marginBottom: 1, flexWrap: "wrap",flexDirection:'column' }} >
 
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">Tùy chọn</FormLabel>
@@ -403,7 +385,7 @@ function StatisticalReport() {
               <Divider />
               <Box display={'flex'} flexWrap={'wrap'}>
 
-                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <InputLabel id="demo-select-small-label">Quận/ huyện</InputLabel>
                   <Select
                     disabled={display === 0}
@@ -467,31 +449,31 @@ function StatisticalReport() {
                       )
                     })}
                   </Select>
-                </FormControl>
+                </FormControl> */}
 
 
 
 
 
                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
-                  <InputLabel id="demo-select-small-label">Chất lượng dịch vụ</InputLabel>
+                  <InputLabel id="demo-select-small-label">Thang điểm BO</InputLabel>
                   <Select
                     disabled={display === 0}
                     labelId="demo-select-small-label"
                     id="demo-select-small"
-                    label="Chất lượng dịch vụ"
+                    label="Thang điểm BO"
                     value={qualityService}
                     onChange={(e) => setQualityService(e.target.value)}
                   >
                     <MenuItem value={5}>
                       Tất cả
                     </MenuItem>
-                    <MenuItem value={0}>Chất lượng tốt</MenuItem>
-                    <MenuItem value={1}>Chất lượng kém</MenuItem>
+                    <MenuItem value={0}>Khả năng chuyển BO cao</MenuItem>
+                    <MenuItem value={1}>Khả năng chuyển BO thấp</MenuItem>
                   </Select>
                 </FormControl>
 
-                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <InputLabel id="demo-select-small-label">Chất lượng phục vụ</InputLabel>
                   <Select
                     disabled={display === 0}
@@ -507,10 +489,10 @@ function StatisticalReport() {
                     <MenuItem value={0}>Chất lượng tốt</MenuItem>
                     <MenuItem value={1}>Chất lượng kém</MenuItem>
                   </Select>
-                </FormControl>
+                </FormControl> */}
 
 
-                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <InputLabel id="demo-select-small-label">Nhà cung cấp</InputLabel>
                   <Select
                     disabled={display === 0}
@@ -530,9 +512,9 @@ function StatisticalReport() {
                       )
                     })}
                   </Select>
-                </FormControl>
+                </FormControl> */}
 
-                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <InputLabel id="demo-select-small-label">Dịch vụ</InputLabel>
                   <Select
                     disabled={display === 0}
@@ -551,30 +533,7 @@ function StatisticalReport() {
                       )
                     })}
                   </Select>
-                </FormControl>
-
-                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
-                  <InputLabel id="demo-select-small-label">Nhân viên khảo sát</InputLabel>
-                  <Select
-                    disabled={display === 0}
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    label="Nhân viên khảo sát"
-                    value={chooseNv}
-                    onChange={(e) => setChooseNv(e.target.value)}
-                  >
-                    <MenuItem value={0}>
-                      Tất cả
-                    </MenuItem>
-                    {nv && nv.filter(x => x.TEN_NV !== null && (x.CHUCVU_NV !== 0 && x.CHUCVU_NV !== 2)).map(ele => {
-                      return (
-                        <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
-
-
+                </FormControl> */}
 
                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
@@ -636,7 +595,6 @@ function StatisticalReport() {
                   )}
                 />
 
-
                 <Box display={'flex'} marginTop={2} flexWrap='wrap' sx={screenWidth > 720 ? "" : { width: '100%' }} >
                   <Button disabled={display === 0} sx={{ display: 'flex', mr: 1, width: 150 }} color={'primary'} variant="contained" onClick={handleSearch}>
                     {loadingSearch ? <>
@@ -658,17 +616,9 @@ function StatisticalReport() {
       </> : <><RestartAltRoundedIcon /><Typography >Reset</Typography></>}
     </Button> */}
 
-
-
                 </Box>
-
               </Box>
-              <Box width={'100%'} display='flex' justifyContent={'flex-end'}>
-
-              </Box>
-
-
-
+            
             </Box>
             <TableContainer component={Paper}>
               <Table size='small'>
@@ -873,7 +823,7 @@ function StatisticalReport() {
     </ComponentSkeleton>
   )
 }
-export default StatisticalReport
+export default StatisticalBO
 
 
 

@@ -27,13 +27,15 @@ function DetailCustomer(props) {
     const [openDiaLog, setOpenDialog] = React.useState(false)
     const [idPKS, setIdPKS] = React.useState(0)
     const [idDV, setIdDV] = React.useState(0)
+    const [idctpks, setIdctpks] = React.useState(0)
     const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     const [openDiaLogDetail, setOpenDialogDetail] = React.useState(false)
 
-    const openDiaLogEdit = (idpks, iddv) => {
+    const openDiaLogEdit = (idpks, iddv, idctpks) => {
         setOpenDialog(true)
         setIdPKS(idpks)
         setIdDV(iddv)
+        setIdctpks(idctpks)
     }
     console.log(openDiaLogDetail)
 
@@ -170,50 +172,50 @@ function DetailCustomer(props) {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {surveycustomer != '' ? (
-                                        surveycustomer.map((survey) => {
-                                            return (
-                                                <TableRow key={survey.ID_CTPKS}>
-                                                    <TableCell> {survey.TEN_DV} </TableCell>
-                                                    <TableCell>
-                                                        {survey.TEN_NCC}
-                                                    </TableCell>
-                                                    <TableCell> {formatDate(survey.NGAYBATDAUDONGCOC_CTPKS)}</TableCell>
-                                                    <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS)}</TableCell>
-                                                    {/* <TableCell> {surveycustomer.length > 0 ? "Đã khảo sát" : "Chưa khảo sát"}</TableCell> */}
-                                                    <TableCell>
-                                                        <Tooltip title="Xem chi tiết khảo sát">
-                                                            <IconButton>
-                                                                <RemoveRedEyeIcon color={'primary'} onClick={() => { openDiaLogDetailLix(survey.ID_PKS, survey.ID_DV) }}/>
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                        <Tooltip title="Cập nhật khảo sát">
-                                                            <IconButton>
-                                                                <EditIcon color={'warning'} onClick={() => { openDiaLogEdit(survey.ID_PKS, survey.ID_DV) }} />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                        {/* <Tooltip>
-                                                        <IconButton>
-                                                            <DeleteIcon color={'error'} />
-                                                        </IconButton>
-                                                    </Tooltip> */}
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })
-                                    ) : (
+                                    {
                                         loading ? (<TableRow>
                                             <TableCell colSpan={6} style={{ textAlign: 'center' }}>
                                                 <CircularProgress loading={loading} />
                                             </TableCell>
                                         </TableRow>) : (
+                                            
+                                            surveycustomer.length > 0 ? surveycustomer.map((survey) => {
+                                                return (
+                                                    <TableRow key={survey.ID_CTPKS}>
+                                                        <TableCell> {survey.TEN_DV} </TableCell>
+                                                        <TableCell>
+                                                            {survey.TEN_NCC}
+                                                        </TableCell>
+                                                        <TableCell> {formatDate(survey.NGAYBATDAUDONGCOC_CTPKS)}</TableCell>
+                                                        <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS)}</TableCell>
+                                                        {/* <TableCell> {surveycustomer.length > 0 ? "Đã khảo sát" : "Chưa khảo sát"}</TableCell> */}
+                                                        <TableCell>
+                                                            <Tooltip title="Xem chi tiết khảo sát">
+                                                                <IconButton>
+                                                                    <RemoveRedEyeIcon color={'primary'} onClick={() => { openDiaLogDetailLix(survey.ID_PKS, survey.ID_DV) }}/>
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title="Cập nhật khảo sát">
+                                                                <IconButton>
+                                                                    <EditIcon color={'warning'} onClick={() => { openDiaLogEdit(survey.ID_PKS, survey.ID_DV, survey.ID_CTPKS) }} />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            {/* <Tooltip>
+                                                            <IconButton>
+                                                                <DeleteIcon color={'error'} />
+                                                            </IconButton>
+                                                        </Tooltip> */}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            }) : 
                                             <TableRow>
                                                 <TableCell colSpan={6} style={{ textAlign: 'center' }}>
                                                     <Typography variant="h3">Khách hàng chưa khảo sát dịch vụ</Typography>
                                                 </TableCell>
                                             </TableRow>
                                         )
-                                    )}
+                                    }
 
                                 </TableBody>
                             </Table>
@@ -230,6 +232,7 @@ function DetailCustomer(props) {
                 open={openDiaLog}
                 handleClose={closeDialog}
                 id={idPKS}
+                idctpks={idctpks}
                 serviceList={props.serviceList}
                 wards={props.wards}
                 servicePointList={servicePointList}

@@ -34,11 +34,14 @@ Route::group(['middleware' => ['api']], function () {
         //khach hang
         Route::get('/get_danhsachkhachhang/{count}', [danhsachkhachhang::class, 'get_danhsachkhachhang']);
         Route::get('/get_danhsachbaocaophieu/{count}', [danhsachkhachhang::class, 'get_danhsachbaocaophieu']);
+        Route::get('/get_danhsachbaocaophieuBO/{count}', [danhsachkhachhang::class, 'get_danhsachbaocaophieuBO']);
         Route::get('/get_danhsachdichvu/{count}', [DichVuController::class, 'getAllServices']);
         Route::get('/get_danhsachnhacungcap/{count}', [DichVuController::class, 'get_danhsachnhacungcap']);
         Route::get('/get_danhsachnhacungcapapi', [DichVuController::class, 'get_danhsachnhacungcapapi']);
 
         Route::get('/getServiceType', [DichVuController::class, 'getServiceType']);
+        Route::get('/getTypeOfPay', [DichVuController::class, 'getTypeOfPay']);
+        
         Route::post('/search-dv/{count}', [DichVuController::class, 'search']);
 
 
@@ -83,6 +86,7 @@ Route::group(['middleware' => ['api']], function () {
         Route::post('/searchcustomer/{count}', [danhsachkhachhang::class, 'searchcustomer']);
         Route::post('/searchinasignment/{count}', [danhsachkhachhang::class, 'searchinasignment']);
         Route::post('/filter-report/{count}', [danhsachkhachhang::class, 'filterreport']);
+        Route::post('/filter-report-BO/{count}', [danhsachkhachhang::class, 'filterreportBO']);
         Route::get('/getNV', [danhsachkhachhang::class, 'getNV']);
         //Khach hang Excel
         Route::post('/export-excel', [danhsachkhachhang::class, 'exportExcel']);

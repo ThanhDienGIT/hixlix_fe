@@ -7,6 +7,7 @@ import StatisticalReport from 'pages/components-overview/StatisticalReport';
 import ServiceManagement from 'pages/components-overview/ServiceManagement';
 import SupplierManagement from 'pages/components-overview/SupplierManagement';
 import UserManagement from 'pages/components-overview/UserManagement';
+import StatisticalBO from 'pages/components-overview/StatisticalBO';
 
 
 // render - dashboard
@@ -84,6 +85,10 @@ const MainRoutes = {
     {
       path: 'user-management',
       element: <UserManagement/>
+    },
+    {
+      path: 'statistical-bo',
+      element: <StatisticalBO/>
     }
     
   ]
