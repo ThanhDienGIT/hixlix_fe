@@ -4,8 +4,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { FormHelperText ,Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
-import {  Checkbox, FormControlLabel } from '../../../node_modules/@mui/material/index';
+import { FormHelperText, Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
+import { Checkbox, FormControlLabel } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { format } from 'date-fns';
@@ -30,7 +30,7 @@ function LixDialog(props) {
     const [isError, setIsError] = useState(false)
     // const [isErrorOther, setIsErrorOther] = useState(false)
 
-    const [statusBO, setStatusBO] = useState(false)
+    // const [statusBO, setStatusBO] = useState(false)
     const alertError = (string) => {
         setContenNotifi(string)
         setOpenAlertError(true)
@@ -88,6 +88,8 @@ function LixDialog(props) {
         THOIGIANLAPDAT_CTPKS: "",
         THOIGIANNGUNG_CTPKS: "",
         NHACUNGCAP_CTPKS: 0,
+        BO: 0,
+        DIEM_BO: 0,
         DIEMHAILONG_CTPKS: 0,
         CAMNHANDICHVU_CTPKS: 0,
         CANNHANPHUCVU_CTPKS: 0,
@@ -153,6 +155,27 @@ function LixDialog(props) {
             [name]: value
         }));
     };
+
+    const onChangeBo = (e) => {
+        const { name } = e.target;
+        if (e.target.checked === false)
+        {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 0
+            }));
+        }
+        else
+        {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 1
+            }));
+        }
+        
+    };
+
+    
 
     const onChangeTypeOfPay = (e) => {
         const { name, value } = e.target;
@@ -252,6 +275,8 @@ function LixDialog(props) {
             THOIGIANLAPDAT_CTPKS: "",
             THOIGIANNGUNG_CTPKS: "",
             NHACUNGCAP_CTPKS: 0,
+            BO: 0,
+            DIEM_BO: 0,
             DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
@@ -279,6 +304,8 @@ function LixDialog(props) {
             THOIGIANLAPDAT_CTPKS: "",
             THOIGIANNGUNG_CTPKS: "",
             NHACUNGCAP_CTPKS: 0,
+            BO: 0,
+            DIEM_BO: 0,
             DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
@@ -313,6 +340,8 @@ function LixDialog(props) {
                         THOIGIANLAPDAT_CTPKS: "",
                         THOIGIANNGUNG_CTPKS: "",
                         NHACUNGCAP_CTPKS: 0,
+                        BO: 0,
+                        DIEM_BO: 0,
                         DIEMHAILONG_CTPKS: 0,
                         CAMNHANDICHVU_CTPKS: 0,
                         CANNHANPHUCVU_CTPKS: 0,
@@ -422,7 +451,7 @@ function LixDialog(props) {
                                     })}
 
                                 </Select>
-                                <FormHelperText sx={{color: 'red'}}>{isError && service.NHACUNGCAP_CTPKS === 0 && 'Vui lòng chọn nhà cung cấp dịch vụ'}</FormHelperText>
+                                <FormHelperText sx={{ color: 'red' }}>{isError && service.NHACUNGCAP_CTPKS === 0 && 'Vui lòng chọn nhà cung cấp dịch vụ'}</FormHelperText>
                             </FormControl>
                             <TextField {...(isError && service.MUCCUOC_CTPKS === '' ? { error: true, helperText: 'Vui lòng nhập mức cước' } : {})} label="Mức cước" type={'number'} sx={{ marginTop: 2 }} value={service.MUCCUOC_CTPKS} name={'MUCCUOC_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             {/* <TextField label="Hình thức đóng" sx={{ marginTop: 2 }} value={service.HINHTHUCDONG_CTPKS} name={'HINHTHUCDONG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} /> */}
@@ -445,7 +474,7 @@ function LixDialog(props) {
                                     })}
 
                                 </Select>
-                                <FormHelperText sx={{color: 'red'}}>{isError && (service.HINHTHUCDONG_CTPKS === 0 || service.HINHTHUCDONG_CTPKS === '') && 'Vui lòng chọn hình thức đóng cước'}</FormHelperText>
+                                <FormHelperText sx={{ color: 'red' }}>{isError && (service.HINHTHUCDONG_CTPKS === 0 || service.HINHTHUCDONG_CTPKS === '') && 'Vui lòng chọn hình thức đóng cước'}</FormHelperText>
                             </FormControl>
                             <TextField {...(isError && service.TENKHACHHANGDAIDIEN_CTPKS === '' ? { error: true, helperText: 'Vui lòng nhập tên khách hàng đại diện' } : {})} label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.TENKHACHHANGDAIDIEN_CTPKS} name={'TENKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField {...(isError && service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' ? { error: true, helperText: 'Vui lòng nhập SĐT khách hàng đại diện' } : {})} label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} name={'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
@@ -566,33 +595,34 @@ function LixDialog(props) {
                                 </Select>
                             </FormControl>
                             <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
-                           
+
 
                             <FormControlLabel
+                                name="BO"
                                 label="Phiếu BO"
                                 size={'large'}
                                 disabled={service.ID_DV !== 0 ? false : true}
                                 {...label}
-                                control={<Checkbox checked={statusBO} onChange={(e) => { setStatusBO(e.target.checked) }} />}
+                                control={<Checkbox checked={service.BO} onChange={(e) => { onChangeBo(e) }} />}
                             />
-                            {statusBO ? 
-                            <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                <InputLabel>Đánh giá BO </InputLabel>
-                                <Select
-                                    value={service.CANNHANPHUCVU_CTPKS}
-                                    name="CANNHANPHUCVU_CTPKS"
-                                    onChange={(e) => { onChangeservice(e) }}
-                                    disabled={service.ID_DV !== 0 ? false : true}
-                                >
-                                    {props.servicePointList && props.servicePointList.map(ele => {
-                                        return (
-                                            <MenuItem key={ele} value={ele}>{ele}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                            </FormControl> 
-                            : ""}
-                           
+                            {service.BO ?
+                                <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                    <InputLabel>Đánh giá BO </InputLabel>
+                                    <Select
+                                        value={service.DIEM_BO}
+                                        name="DIEM_BO"
+                                        onChange={(e) => { onChangeservice(e) }}
+                                        disabled={service.ID_DV !== 0 ? false : true}
+                                    >
+                                        {props.servicePointList && props.servicePointList.map(ele => {
+                                            return (
+                                                <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+                                : ""}
+
 
 
                         </CardContent>

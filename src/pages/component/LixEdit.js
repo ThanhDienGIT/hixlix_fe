@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormHelperText, Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
+import { Checkbox, FormControlLabel } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { format } from 'date-fns';
@@ -27,6 +28,7 @@ function LixEdit(props) {
     const [idTypeService, setIdTypeService] = useState(0)
     const [typeOfPay, setTypeOfPay] = useState([])
     const [isError, setIsError] = useState(false)
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 
     const alertError = (string) => {
@@ -87,6 +89,8 @@ function LixEdit(props) {
         THOIGIANLAPDAT_CTPKS: "",
         THOIGIANNGUNG_CTPKS: "",
         NHACUNGCAP_CTPKS: 0,
+        BO: 0,
+        DIEM_BO: 0,
         DIEMHAILONG_CTPKS: 0,
         CAMNHANDICHVU_CTPKS: 0,
         CANNHANPHUCVU_CTPKS: 0,
@@ -205,6 +209,23 @@ function LixEdit(props) {
             .catch(err => console.log(err))
     }
 
+    const onChangeBo = (e) => {
+        const { name } = e.target;
+        if (e.target.checked === false) {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 0
+            }));
+        }
+        else {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 1
+            }));
+        }
+
+    };
+
     useEffect(() => {
         if (props.idCustomer !== 0) {
             getInfoCustomer(props.idCustomer)
@@ -284,6 +305,8 @@ function LixEdit(props) {
             THOIGIANLAPDAT_CTPKS: "",
             THOIGIANNGUNG_CTPKS: "",
             NHACUNGCAP_CTPKS: 0,
+            BO: 0,
+            DIEM_BO: 0,
             DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
@@ -312,6 +335,8 @@ function LixEdit(props) {
             THOIGIANLAPDAT_CTPKS: "",
             THOIGIANNGUNG_CTPKS: "",
             NHACUNGCAP_CTPKS: 0,
+            BO: 0,
+            DIEM_BO: 0,
             DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
@@ -327,6 +352,7 @@ function LixEdit(props) {
 
 
     const callAPI = () => {
+        // alert(props.idctpks)
         instance.get(`getLix_By_IdCustomer_and_IdService/${props.idCustomer}/${service.ID_DV}/${1}`)
             .then(res => {
                 console.log(res.data)
@@ -347,6 +373,8 @@ function LixEdit(props) {
                         THOIGIANLAPDAT_CTPKS: "",
                         THOIGIANNGUNG_CTPKS: "",
                         NHACUNGCAP_CTPKS: 0,
+                        BO: 0,
+                        DIEM_BO: 0,
                         DIEMHAILONG_CTPKS: 0,
                         CAMNHANDICHVU_CTPKS: 0,
                         CANNHANPHUCVU_CTPKS: 0,
@@ -368,6 +396,16 @@ function LixEdit(props) {
     }
 
     useEffect(() => {
+        if (props.iddv && props.iddv !== 0) {
+            setService(prevService => ({
+                ...prevService,
+                ['ID_DV']: props.iddv
+            }));
+        }
+
+    }, [props.iddv])
+
+    useEffect(() => {
         if (props.idCustomer !== 0 && service.ID_DV !== 0) {
             callAPI()
             console.log(serviceList)
@@ -380,20 +418,23 @@ function LixEdit(props) {
     }, [service.ID_DV])
 
 
-    useEffect(() => {
-        if (props.iddv && props.iddv !== 0) {
-            setService(prevService => ({
-                ...prevService,
-                ['ID_DV']: props.iddv
-            }));
-        }
-
-    }, [props.iddv])
+    // useEffect(() => {
+    //     if (props.open === true)
+    //     {
+    //         callAPI()
+    //     }
+        
+    // }, [props.open])
 
 
 
 
-    console.log(service)
+    
+
+
+
+
+    console.log(props.open)
 
     return (
         <Dialog
@@ -614,6 +655,34 @@ function LixEdit(props) {
                                 </Select>
                             </FormControl>
                             <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+
+
+                            <FormControlLabel
+                                name="BO"
+                                label="Phiếu BO"
+                                size={'large'}
+                                disabled={service.ID_DV !== 0 ? false : true}
+                                {...label}
+                                control={<Checkbox checked={service.BO} onChange={(e) => { onChangeBo(e) }} />}
+                            />
+                            {service.BO ?
+                                <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                    <InputLabel>Đánh giá BO </InputLabel>
+                                    <Select
+                                        value={service.DIEM_BO}
+                                        name="DIEM_BO"
+                                        onChange={(e) => { onChangeservice(e) }}
+                                        disabled={service.ID_DV !== 0 ? false : true}
+                                    >
+                                        {props.servicePointList && props.servicePointList.map(ele => {
+                                            return (
+                                                <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+                                : ""}
+
                         </CardContent>
                     </Card>
                 </Box>

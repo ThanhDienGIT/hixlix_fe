@@ -751,7 +751,7 @@ function StatisticalReport() {
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             {ele.ACCOUNTKHACHHANG_CTPKS}
           </TableCell> */}
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        <TableCell>
                           {ele.TEN_NCC}
                         </TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -787,7 +787,7 @@ function StatisticalReport() {
                         <TableCell>
                           {formatDate(ele.NGAYTAO_CTPKS)}
                         </TableCell>
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        <TableCell>
                           {ele.TEN_NV}
                         </TableCell>
 

@@ -419,7 +419,7 @@ function ComponentTest() {
                                             {...params}
                                             label='Tìm kiếm...'
                                             size="small"
-                                            sx={{ marginRight: 1, marginTop: 1.8, width: 310 }}
+                                            sx={{ marginRight: 1, marginTop: 1.8, width: 150 }}
                                             onChange={(e) => setSearchInput(e.target.value)}
                                             onInputChange={(e, value) => {
                                                 setSearchInput(value);

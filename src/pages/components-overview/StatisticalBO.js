@@ -21,7 +21,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
-import { format, isValid } from 'date-fns';
+import { format, isValid, startOfMonth } from 'date-fns';
 import Autocomplete from '@mui/material/Autocomplete';
 // import AnimateButton from 'components/@extended/AnimateButton';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -37,6 +37,7 @@ function StatisticalBO() {
 
   const today = new Date();
   const formattedToday = format(today, 'yyyy/MM/dd');
+  const formattedFirstDateOfMonth = format(startOfMonth(new Date()), 'yyyy/MM/dd');
 
   const { token } = useContext(TokenContext);
   token
@@ -66,7 +67,7 @@ function StatisticalBO() {
 //   const [ap, setAp] = useState(0)
 //   const [supplier, setSupplier] = useState(0);
 //   const [service, setService] = useState(0);
-  const [fromDate, setFromDate] = useState(formattedToday);
+  const [fromDate, setFromDate] = useState(formattedFirstDateOfMonth);
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
   const [searchStatus, setSearchStatus] = useState(0)
@@ -74,6 +75,8 @@ function StatisticalBO() {
   const [display, setDisplay] = useState(0)
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
+
+  
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -151,7 +154,7 @@ function StatisticalBO() {
     setRowPage(ele.target.value)
   }
   const CallAPIPage = () => {
-    instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
+    instance.get(`get_danhsachbaocaophieuBO/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
       setAlloption(res.data.data)
@@ -162,7 +165,7 @@ function StatisticalBO() {
 
   const CallAPI = () => {
     setLoadingInitial(true)
-    instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
+    instance.get(`get_danhsachbaocaophieuBO/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
       setAlloption(res.data.data)
@@ -278,30 +281,24 @@ function StatisticalBO() {
 
   const handleSearch = async () => {
      setLoadingSearch(true)
-    // const objectSend = {
-    //   quality_survey: qualityService,
-    //   CHATLUONG_PV: serveSurvey,
-    //   keywords: searchInput,
-    //   MAHUYEN_KH: huyen,
-    //   MAXA_KH: xa,
-    //   MAAP_KH: ap,
-    //   NHACUNGCAP: supplier,
-    //   DICHVU: service,
-    //   TUNGAY: fromDate,
-    //   DENNGAY: toDate
-    // }
-    // await instance.post(`filter-report/${rowPage}?page=${page}`, objectSend)
-    //   .then((res) => {
-    //     console.log(res)
-    //     setData(res.data.dstk.data)
-    //     setMaxPage(res.data.dstk.last_page)
-    //     setAlloption(res.data.dstk.data)
-    //     setSearchStatus(1)
+    const objectSend = {
+      quality_survey: qualityService,
+      keywords: searchInput,
+      TUNGAY: fromDate,
+      DENNGAY: toDate
+    }
+    await instance.post(`filter-report-BO/${rowPage}?page=${page}`, objectSend)
+      .then((res) => {
+        console.log(res)
+        setData(res.data.dstk.data)
+        setMaxPage(res.data.dstk.last_page)
+        setAlloption(res.data.dstk.data)
+        setSearchStatus(1)
          setSearchStatus()
          setLoadingSearch(false)
-    //     const newStartIndex = (page - 1) * rowPage + 1;
-    //     setStartIndex(newStartIndex);
-    //   })
+        const newStartIndex = (page - 1) * rowPage + 1;
+        setStartIndex(newStartIndex);
+      })
   }
 
   const exportDataToExcel = async () => {
@@ -471,8 +468,8 @@ function StatisticalBO() {
                     <MenuItem value={5}>
                       Tất cả
                     </MenuItem>
-                    <MenuItem value={0}>Chất lượng tốt</MenuItem>
-                    <MenuItem value={1}>Chất lượng kém</MenuItem>
+                    <MenuItem value={0}>Khả năng chuyển BO cao</MenuItem>
+                    <MenuItem value={1}>Khả năng chuyển BO thấp</MenuItem>
                   </Select>
                 </FormControl>
 
@@ -704,7 +701,7 @@ function StatisticalBO() {
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             {ele.ACCOUNTKHACHHANG_CTPKS}
           </TableCell> */}
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        <TableCell>
                           {ele.TEN_NCC}
                         </TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -740,7 +737,7 @@ function StatisticalBO() {
                         <TableCell>
                           {formatDate(ele.NGAYTAO_CTPKS)}
                         </TableCell>
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        <TableCell>
                           {ele.TEN_NV}
                         </TableCell>
 
