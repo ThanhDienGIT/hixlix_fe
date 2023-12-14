@@ -244,10 +244,10 @@ function LixEdit(props) {
     const createSurvey = () => {
         if (service.ID_DV !== 0) {
             if (service.NHACUNGCAP_CTPKS === 1) {
-                if (Number(service.HINHTHUCDONG_CTPKS) === 0 || service.TENKHACHHANGDAIDIEN_CTPKS === null
-                    || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null || service.ACCOUNTKHACHHANG_CTPKS === null
-                    || service.NGAYBATDAUDONGCOC_CTPKS === null || service.NGAYKETTHUCDONGCOC_CTPKS === null) {
-                    Number(service.NHACUNGCAP_CTPKS) === 1 ? setIsError(true) : setIsError(true)
+                if (service.HINHTHUCDONG_CTPKS === 0 || (service.TENKHACHHANGDAIDIEN_CTPKS === '' || service.TENKHACHHANGDAIDIEN_CTPKS === null)
+                    || (service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null) || (service.ACCOUNTKHACHHANG_CTPKS === '' || service.ACCOUNTKHACHHANG_CTPKS === null)
+                    || (service.NGAYBATDAUDONGCOC_CTPKS === '' || service.NGAYBATDAUDONGCOC_CTPKS === null || service.NGAYBATDAUDONGCOC_CTPKS === '0000-00-00') || (service.NGAYKETTHUCDONGCOC_CTPKS === '' || service.NGAYKETTHUCDONGCOC_CTPKS === null || service.NGAYKETTHUCDONGCOC_CTPKS === '0000-00-00')) {
+                    service.NHACUNGCAP_CTPKS === 1 ? setIsError(true) : setIsError(true)
                 }
                 else {
                     instance.post('AddEditLix', service)
@@ -263,8 +263,8 @@ function LixEdit(props) {
                 }
             }
             else {
-                if (Number(service.HINHTHUCDONG_CTPKS) === 0 || service.TENKHACHHANGDAIDIEN_CTPKS === null
-                    || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null) {
+                if (Number(service.HINHTHUCDONG_CTPKS) === 0 || (service.TENKHACHHANGDAIDIEN_CTPKS === '' || service.TENKHACHHANGDAIDIEN_CTPKS === null)
+                    || (service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null)) {
                     Number(service.NHACUNGCAP_CTPKS) === 1 ? setIsError(true) : setIsError(true)
                 }
                 else {
@@ -524,7 +524,7 @@ function LixEdit(props) {
                                     onChange={(e) => { onChangeTypeOfPay(e) }}
                                     label='Hình thức đóng'
                                     disabled={service.ID_DV !== 0 ? false : true}
-                                    {...(Number(service.HINHTHUCDONG_CTPKS) === 0 ? { error: isError } : { error: false })}
+                                    {...(service.HINHTHUCDONG_CTPKS === '' ? { error: isError } : { error: false })}
                                 >
                                     <MenuItem selected value={0}>Chọn hình thước đóng cước</MenuItem>
                                     {typeOfPay && typeOfPay.map(ele => {
@@ -534,12 +534,12 @@ function LixEdit(props) {
                                     })}
 
                                 </Select>
-                                <FormHelperText sx={{ color: 'red' }}>{isError && (Number(service.HINHTHUCDONG_CTPKS) === 0 || service.HINHTHUCDONG_CTPKS === '') && 'Vui lòng chọn hình thức đóng cước'}</FormHelperText>
+                                <FormHelperText sx={{ color: 'red' }}>{isError && (service.HINHTHUCDONG_CTPKS === 0 || service.HINHTHUCDONG_CTPKS === '') && 'Vui lòng chọn hình thức đóng cước'}</FormHelperText>
                             </FormControl>
                             <TextField {...(isError && (service.TENKHACHHANGDAIDIEN_CTPKS === '' || service.TENKHACHHANGDAIDIEN_CTPKS === null) ? { error: true, helperText: 'Vui lòng nhập tên khách hàng đại diện' } : {})} label="Khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.TENKHACHHANGDAIDIEN_CTPKS} name={'TENKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField {...(isError && (service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null) ? { error: true, helperText: 'Vui lòng nhập SĐT khách hàng đại diện' } : {})} label="Số điện thoại khách hàng đại diện (*)" sx={{ marginTop: 2 }} value={service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS} name={'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
                             <TextField
-                                {...(service.NHACUNGCAP_CTPKS === 1 && (service.ACCOUNTKHACHHANG_CTPKS === '' || service.ACCOUNTKHACHHANG_CTPKS === null) ? { error: isError, helperText: isError ? 'Vui lòng nhập Account BRCĐ khách hàng đại diện' : '' } : {})}
+                                {...(isError && service.NHACUNGCAP_CTPKS === 1 && (service.ACCOUNTKHACHHANG_CTPKS === '' || service.ACCOUNTKHACHHANG_CTPKS === null) ? { error: true, helperText: 'Vui lòng nhập Account BRCĐ khách hàng đại diện' } : {})}
 
                                 label="Account BRCĐ" sx={{ marginTop: 2 }} value={service.ACCOUNTKHACHHANG_CTPKS} name={'ACCOUNTKHACHHANG_CTPKS'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
@@ -558,8 +558,8 @@ function LixEdit(props) {
                                     slotProps={{
                                         textField: {
                                             size: 'small',
-                                            error: service.NHACUNGCAP_CTPKS === 1 && service.NGAYBATDAUDONGCOC_CTPKS === null ? isError : '',
-                                            helperText: isError && service.NGAYBATDAUDONGCOC_CTPKS === null ? 'Vui lòng chọn ngày bắt đầu đặt cọc' : ''
+                                            error: service.NHACUNGCAP_CTPKS === 1 && (service.NGAYBATDAUDONGCOC_CTPKS === '' || service.NGAYBATDAUDONGCOC_CTPKS === null || service.NGAYBATDAUDONGCOC_CTPKS === '0000-00-00') ? isError : '',
+                                            helperText: isError && (service.NGAYBATDAUDONGCOC_CTPKS === '' || service.NGAYBATDAUDONGCOC_CTPKS === null) ? 'Vui lòng chọn ngày bắt đầu đặt cọc' : ''
                                         }
                                     }}
                                     format="dd/MM/yyyy" />
@@ -579,8 +579,8 @@ function LixEdit(props) {
                                     slotProps={{
                                         textField: {
                                             size: 'small',
-                                            error: service.NHACUNGCAP_CTPKS === 1 && service.NGAYKETTHUCDONGCOC_CTPKS === null ? isError : '',
-                                            helperText: isError && service.NGAYKETTHUCDONGCOC_CTPKS === null ? 'Vui lòng chọn ngày kết thúc đặt cọc' : ''
+                                            error: service.NHACUNGCAP_CTPKS === 1 && (service.NGAYKETTHUCDONGCOC_CTPKS === '' || service.NGAYKETTHUCDONGCOC_CTPKS === null || service.NGAYKETTHUCDONGCOC_CTPKS === '0000-00-00') ? isError : '',
+                                            helperText: isError && (service.NGAYKETTHUCDONGCOC_CTPKS === '' || service.NGAYKETTHUCDONGCOC_CTPKS === null) ? 'Vui lòng chọn ngày kết thúc đặt cọc' : ''
                                         }
                                     }}
                                     format="dd/MM/yyyy" />
@@ -654,18 +654,22 @@ function LixEdit(props) {
                                     })}
                                 </Select>
                             </FormControl>
-                            <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            
+                            <TextField rows={4} label="ý kiến khác" placeholder={"ý kiến khác"} multiline sx={{ marginTop: 2 }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
 
-                            <FormControlLabel
-                                name="BO"
-                                label="Phiếu BO"
-                                size={'large'}
-                                disabled={service.ID_DV !== 0 ? false : true}
-                                {...label}
-                                control={<Checkbox checked={service.BO} onChange={(e) => { onChangeBo(e) }} />}
-                            />
-                            {service.BO ?
+                            {Number(service.NHACUNGCAP_CTPKS) !== 1 ?
+                                <FormControlLabel
+                                    name="BO"
+                                    label="Phiếu BO"
+                                    size={'large'}
+                                    disabled={service.ID_DV !== 0 ? false : true}
+                                    {...label}
+                                    control={<Checkbox checked={service.BO} onChange={(e) => { onChangeBo(e) }} />}
+                                /> 
+                                : ""
+                            }
+                            {service.BO && Number(service.NHACUNGCAP_CTPKS) !== 1 ?
                                 <FormControl fullwidth sx={{ marginTop: 2 }}>
                                     <InputLabel>Đánh giá BO </InputLabel>
                                     <Select

@@ -134,10 +134,10 @@ function DetailLix(props) {
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography sx={Number(detail.CAMNHANDICHVU_CTPKS) < 5 ? {color:'red'} : ""} ><b>Điểm chất lượng dịch vụ:</b> <br /> {detail.CAMNHANDICHVU_CTPKS ? detail.CAMNHANDICHVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
+                                <Typography sx={Number(detail.CAMNHANDICHVU_CTPKS) < 5 ? {color:'red'} : ""} ><b>Điểm chất lượng dịch vụ:</b> <br /> {detail.CAMNHANDICHVU_CTPKS || detail.CAMNHANDICHVU_CTPKS === 0  ? detail.CAMNHANDICHVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography sx={Number(detail.CANNHANPHUCVU_CTPKS) < 5 ? {color:'red'} : ""}><b>Điểm chất lượng phục vụ:</b> <br /> {detail.CANNHANPHUCVU_CTPKS ? detail.CANNHANPHUCVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
+                                <Typography sx={Number(detail.CANNHANPHUCVU_CTPKS) < 5 ? {color:'red'} : ""}><b>Điểm chất lượng phục vụ:</b> <br /> {detail.CANNHANPHUCVU_CTPKS || detail.CANNHANPHUCVU_CTPKS === 0 ? detail.CANNHANPHUCVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
                             </Grid>
 
 
