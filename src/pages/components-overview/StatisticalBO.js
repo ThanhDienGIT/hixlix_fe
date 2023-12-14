@@ -54,19 +54,19 @@ function StatisticalBO() {
   const [provider, setProvider] = useState([])
   const [wards, setWards] = useState([])
   const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-//  const [statusSurvey, setStatusSurvey] = useState('');
-//  const [serveSurvey, setServeSurvey] = useState(5);
+  //  const [statusSurvey, setStatusSurvey] = useState('');
+  //  const [serveSurvey, setServeSurvey] = useState(5);
   const [qualityService, setQualityService] = useState(5);
   const [searchInput, setSearchInput] = useState('');
   const [alloption, setAlloption] = useState([]);
   const [quanhuyen, setQuanhuyen] = useState([]);
-//   const [xaphuong, setXaphuong] = useState([]);
-//   const [apKV, setApKV] = useState([]);
-//  const [huyen, setHuyen] = useState(0)
-//   const [xa, setXa] = useState(0)
-//   const [ap, setAp] = useState(0)
-//   const [supplier, setSupplier] = useState(0);
-//   const [service, setService] = useState(0);
+  //   const [xaphuong, setXaphuong] = useState([]);
+  //   const [apKV, setApKV] = useState([]);
+  //  const [huyen, setHuyen] = useState(0)
+  //   const [xa, setXa] = useState(0)
+  //   const [ap, setAp] = useState(0)
+  //   const [supplier, setSupplier] = useState(0);
+  //   const [service, setService] = useState(0);
   const [fromDate, setFromDate] = useState(formattedFirstDateOfMonth);
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
@@ -76,7 +76,7 @@ function StatisticalBO() {
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
 
-  
+
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -196,24 +196,24 @@ function StatisticalBO() {
     }
   }, [page, rowPage]);
 
-//   const onchangeHuyen = async (e) => {
-//     setHuyen(e.target.value)
-//     const response = await instance.get('getAllXaPhuong/' + e.target.value);
-//     if (response.status === 200) {
-//       setXaphuong(response.data.xaphuong)
-//       setXa(0)
-//       setAp(0)
-//     }
-//   }
+  //   const onchangeHuyen = async (e) => {
+  //     setHuyen(e.target.value)
+  //     const response = await instance.get('getAllXaPhuong/' + e.target.value);
+  //     if (response.status === 200) {
+  //       setXaphuong(response.data.xaphuong)
+  //       setXa(0)
+  //       setAp(0)
+  //     }
+  //   }
 
-//   const onchangeXa = async (e) => {
-//     setXa(e.target.value)
-//     const response = await instance.get('getAllAp/' + e.target.value);
-//     if (response.status === 200) {
-//       setApKV(response.data.ap)
-//       setAp(0)
-//     }
-//   }
+  //   const onchangeXa = async (e) => {
+  //     setXa(e.target.value)
+  //     const response = await instance.get('getAllAp/' + e.target.value);
+  //     if (response.status === 200) {
+  //       setApKV(response.data.ap)
+  //       setAp(0)
+  //     }
+  //   }
 
   const getDSNhaCungCap = async () => {
     const response = await instance.get('get_danhsachnhacungcapapi');
@@ -280,7 +280,7 @@ function StatisticalBO() {
   }
 
   const handleSearch = async () => {
-     setLoadingSearch(true)
+    setLoadingSearch(true)
     const objectSend = {
       quality_survey: qualityService,
       keywords: searchInput,
@@ -294,8 +294,8 @@ function StatisticalBO() {
         setMaxPage(res.data.dstk.last_page)
         setAlloption(res.data.dstk.data)
         setSearchStatus(1)
-         setSearchStatus()
-         setLoadingSearch(false)
+        setSearchStatus()
+        setLoadingSearch(false)
         const newStartIndex = (page - 1) * rowPage + 1;
         setStartIndex(newStartIndex);
       })
@@ -367,7 +367,7 @@ function StatisticalBO() {
           </Stack>
           :
           <>
-            <Box display={'flex'} sx={{ alignItems: 'flex-start', marginBottom: 1, flexWrap: "wrap",flexDirection:'column' }} >
+            <Box display={'flex'} sx={{ alignItems: 'flex-start', marginBottom: 1, flexWrap: "wrap", flexDirection: 'column' }} >
 
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">Tùy chọn</FormLabel>
@@ -618,7 +618,7 @@ function StatisticalBO() {
 
                 </Box>
               </Box>
-            
+
             </Box>
             <TableContainer component={Paper}>
               <Table size='small'>
@@ -647,6 +647,7 @@ function StatisticalBO() {
                     <TableCell sx={{ color: 'white' }}> Tháng kết thúc đặt cọc </TableCell>
                     {/* <TableCell sx={{ color: 'white' }}> Thời gian lắp đặt </TableCell>
       <TableCell sx={{ color: 'white' }}> Thời gian ngưng </TableCell> */}
+                    <TableCell sx={{ color: 'white' }}> Điểm BO </TableCell>
                     <TableCell sx={{ color: 'white' }}> Chất lượng dịch vụ </TableCell>
                     <TableCell sx={{ color: 'white' }}> Chất lượng phục vụ </TableCell>
                     <TableCell sx={{ color: 'white' }}> Ngày khảo sát </TableCell>
@@ -728,6 +729,9 @@ function StatisticalBO() {
           <TableCell>
             {formatDate(ele.THOIGIANNGUNG_CTPKS)}
           </TableCell> */}
+                        <TableCell align='center'>
+                          {ele.DIEM_BO}
+                        </TableCell>
                         <TableCell align='center'>
                           {ele.CAMNHANDICHVU_CTPKS}
                         </TableCell>
