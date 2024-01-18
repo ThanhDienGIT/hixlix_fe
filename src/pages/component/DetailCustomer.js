@@ -184,10 +184,10 @@ function DetailCustomer(props) {
                                                     <TableRow key={survey.ID_CTPKS}>
                                                         <TableCell> {survey.TEN_DV} </TableCell>
                                                         <TableCell>
-                                                            {survey.TEN_NCC}
+                                                            {survey.TEN_NCC !== null ? survey.TEN_NCC : '---'}
                                                         </TableCell>
-                                                        <TableCell> {formatDate(survey.NGAYBATDAUDONGCOC_CTPKS)}</TableCell>
-                                                        <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS)}</TableCell>
+                                                        <TableCell> {formatDate(survey.NGAYBATDAUDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(survey.NGAYBATDAUDONGCOC_CTPKS) : '---'}</TableCell>
+                                                        <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS)  !== '01/01/1970' ? formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) : '---'}</TableCell>
                                                         {/* <TableCell> {surveycustomer.length > 0 ? "Đã khảo sát" : "Chưa khảo sát"}</TableCell> */}
                                                         <TableCell>
                                                             <Tooltip title="Xem chi tiết khảo sát">

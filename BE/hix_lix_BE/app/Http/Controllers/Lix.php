@@ -19,14 +19,14 @@ class Lix extends Controller
         $ID_PKS = $request->ID_PKS;
         $ID_KH = $request->ID_KH;
         $ID_DV = $request->ID_DV;
-        $result = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-        ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-        ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-        ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-        ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-        ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+        $result = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
         ->where('phieu_khao_sat.ID_KH', $ID_KH)
         ->where('chi_tiet_phieu_khao_sat_lix.ID_PKS', $ID_PKS)
         ->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $ID_DV)
@@ -325,6 +325,7 @@ class Lix extends Controller
                     'YKIENKHAC' => $request['YKIENKHAC'],
                     'NGUOIUPDATE_CTPKS' => $request['NGUOIUPDATE_CTPKS'],
                     'NGAYUPDATE_CTPKS' => $request['NGAYUPDATE_CTPKS'],
+                    'KHONG_SD' => $request['KHONG_SD']
                 ]);
 
                 return response()->json('Cập nhật thành công', 200);
@@ -352,7 +353,8 @@ class Lix extends Controller
                     'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
                     'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
                     'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
-                    'IS_DELETED' => 0
+                    'IS_DELETED' => 0,
+                    'KHONG_SD' => $request->KHONG_SD
                 ];
 
                 phieukhaosat::where('ID_PKS', $result->ID_PKS)->update([
@@ -396,7 +398,8 @@ class Lix extends Controller
                 'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
                 'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
                 'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
-                'IS_DELETED' => 0
+                'IS_DELETED' => 0,
+                'KHONG_SD' => $request->KHONG_SD
             ];
             $result = chi_tiet_phieu_khao_sat_lix::insert($data2);
             if ($result) {

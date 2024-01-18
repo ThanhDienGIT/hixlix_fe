@@ -230,20 +230,6 @@ function StatisticalReport() {
     getAllQuanHuyen()
     callAPIServiceList()
     getDSNhaCungCap()
-    // setProvider([
-    //   {
-    //     ID_NHACUNGCAP: 1,
-    //     TEN_NHACUNGCAP: "Viettel",
-    //   },
-    //   {
-    //     ID_NHACUNGCAP: 2,
-    //     TEN_NHACUNGCAP: "VNPT",
-    //   },
-    //   {
-    //     ID_NHACUNGCAP: 3,
-    //     TEN_NHACUNGCAP: "FPT",
-    //   },
-    // ])
     setWards([
       {
         ID_DVHC: 1,

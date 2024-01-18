@@ -130,7 +130,7 @@ function DetailLix(props) {
                                 <Typography ><b>Dịch vụ:</b> <br /> {detail.TEN_DV ? detail.TEN_DV : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Mức cước:</b> <br /> {detail.MUCCUOC_CTPKS && detail.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Typography>
+                                <Typography ><b>Mức cước:</b> <br /> {detail.MUCCUOC_CTPKS ? detail.MUCCUOC_CTPKS.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) : 'Chưa có'}</Typography>
                             </Grid>
 
                             <Grid item xs={6}>
@@ -143,13 +143,13 @@ function DetailLix(props) {
 
 
                             <Grid item xs={6}>
-                                <Typography ><b>Hình thức cước BRCĐ:</b> <br /> {detail.HINHTHUCDONG_CTPKS}</Typography>
+                                <Typography ><b>Hình thức cước BRCĐ:</b> <br /> {detail.HINHTHUCDONG_CTPKS !== '' ? detail.HINHTHUCDONG_CTPKS : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Tháng bắt đầu đặt cọc:</b> <br /> {detail.NGAYBATDAUDONGCOC_CTPKS && formatDate(detail.NGAYBATDAUDONGCOC_CTPKS)}</Typography>
+                                <Typography ><b>Tháng bắt đầu đặt cọc:</b> <br /> {formatDate(detail.NGAYBATDAUDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(detail.NGAYBATDAUDONGCOC_CTPKS) : 'Chưa có'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography ><b>Tháng kết thúc đặt cọc:</b> <br /> {detail.NGAYKETTHUCDONGCOC_CTPKS && formatDate(detail.NGAYKETTHUCDONGCOC_CTPKS)}</Typography>
+                                <Typography ><b>Tháng kết thúc đặt cọc:</b> <br /> {formatDate(detail.NGAYKETTHUCDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(detail.NGAYKETTHUCDONGCOC_CTPKS) : 'Chưa có'}</Typography>
                             </Grid>
                             {/* <Grid item xs={6}>
                                 <Typography ><b>Thời gian lắp đặt:</b> <br /> {detail.THOIGIANLAPDAT_CTPKS && formatDate(detail.THOIGIANLAPDAT_CTPKS)}</Typography>
@@ -158,7 +158,7 @@ function DetailLix(props) {
                                 <Typography ><b>Thời gian ngưng:</b> <br /> {detail.THOIGIANNGUNG_CTPKS && formatDate(detail.THOIGIANNGUNG_CTPKS)}</Typography>
                             </Grid> */}
                             <Grid item xs={6}>
-                                <Typography ><b>Nhân viên khảo sát:</b> <br /> {detail.TEN_NV}</Typography>
+                                <Typography ><b>Nhân viên khảo sát:</b> <br /> {detail.TEN_NV !== null ? detail.TEN_NV : 'Chưa có'}</Typography>
                             </Grid>
                         </Grid>
                     </Card>
