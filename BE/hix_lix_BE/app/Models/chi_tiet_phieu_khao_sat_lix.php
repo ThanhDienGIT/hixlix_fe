@@ -33,6 +33,7 @@ class chi_tiet_phieu_khao_sat_lix extends Model
         'CAMNHANDICHVU_CTPKS',
         'CANNHANPHUCVU_CTPKS',
         'YKIENKHAC',
+        'KHONG_SD',
         'NGUOITAO_CTPKS',
         'NGAYTAO_CTPKS',
         'NGUOIUPDATE_CTPKS',

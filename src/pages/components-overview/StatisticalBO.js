@@ -60,13 +60,13 @@ function StatisticalBO() {
   const [searchInput, setSearchInput] = useState('');
   const [alloption, setAlloption] = useState([]);
   const [quanhuyen, setQuanhuyen] = useState([]);
-  //   const [xaphuong, setXaphuong] = useState([]);
-  //   const [apKV, setApKV] = useState([]);
-  //  const [huyen, setHuyen] = useState(0)
-  //   const [xa, setXa] = useState(0)
-  //   const [ap, setAp] = useState(0)
-  //   const [supplier, setSupplier] = useState(0);
-  //   const [service, setService] = useState(0);
+  const [xaphuong, setXaphuong] = useState([]);
+  const [apKV, setApKV] = useState([]);
+  const [huyen, setHuyen] = useState(0)
+  const [xa, setXa] = useState(0)
+  const [ap, setAp] = useState(0)
+  const [supplier, setSupplier] = useState(0);
+  const [service, setService] = useState(0);
   const [fromDate, setFromDate] = useState(formattedFirstDateOfMonth);
   const [toDate, setToDate] = useState(formattedToday);
   const [disabled, setDisabled] = useState(false);
@@ -75,6 +75,7 @@ function StatisticalBO() {
   const [display, setDisplay] = useState(0)
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
+  const [use, setUse] = useState(5)
 
 
 
@@ -196,24 +197,24 @@ function StatisticalBO() {
     }
   }, [page, rowPage]);
 
-  //   const onchangeHuyen = async (e) => {
-  //     setHuyen(e.target.value)
-  //     const response = await instance.get('getAllXaPhuong/' + e.target.value);
-  //     if (response.status === 200) {
-  //       setXaphuong(response.data.xaphuong)
-  //       setXa(0)
-  //       setAp(0)
-  //     }
-  //   }
+  const onchangeHuyen = async (e) => {
+    setHuyen(e.target.value)
+    const response = await instance.get('getAllXaPhuong/' + e.target.value);
+    if (response.status === 200) {
+      setXaphuong(response.data.xaphuong)
+      setXa(0)
+      setAp(0)
+    }
+  }
 
-  //   const onchangeXa = async (e) => {
-  //     setXa(e.target.value)
-  //     const response = await instance.get('getAllAp/' + e.target.value);
-  //     if (response.status === 200) {
-  //       setApKV(response.data.ap)
-  //       setAp(0)
-  //     }
-  //   }
+  const onchangeXa = async (e) => {
+    setXa(e.target.value)
+    const response = await instance.get('getAllAp/' + e.target.value);
+    if (response.status === 200) {
+      setApKV(response.data.ap)
+      setAp(0)
+    }
+  }
 
   const getDSNhaCungCap = async () => {
     const response = await instance.get('get_danhsachnhacungcapapi');
@@ -285,7 +286,13 @@ function StatisticalBO() {
       quality_survey: qualityService,
       keywords: searchInput,
       TUNGAY: fromDate,
-      DENNGAY: toDate
+      DENNGAY: toDate,
+      MAHUYEN_KH: huyen,
+      MAXA_KH: xa,
+      MAAP_KH: ap,
+      NHACUNGCAP: supplier,
+      DICHVU: service,
+      USE: use
     }
     await instance.post(`filter-report-BO/${rowPage}?page=${page}`, objectSend)
       .then((res) => {
@@ -330,6 +337,8 @@ function StatisticalBO() {
   const onChangeSelectOption = (e) => {
     setDisplay(Number(e.target.value))
   }
+
+  console.log(use)
 
   // const resetFillterCondition = () => {
   //   setQualityService(5)
@@ -385,7 +394,7 @@ function StatisticalBO() {
               <Divider />
               <Box display={'flex'} flexWrap={'wrap'}>
 
-                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <InputLabel id="demo-select-small-label">Quận/ huyện</InputLabel>
                   <Select
                     disabled={display === 0}
@@ -449,8 +458,81 @@ function StatisticalBO() {
                       )
                     })}
                   </Select>
-                </FormControl> */}
+                </FormControl>
 
+
+
+
+
+                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
+                  <InputLabel id="demo-select-small-label">Sử dụng dịch vụ</InputLabel>
+                  <Select
+                    disabled={display === 0}
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    label="Sử dụng dịch vụ"
+                    name="use"
+                    value={use}
+                    onChange={(e) => setUse(e.target.value)}
+                  >
+                    <MenuItem value={5}>
+                      Tất cả
+                    </MenuItem>
+                    <MenuItem value={0}>
+                      Có sử dụng dịch vụ
+                    </MenuItem>
+                    <MenuItem value={1}>
+                      Không sử dụng dịch vụ
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+
+
+
+
+
+                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2, display: use === 1 ? 'none' : '' }} size="small">
+                  <InputLabel id="demo-select-small-label">Nhà cung cấp</InputLabel>
+                  <Select
+                    disabled={display === 0}
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    label="Chất lượng dịch vụ"
+                    name="NHACUNGCAP_CTPKS"
+                    value={supplier}
+                    onChange={(e) => setSupplier(e.target.value)}
+                  >
+                    <MenuItem value={0}>
+                      Tất cả
+                    </MenuItem>
+                    {provider && provider.filter(x => x.TEN_NCC !== null).map(ele => {
+                      return (
+                        <MenuItem key={ele.ID_NCC} value={ele.ID_NCC}>{ele.TEN_NCC}</MenuItem>
+                      )
+                    })}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2, display: use === 1 ? 'none' : '' }} size="small">
+                  <InputLabel id="demo-select-small-label">Dịch vụ</InputLabel>
+                  <Select
+                    disabled={display === 0}
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    label="Dịch vụ"
+                    value={service}
+                    onChange={(e) => setService(e.target.value)}
+                  >
+                    <MenuItem value={0}>
+                      Tất cả
+                    </MenuItem>
+                    {defaultService && defaultService.filter(x => x.TEN_DV !== null).map(ele => {
+                      return (
+                        <MenuItem key={ele.ID_DV} value={ele.ID_DV}>{ele.TEN_DV}</MenuItem>
+                      )
+                    })}
+                  </Select>
+                </FormControl>
 
 
 
@@ -492,48 +574,7 @@ function StatisticalBO() {
                 </FormControl> */}
 
 
-                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
-                  <InputLabel id="demo-select-small-label">Nhà cung cấp</InputLabel>
-                  <Select
-                    disabled={display === 0}
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    label="Chất lượng dịch vụ"
-                    name="NHACUNGCAP_CTPKS"
-                    value={supplier}
-                    onChange={(e) => setSupplier(e.target.value)}
-                  >
-                    <MenuItem value={0}>
-                      Tất cả
-                    </MenuItem>
-                    {provider && provider.filter(x => x.TEN_NCC !== null).map(ele => {
-                      return (
-                        <MenuItem key={ele.ID_NCC} value={ele.ID_NCC}>{ele.TEN_NCC}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl> */}
 
-                {/* <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
-                  <InputLabel id="demo-select-small-label">Dịch vụ</InputLabel>
-                  <Select
-                    disabled={display === 0}
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    label="Dịch vụ"
-                    value={service}
-                    onChange={(e) => setService(e.target.value)}
-                  >
-                    <MenuItem value={0}>
-                      Tất cả
-                    </MenuItem>
-                    {defaultService && defaultService.filter(x => x.TEN_DV !== null).map(ele => {
-                      return (
-                        <MenuItem key={ele.ID_DV} value={ele.ID_DV}>{ele.TEN_DV}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl> */}
 
                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                   <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={viLocale}
@@ -691,7 +732,7 @@ function StatisticalBO() {
             {ele.CCCD_KH}
           </TableCell> */}
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          {ele.TENKHACHHANGDAIDIEN_CTPKS}
+                          {ele.TENKHACHHANGDAIDIEN_CTPKS !== null ? ele.TENKHACHHANGDAIDIEN_CTPKS : '---'}
                         </TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
                           {ele.DIACHI_KH}
@@ -703,7 +744,7 @@ function StatisticalBO() {
             {ele.ACCOUNTKHACHHANG_CTPKS}
           </TableCell> */}
                         <TableCell>
-                          {ele.TEN_NCC}
+                          {ele.TEN_NCC !== null ? ele.TEN_NCC : '---'}
                         </TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
                           {ele.TEN_DV}
@@ -718,10 +759,10 @@ function StatisticalBO() {
             {ele.HINHTHUCDONG_CTPKS}
           </TableCell> */}
                         <TableCell>
-                          {formatDate(ele.NGAYBATDAUDONGCOC_CTPKS)}
+                          {formatDate(ele.NGAYBATDAUDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(ele.NGAYBATDAUDONGCOC_CTPKS) : '---'}
                         </TableCell>
                         <TableCell>
-                          {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS)}
+                          {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS) : '---'}
                         </TableCell>
                         {/* <TableCell>
             {formatDate(ele.THOIGIANLAPDAT_CTPKS)}

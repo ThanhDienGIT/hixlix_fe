@@ -494,14 +494,14 @@ class danhsachkhachhang extends Controller
         if (!empty($request->keywords)) {
             if ($chucvu_nv === 0 || $chucvu_nv === 2) {
                 DB::enableQueryLog();
-                $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
                     ->where(function ($query) use ($request, $dateObject) {
                         $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
@@ -523,6 +523,30 @@ class danhsachkhachhang extends Controller
                         }
                     })
                     ->where(function ($query) use ($request) {
+                        
+                        if ($request->MAHUYEN_KH != 0) {
+                            $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                        }
+                        if ($request->MAXA_KH != 0) {
+                            $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                        }
+                        if ($request->MAAP_KH !== 0) {
+                            $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                        }
+
+                        if ($request->USE !== 5) {
+                            $query->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                        }
+                        
+                        if ($request->NHACUNGCAP !== 0) {
+                            $query->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                        }
+                        if ($request->DICHVU !== 0) {
+                            $query->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                        }
+
+
+
 
                     
                         if ($request->quality_survey !== 5) {
@@ -559,14 +583,14 @@ class danhsachkhachhang extends Controller
                 return response()->json(['dstk' => $report], 200);
             } else {
 
-                $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
                     ->where(function ($query) use ($request, $dateObject, $id_nv) {
                         $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
@@ -591,7 +615,29 @@ class danhsachkhachhang extends Controller
                     })
                     ->where(function ($query) use ($request) {
 
+                        if ($request->MAHUYEN_KH != 0) {
+                            $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                        }
+                        if ($request->MAXA_KH != 0) {
+                            $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                        }
+                        if ($request->MAAP_KH !== 0) {
+                            $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                        }
+
+                        if ($request->USE !== 5) {
+                            $query->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                        }
                         
+                        if ($request->NHACUNGCAP !== 0) {
+                            $query->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                        }
+                        if ($request->DICHVU !== 0) {
+                            $query->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                        }
+
+
+   
                         if ($request->quality_survey !== 5) {
                             if ($request->quality_survey === 0) {
                                 $query->where('chi_tiet_phieu_khao_sat_lix.DIEM_BO', '>=', 5);
@@ -622,15 +668,40 @@ class danhsachkhachhang extends Controller
             }
         } else {
             if ($chucvu_nv === 0 || $chucvu_nv === 2) {
-                $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('chi_tiet_phieu_khao_sat_lix.BO', 1);
+
+                    if ($request->MAHUYEN_KH != 0) {
+                        $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                    }
+                    if ($request->MAXA_KH != 0) {
+                        $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                    }
+                    if ($request->MAAP_KH !== 0) {
+                        $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                    }
+
+                    if ($request->USE !== 5) {
+                        $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                    }
+                    
+                    if ($request->NHACUNGCAP !== 0) {
+                        $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                    }
+                    if ($request->DICHVU !== 0) {
+                        $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                    }
+
+
+
+                
 
                 
                 if ($request->quality_survey !== 5) {
@@ -659,16 +730,42 @@ class danhsachkhachhang extends Controller
                     ->paginate($count);
                 return response()->json(['dstk' => $report], 200);
             } else {
-                $report = phieukhaosat::join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    ->join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    ->join('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                     ->where('phieu_khao_sat.id_nv', $id_nv)
                     ->where('chi_tiet_phieu_khao_sat_lix.BO', 1);
+
+                    if ($request->MAHUYEN_KH != 0) {
+                        $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                    }
+                    if ($request->MAXA_KH != 0) {
+                        $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                    }
+                    if ($request->MAAP_KH !== 0) {
+                        $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                    }
+
+                    if ($request->USE !== 5) {
+                        $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                    }
+                    
+                    if ($request->NHACUNGCAP !== 0) {
+                        $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                    }
+                    if ($request->DICHVU !== 0) {
+                        $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                    }
+
+
+
+
+
 
                 
                 if ($request->quality_survey !== 5) {
@@ -1072,10 +1169,10 @@ class danhsachkhachhang extends Controller
     {
         $chucvu_nv = auth()->user()->CHUCVU_NV;
         if ($chucvu_nv === 0 || $chucvu_nv === 2) {
-            $survey = phieukhaosat::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                ->join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+            $survey = phieukhaosat::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                ->leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
                 ->where('phieu_khao_sat.ID_KH', $id)
                 ->get();
 
@@ -1085,10 +1182,10 @@ class danhsachkhachhang extends Controller
                 return response()->json(['message' => 'Không tìm thấy khách hàng'], 404);
             }
         } else {
-            $survey = phieukhaosat::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                ->join('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                ->join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                ->join('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+            $survey = phieukhaosat::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                ->leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
                 ->where('phieu_khao_sat.ID_KH', $id)
                 ->where('phieu_khao_sat.ID_NV', auth()->user()->ID_NV)
                 ->get();
