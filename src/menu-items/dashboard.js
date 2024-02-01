@@ -31,7 +31,7 @@ const dashboard = {
     // },
     {
       id: 'customer',
-      title: 'Khách hàng',
+      title: 'Danh sách khách hàng',
       type: 'item',
       url: '/table',
       icon: icons2.SolutionOutlined,
@@ -66,7 +66,7 @@ const dashboard = {
     },
     {
       id: 'asignment',
-      title: 'Phân công khảo sát KH',
+      title: 'Phân công khảo sát',
       type: 'item',
       url: '/asignment-customer',
       icon: AssignmentIndRoundedIcon,

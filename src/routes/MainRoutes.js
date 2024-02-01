@@ -8,6 +8,9 @@ import ServiceManagement from 'pages/components-overview/ServiceManagement';
 import SupplierManagement from 'pages/components-overview/SupplierManagement';
 import UserManagement from 'pages/components-overview/UserManagement';
 import StatisticalBO from 'pages/components-overview/StatisticalBO';
+import QualityManagement from 'pages/components-overview/QualityManagement';
+import ServiceQualityManagement from 'pages/components-overview/ServiceQualityManagement';
+import BOSettingManagement from 'pages/components-overview/BOSettingManagement';
 
 
 // render - dashboard
@@ -77,6 +80,18 @@ const MainRoutes = {
     {
       path: 'service-management',
       element: <ServiceManagement/>
+    },
+    {
+      path: 'quality-management',
+      element: <QualityManagement/>
+    },
+    {
+      path: 'service-quality-management',
+      element: <ServiceQualityManagement/>
+    },
+    {
+      path: 'BO-setting-management',
+      element: <BOSettingManagement/>
     },
     {
       path: 'supplier-management',

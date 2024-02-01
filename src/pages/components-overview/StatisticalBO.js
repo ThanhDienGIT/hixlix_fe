@@ -56,7 +56,7 @@ function StatisticalBO() {
   const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   //  const [statusSurvey, setStatusSurvey] = useState('');
   //  const [serveSurvey, setServeSurvey] = useState(5);
-  const [qualityService, setQualityService] = useState(5);
+  const [qualityService, setQualityService] = useState(0);
   const [searchInput, setSearchInput] = useState('');
   const [alloption, setAlloption] = useState([]);
   const [quanhuyen, setQuanhuyen] = useState([]);
@@ -76,6 +76,7 @@ function StatisticalBO() {
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
   const [use, setUse] = useState(5)
+  const [BOSetting, setBOSetting] = useState([])
 
 
 
@@ -98,7 +99,7 @@ function StatisticalBO() {
     if (isValid(date)) {
       return format(date, 'dd/MM/yyyy');
     } else {
-      return "Ngày không hợp lệ";
+      return "---";
     }
   };
 
@@ -134,6 +135,12 @@ function StatisticalBO() {
     setIdKhaoSat(0);
   }
 
+  const getBOSetting = async () => {
+    await instance.get(`get_alldanhsachcauhinhBO`).then(res => {
+      setBOSetting(res.data)
+    }).catch(err => console.log(err))
+  }
+
   const [maxPage, setMaxPage] = useState(0);
   const listPage = [5, 10, 15, 25, 50];
   const [rowPage, setRowPage] = useState(10);
@@ -158,7 +165,8 @@ function StatisticalBO() {
     instance.get(`get_danhsachbaocaophieuBO/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
-      setAlloption(res.data.data)
+      // setAlloption(res.data.data)
+      setAlloption([])
       const newStartIndex = (page - 1) * rowPage + 1;
       setStartIndex(newStartIndex);
     }).catch(err => console.log(err))
@@ -169,7 +177,8 @@ function StatisticalBO() {
     instance.get(`get_danhsachbaocaophieuBO/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
-      setAlloption(res.data.data)
+      // setAlloption(res.data.data)
+      setAlloption([])
       setLoadingInitial(false)
       const newStartIndex = (page - 1) * rowPage + 1;
       setStartIndex(newStartIndex);
@@ -230,6 +239,7 @@ function StatisticalBO() {
     CallAPI()
     getAllQuanHuyen()
     callAPIServiceList()
+    getBOSetting()
     getDSNhaCungCap()
     // setProvider([
     //   {
@@ -299,7 +309,8 @@ function StatisticalBO() {
         console.log(res)
         setData(res.data.dstk.data)
         setMaxPage(res.data.dstk.last_page)
-        setAlloption(res.data.dstk.data)
+        // setAlloption(res.data.dstk.data)
+        setAlloption([])
         setSearchStatus(1)
         setSearchStatus()
         setLoadingSearch(false)
@@ -311,7 +322,23 @@ function StatisticalBO() {
   const exportDataToExcel = async () => {
     setLoading(true)
     setDisabled(true)
-    await instance.post('export-excel', { export_data: data }, { responseType: 'blob' })
+    const objectSend = {
+      quality_survey: qualityService,
+      keywords: searchInput,
+      TUNGAY: fromDate,
+      DENNGAY: toDate,
+      MAHUYEN_KH: huyen,
+      MAXA_KH: xa,
+      MAAP_KH: ap,
+      NHACUNGCAP: supplier,
+      DICHVU: service,
+      USE: use,
+      display: display
+    }
+    await instance.post('export-excel-bo',
+      // { export_data: data }
+      objectSend
+      , { responseType: 'blob' })
       .then(response => {
         const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
 
@@ -538,7 +565,7 @@ function StatisticalBO() {
 
 
                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
-                  <InputLabel id="demo-select-small-label">Thang điểm BO</InputLabel>
+                  <InputLabel id="demo-select-small-label">Khả năng chuyển BO</InputLabel>
                   <Select
                     disabled={display === 0}
                     labelId="demo-select-small-label"
@@ -547,11 +574,16 @@ function StatisticalBO() {
                     value={qualityService}
                     onChange={(e) => setQualityService(e.target.value)}
                   >
-                    <MenuItem value={5}>
+                    <MenuItem value={0}>
                       Tất cả
                     </MenuItem>
-                    <MenuItem value={0}>Khả năng chuyển BO cao</MenuItem>
-                    <MenuItem value={1}>Khả năng chuyển BO thấp</MenuItem>
+                    {BOSetting && BOSetting.map(ele => {
+                      return (
+                        <MenuItem key={ele.ID_BO} value={ele.ID_BO}>{ele.TEN_BO}</MenuItem>
+                      )
+                    })}
+                    {/* <MenuItem value={0}>Khả năng chuyển BO cao</MenuItem>
+                    <MenuItem value={1}>Khả năng chuyển BO thấp</MenuItem> */}
                   </Select>
                 </FormControl>
 

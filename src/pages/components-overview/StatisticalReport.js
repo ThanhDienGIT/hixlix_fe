@@ -55,8 +55,8 @@ function StatisticalReport() {
   const [wards, setWards] = useState([])
   const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   // const [statusSurvey, setStatusSurvey] = useState('');
-  const [serveSurvey, setServeSurvey] = useState(5);
-  const [qualityService, setQualityService] = useState(5);
+  const [serveSurvey, setServeSurvey] = useState(0);
+  const [qualityService, setQualityService] = useState(0);
   const [searchInput, setSearchInput] = useState('');
   const [alloption, setAlloption] = useState([]);
   const [quanhuyen, setQuanhuyen] = useState([]);
@@ -77,6 +77,8 @@ function StatisticalReport() {
   const [loadingInitial, setLoadingInitial] = useState(false)
   const [startIndex, setStartIndex] = useState(1);
   const [nv, setNv] = useState([])
+  const [quality, setQuality] = useState([])
+  const [serviceQuality, setServiceQuality] = useState([])
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -92,12 +94,13 @@ function StatisticalReport() {
   }
 
   const formatDate = (dateString) => {
+    console.log(dateString)
     const date = new Date(dateString);
 
     if (isValid(date)) {
       return format(date, 'dd/MM/yyyy');
     } else {
-      return "Ngày không hợp lệ";
+      return "---";
     }
   };
 
@@ -144,6 +147,18 @@ function StatisticalReport() {
     }
   }
 
+  const getAllQuality = async () => {
+    await instance.get(`get_alldanhsachchatluong`).then(res => {
+      setQuality(res.data)
+    }).catch(err => console.log(err))
+  }
+
+  const getAllServiceQuality = async () => {
+    await instance.get(`get_alldanhsachchatluongpv`).then(res => {
+      setServiceQuality(res.data)
+    }).catch(err => console.log(err))
+  }
+
   const revertPage = () => {
     if (page > 1) {
       setPage(page - 1)
@@ -157,7 +172,8 @@ function StatisticalReport() {
     instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
-      setAlloption(res.data.data)
+      // setAlloption(res.data.data)
+      setAlloption([])
       const newStartIndex = (page - 1) * rowPage + 1;
       setStartIndex(newStartIndex);
     }).catch(err => console.log(err))
@@ -168,7 +184,8 @@ function StatisticalReport() {
     instance.get(`get_danhsachbaocaophieu/${rowPage}?page=${page}`).then(res => {
       setMaxPage(res.data.last_page)
       setData(res.data.data)
-      setAlloption(res.data.data)
+      // setAlloption(res.data.data)
+      setAlloption([])
       setLoadingInitial(false)
       const newStartIndex = (page - 1) * rowPage + 1;
       setStartIndex(newStartIndex);
@@ -229,6 +246,8 @@ function StatisticalReport() {
     CallAPI()
     getAllQuanHuyen()
     callAPIServiceList()
+    getAllQuality()
+    getAllServiceQuality()
     getDSNhaCungCap()
     setWards([
       {
@@ -290,7 +309,8 @@ function StatisticalReport() {
         console.log(res)
         setData(res.data.dstk.data)
         setMaxPage(res.data.dstk.last_page)
-        setAlloption(res.data.dstk.data)
+        // setAlloption(res.data.dstk.data)
+        setAlloption([])
         setSearchStatus(1)
         setLoadingSearch(false)
         const newStartIndex = (page - 1) * rowPage + 1;
@@ -301,7 +321,24 @@ function StatisticalReport() {
   const exportDataToExcel = async () => {
     setLoading(true)
     setDisabled(true)
-    await instance.post('export-excel', { export_data: data }, { responseType: 'blob' })
+    const objectSend = {
+      quality_survey: qualityService,
+      CHATLUONG_PV: serveSurvey,
+      keywords: searchInput,
+      MAHUYEN_KH: huyen,
+      MAXA_KH: xa,
+      MAAP_KH: ap,
+      NHACUNGCAP: supplier,
+      DICHVU: service,
+      NHANVIEN: chooseNv,
+      TUNGAY: fromDate,
+      DENNGAY: toDate,
+      display: display
+    }
+    await instance.post('export-excel', 
+    objectSend
+    // { export_data: objectSend }
+    , { responseType: 'blob' })
       .then(response => {
         const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
 
@@ -469,11 +506,16 @@ function StatisticalReport() {
                     value={qualityService}
                     onChange={(e) => setQualityService(e.target.value)}
                   >
-                    <MenuItem value={5}>
+                    <MenuItem value={0}>
                       Tất cả
                     </MenuItem>
-                    <MenuItem value={0}>Chất lượng tốt</MenuItem>
-                    <MenuItem value={1}>Chất lượng kém</MenuItem>
+                    {quality && quality.map(ele => {
+                      return (
+                        <MenuItem key={ele.ID_CHATLUONG} value={ele.ID_CHATLUONG}>{ele.TEN_CHATLUONG}</MenuItem>
+                      )
+                    })}
+                    {/* <MenuItem value={0}>Chất lượng tốt</MenuItem>
+                    <MenuItem value={1}>Chất lượng kém</MenuItem> */}
                   </Select>
                 </FormControl>
 
@@ -487,11 +529,16 @@ function StatisticalReport() {
                     value={serveSurvey}
                     onChange={(e) => setServeSurvey(e.target.value)}
                   >
-                    <MenuItem value={5}>
+                    <MenuItem value={0}>
                       Tất cả
                     </MenuItem>
-                    <MenuItem value={0}>Chất lượng tốt</MenuItem>
-                    <MenuItem value={1}>Chất lượng kém</MenuItem>
+                    {serviceQuality && serviceQuality.map(ele => {
+                      return (
+                        <MenuItem key={ele.ID_CHATLUONGPV} value={ele.ID_CHATLUONGPV}>{ele.TEN_CHATLUONGPV}</MenuItem>
+                      )
+                    })}
+                    {/* <MenuItem value={0}>Chất lượng tốt</MenuItem>
+                    <MenuItem value={1}>Chất lượng kém</MenuItem> */}
                   </Select>
                 </FormControl>
 
@@ -753,10 +800,10 @@ function StatisticalReport() {
             {ele.HINHTHUCDONG_CTPKS}
           </TableCell> */}
                         <TableCell>
-                          {formatDate(ele.NGAYBATDAUDONGCOC_CTPKS)}
+                          {formatDate(ele.NGAYBATDAUDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(ele.NGAYBATDAUDONGCOC_CTPKS) : '---'}
                         </TableCell>
                         <TableCell>
-                          {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS)}
+                          {formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(ele.NGAYKETTHUCDONGCOC_CTPKS) : '---'}
                         </TableCell>
                         {/* <TableCell>
             {formatDate(ele.THOIGIANLAPDAT_CTPKS)}
