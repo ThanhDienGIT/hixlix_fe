@@ -158,7 +158,8 @@ function ComponentTest() {
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
-            setAlloption(res.data.data)
+            // setAlloption(res.data.data)
+            setAlloption([])
             // Tính toán số TT của trang hiện tại dựa trên số TT toàn cục và startIndex
             const newStartIndex = (page - 1) * rowPage + 1;
             setStartIndex(newStartIndex);
@@ -170,7 +171,8 @@ function ComponentTest() {
         instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
             setMaxPage(res.data.last_page)
             setData(res.data.data)
-            setAlloption(res.data.data)
+            // setAlloption(res.data.data)
+            setAlloption([])
             setLoadingInitial(false)
             // Tính toán số TT của trang hiện tại dựa trên số TT toàn cục và startIndex
             const newStartIndex = (page - 1) * rowPage + 1;
@@ -189,7 +191,8 @@ function ComponentTest() {
             instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
                 setMaxPage(res.data.last_page)
                 setData(res.data.data)
-                setAlloption(res.data.data)
+                // setAlloption(res.data.data)
+                setAlloption([])
                 // Tính toán số TT của trang hiện tại dựa trên số TT toàn cục và startIndex
                 const newStartIndex = (page - 1) * rowPage + 1;
                 setStartIndex(newStartIndex);
@@ -292,7 +295,8 @@ function ComponentTest() {
             .then((res) => {
                 setData(res.data.dskh.data)
                 setMaxPage(res.data.dskh.last_page)
-                setAlloption(res.data.dskh.data)
+                // setAlloption(res.data.dskh.data)
+                setAlloption([])
                 setSearchStatus(1)
                 setLoading(false)
                 const newStartIndex = (page - 1) * rowPage + 1;

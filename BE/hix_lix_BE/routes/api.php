@@ -37,6 +37,12 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/get_danhsachbaocaophieuBO/{count}', [danhsachkhachhang::class, 'get_danhsachbaocaophieuBO']);
         Route::get('/get_danhsachdichvu/{count}', [DichVuController::class, 'getAllServices']);
         Route::get('/get_danhsachnhacungcap/{count}', [DichVuController::class, 'get_danhsachnhacungcap']);
+        Route::get('/get_danhsachchatluong/{count}', [DichVuController::class, 'get_danhsachchatluong']);
+        Route::get('/get_danhsachcauhinhBO/{count}', [DichVuController::class, 'get_danhsachcauhinhBO']);
+        Route::get('/get_danhsachchatluongpv/{count}', [DichVuController::class, 'get_danhsachchatluongpv']);
+        Route::get('/get_alldanhsachchatluong', [DichVuController::class, 'get_alldanhsachchatluong']);
+        Route::get('/get_alldanhsachchatluongpv', [DichVuController::class, 'get_alldanhsachchatluongpv']);
+        Route::get('/get_alldanhsachcauhinhBO', [DichVuController::class, 'get_alldanhsachcauhinhBO']);
         Route::get('/get_danhsachnhacungcapapi', [DichVuController::class, 'get_danhsachnhacungcapapi']);
 
         Route::get('/getServiceType', [DichVuController::class, 'getServiceType']);
@@ -61,11 +67,27 @@ Route::group(['middleware' => ['api']], function () {
 
         Route::post('/addService', [DichVuController::class, 'themDichVu']);
         Route::post('/addSupplier', [DichVuController::class, 'addSupplier']);
+        Route::post('/addQuality', [DichVuController::class, 'addQuality']);
+        Route::post('/addBOSetting', [DichVuController::class, 'addBOSetting']);
+        Route::post('/addServiceQuality', [DichVuController::class, 'addServiceQuality']);
         Route::delete('/deletesupplier/{id}', [DichVuController::class, 'deletesupplier']);
+        Route::delete('/deletequality/{id}', [DichVuController::class, 'deletequality']);
+        Route::delete('/deletebosetting/{id}', [DichVuController::class, 'deletebosetting']);
+        
+        Route::delete('/deleteservicequality/{id}', [DichVuController::class, 'deleteservicequality']);
         Route::post('/search-suppliler/{count}', [DichVuController::class, 'searchsp']);
+        Route::post('/search-quality/{count}', [DichVuController::class, 'searchqlt']);
+        Route::post('/search-BO-setting/{count}', [DichVuController::class, 'searchbost']);
+        Route::post('/search-service-quality/{count}', [DichVuController::class, 'searchsvqlt']);
         Route::post('/updateSupplier/{id}', [DichVuController::class, 'updateSupplier']);
+        Route::post('/updateQuality/{id}', [DichVuController::class, 'updateQuality']);
+        Route::post('/updateBOSetting/{id}', [DichVuController::class, 'updateBOSetting']);
+        Route::post('/updateServiceQuality/{id}', [DichVuController::class, 'updateServiceQuality']);
         Route::get('/getSpByID/{id}', [DichVuController::class, 'getSpByID']);
-
+        Route::get('/getQualityByID/{id}', [DichVuController::class, 'getQualityByID']);
+        Route::get('/getBOByID/{id}', [DichVuController::class, 'getBOByID']);
+        Route::get('/getServiceQualityByID/{id}', [DichVuController::class, 'getServiceQualityByID']);
+        
 
 
 
@@ -90,6 +112,8 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getNV', [danhsachkhachhang::class, 'getNV']);
         //Khach hang Excel
         Route::post('/export-excel', [danhsachkhachhang::class, 'exportExcel']);
+        Route::post('/export-excel-bo', [danhsachkhachhang::class, 'exportExcelBO']);
+        
         // Route::post('/export-excel', 'App\Http\Controllers\danhsachkhachhang@exportExcel')->name('exportExcel');
         //DVHC
         Route::get('/getallquanhuyen', [danhsachkhachhang::class, 'getallquanhuyen']);

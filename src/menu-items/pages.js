@@ -3,6 +3,9 @@
 import WifiTetheringRoundedIcon from '@mui/icons-material/WifiTetheringRounded';
 import AddBusinessRoundedIcon from '@mui/icons-material/AddBusinessRounded';
 import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
+import Filter8RoundedIcon from '@mui/icons-material/Filter8Rounded';
+import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
+import FormatBoldRoundedIcon from '@mui/icons-material/FormatBoldRounded';
 
 // icons
 // const icons = {
@@ -57,6 +60,33 @@ const pages = {
       type: 'item',
       url: '/user-management',
       icon: ManageAccountsRoundedIcon,
+      breadcrumbs: false,
+      role: [2,0]
+    },
+    {
+      id: 'quality',
+      title: 'Danh mục chất lượng dịch vụ',
+      type: 'item',
+      url: '/quality-management',
+      icon: Filter8RoundedIcon,
+      breadcrumbs: false,
+      role: [2,0]
+    },
+    {
+      id: 'servicequality',
+      title: 'Danh mục chất lượng phục vụ',
+      type: 'item',
+      url: '/service-quality-management',
+      icon: SupportAgentRoundedIcon,
+      breadcrumbs: false,
+      role: [2,0]
+    },
+    {
+      id: 'BOsetting',
+      title: 'Danh mục khả năng chuyển BO',
+      type: 'item',
+      url: '/BO-setting-management',
+      icon: FormatBoldRoundedIcon,
       breadcrumbs: false,
       role: [2,0]
     }
