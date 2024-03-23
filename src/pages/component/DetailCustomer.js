@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { Box, Card, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '../../../node_modules/@mui/material/index';
+import { TextField, Box, Card, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, FormControl, InputLabel, Select, MenuItem } from '../../../node_modules/@mui/material/index';
 import instance from '../../axios/instance';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import EditIcon from '@mui/icons-material/Edit';
@@ -16,6 +16,9 @@ import Slide from '@mui/material/Slide';
 import { format, isValid } from 'date-fns';
 import LixEdit from './LixEdit';
 import DetailLix from './DetailLix';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import SearchIcon from '@mui/icons-material/Search';
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -29,7 +32,25 @@ function DetailCustomer(props) {
     const [idDV, setIdDV] = React.useState(0)
     const [idctpks, setIdctpks] = React.useState(0)
     const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    const BO_filter = [
+        {
+            value: 2,
+            name: 'Tất cả'
+        },
+        {
+            value: 1,
+            name: 'BO'
+        },
+        {
+            value: 0,
+            name: 'Phiếu thường'
+        },
+    ]
+    const [BO, setBO] = React.useState(2)
     const [openDiaLogDetail, setOpenDialogDetail] = React.useState(false)
+    const [searchInput, setSearchInput] = React.useState('')
+    const [supplier, setSupplier] = React.useState(0)
+    const [LoadingButton, setLoadingButon] = React.useState(false)
 
     const openDiaLogEdit = (idpks, iddv, idctpks) => {
         setOpenDialog(true)
@@ -49,7 +70,7 @@ function DetailCustomer(props) {
         setOpenDialog(false)
     }
 
-    
+
 
     const closeDialogDetailLix = () => {
         setOpenDialogDetail(false)
@@ -81,6 +102,33 @@ function DetailCustomer(props) {
         }
     };
 
+    const setOnchangeBO = (value) => {
+        setBO(value);
+    }
+
+    const handelInputChange = (value) => {
+        setSearchInput(value);
+    }
+
+    const handleSearch = async () => {
+        setLoadingButon(true)
+        const objectSend = {
+            keywords: searchInput,
+            NCC: supplier,
+            BO: BO,
+            ID_KH: props.idkhachhang
+        }
+        await instance.post('/search-ds-phieu', objectSend)
+            .then((res) => {
+                setSurveycustomer(res.data)
+                setLoadingButon(false)
+            }).
+            catch((err) => {
+                console.log(err)
+                setLoadingButon(false)
+            })
+    }
+
 
     React.useEffect(() => {
         if (props.idkhachhang) {
@@ -95,6 +143,8 @@ function DetailCustomer(props) {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+    // const screenWidth = window.innerWidth
     return (
 
         <>
@@ -159,6 +209,89 @@ function DetailCustomer(props) {
                     </Card>
                     <Box component={Paper} padding={1} marginTop={1}>
                         <Typography variant='h5' >DANH SÁCH DỊCH VỤ KHẢO SÁT</Typography>
+
+                        <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
+                            <Box display="flex" alignItems="center">
+
+
+                                <FormControl sx={{ width: 200, marginRight: 1, marginTop: 1 }} size="small">
+                                    <TextField
+                                        size="small"
+                                        value={searchInput}
+                                        id="free-solo-2-demo"
+                                        onChange={(e) => {
+                                            handelInputChange(e.target.value);
+                                        }}
+                                    />
+                                </FormControl>
+
+                                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 1 }} size="small">
+                                    <InputLabel id="demo-select-small-label">Nhà cung cấp</InputLabel>
+                                    <Select
+                                        labelId="demo-select-small-label"
+                                        id="demo-select-small"
+                                        label="Chất lượng dịch vụ"
+                                        name="NHACUNGCAP_CTPKS"
+                                        value={supplier}
+                                        onChange={(e) => setSupplier(e.target.value)}
+                                    >
+                                        <MenuItem value={0}>
+                                            Tất cả
+                                        </MenuItem>
+                                        {props.provider && props.provider.filter(x => x.TEN_NCC !== null).map(ele => {
+                                            return (
+                                                <MenuItem key={ele.ID_NCC} value={ele.ID_NCC}>{ele.TEN_NCC}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+
+
+                                <FormControl sx={{ width: 150, marginRight: 1, marginTop: 1 }} size="small">
+                                    <InputLabel id="demo-select-small-label">BO</InputLabel>
+                                    <Select
+                                        labelId="demo-select-small-label"
+                                        id="demo-select-small"
+                                        label="BO"
+                                        name="BO"
+                                        value={BO}
+                                        onChange={(e) => setOnchangeBO(e.target.value)}
+                                    >
+                                        {/* <MenuItem value={2}>
+                                    Tất cả
+                                </MenuItem> */}
+                                        {BO_filter && BO_filter.map(ele => {
+                                            return (
+                                                <MenuItem key={ele.value} value={ele.value}>{ele.name}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+
+                                <Button sx={{ display: 'flex', mr: 1, mt: 1, width: 150 }} color={'primary'} variant="contained"
+                                    onClick={handleSearch}
+                                >
+                                    {LoadingButton ? <>
+                                        <CircularProgress size="1rem" color="inherit" sx={{ mr: 0.5 }} /><Typography >Tìm kiếm</Typography>
+                                    </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
+                                </Button>
+
+                            </Box>
+
+
+
+
+
+
+
+
+
+                        </Box>
+
+
+
+
+
                         <TableContainer component={Paper} sx={{ marginTop: 1 }}>
                             <Table size={'small'}>
                                 <TableHead sx={{ backgroundColor: '#1890ff' }}>
@@ -167,7 +300,7 @@ function DetailCustomer(props) {
                                         <TableCell sx={{ color: 'white' }}> Nhà cung cấp </TableCell>
                                         <TableCell sx={{ color: 'white' }}> Ngày bắt đầu đặt cọc </TableCell>
                                         <TableCell sx={{ color: 'white' }}> Ngày kết thúc đặt cọc </TableCell>
-                                        {/* <TableCell sx={{ color: 'white' }}> Trạng thái </TableCell> */}
+                                        <TableCell sx={{ color: 'white' }}> BO </TableCell>
                                         <TableCell sx={{ color: 'white' }}> Thao tác </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -178,7 +311,7 @@ function DetailCustomer(props) {
                                                 <CircularProgress loading={loading} />
                                             </TableCell>
                                         </TableRow>) : (
-                                            
+
                                             surveycustomer.length > 0 ? surveycustomer.map((survey) => {
                                                 return (
                                                     <TableRow key={survey.ID_CTPKS}>
@@ -187,12 +320,12 @@ function DetailCustomer(props) {
                                                             {survey.TEN_NCC !== null ? survey.TEN_NCC : '---'}
                                                         </TableCell>
                                                         <TableCell> {formatDate(survey.NGAYBATDAUDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(survey.NGAYBATDAUDONGCOC_CTPKS) : '---'}</TableCell>
-                                                        <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS)  !== '01/01/1970' ? formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) : '---'}</TableCell>
-                                                        {/* <TableCell> {surveycustomer.length > 0 ? "Đã khảo sát" : "Chưa khảo sát"}</TableCell> */}
+                                                        <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) : '---'}</TableCell>
+                                                        <TableCell> {survey.BO == 1 ? <CheckCircleOutlineRoundedIcon sx={{ color: '#3ec100' }} /> : <ClearRoundedIcon sx={{ color: '#666666' }} />}</TableCell>
                                                         <TableCell>
                                                             <Tooltip title="Xem chi tiết khảo sát">
                                                                 <IconButton>
-                                                                    <RemoveRedEyeIcon color={'primary'} onClick={() => { openDiaLogDetailLix(survey.ID_PKS, survey.ID_DV) }}/>
+                                                                    <RemoveRedEyeIcon color={'primary'} onClick={() => { openDiaLogDetailLix(survey.ID_PKS, survey.ID_DV) }} />
                                                                 </IconButton>
                                                             </Tooltip>
                                                             <Tooltip title="Cập nhật khảo sát">
@@ -208,12 +341,12 @@ function DetailCustomer(props) {
                                                         </TableCell>
                                                     </TableRow>
                                                 );
-                                            }) : 
-                                            <TableRow>
-                                                <TableCell colSpan={6} style={{ textAlign: 'center' }}>
-                                                    <Typography variant="h3">Khách hàng chưa khảo sát dịch vụ</Typography>
-                                                </TableCell>
-                                            </TableRow>
+                                            }) :
+                                                <TableRow>
+                                                    <TableCell colSpan={6} style={{ textAlign: 'center' }}>
+                                                        <Typography variant="h3">Khách hàng chưa khảo sát dịch vụ</Typography>
+                                                    </TableCell>
+                                                </TableRow>
                                         )
                                     }
 
@@ -227,7 +360,7 @@ function DetailCustomer(props) {
                         Quay lại
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog >
             <LixEdit
                 open={openDiaLog}
                 handleClose={closeDialog}

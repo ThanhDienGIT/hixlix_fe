@@ -62,7 +62,9 @@ Route::group(['middleware' => ['api']], function () {
         Route::post('/getDetailLix',[Lix::class, 'getDetailLix']);
 
 
-
+        Route::post('/update-add-bo', [Lix::class, 'AddEditLixBO']);
+        Route::post('/search-ds-phieu', [Lix::class, 'SearchDSPhieu']);
+        
 
 
         Route::post('/addService', [DichVuController::class, 'themDichVu']);
@@ -121,6 +123,7 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getAllApById/{id}', [danhsachkhachhang::class, 'getAllApById']);
         Route::get('/getAllAp/{id}', [danhsachkhachhang::class, 'getAllAp']);
         Route::post('/AddEditLix', [Lix::class, 'AddEditLix']);
+        
         Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}/{idnhanvien}', [Lix::class, 'getLix_By_IdCustomer_and_IdService']);
         Route::post('/EditLix', [Lix::class, 'EditLix']);
         Route::get('livesearch_lix', [Lix::class, 'livesearch_lix']);

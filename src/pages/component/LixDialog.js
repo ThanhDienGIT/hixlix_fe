@@ -16,6 +16,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import QuickBO from './QuickBO';
 
 function LixDialog(props) {
     const theme = useTheme();
@@ -28,6 +30,7 @@ function LixDialog(props) {
     const [idTypeService, setIdTypeService] = useState(1)
     const [typeOfPay, setTypeOfPay] = useState([])
     const [isError, setIsError] = useState(false)
+    const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     // const [notUse, setNotUse] = useState(false)
     // const [isErrorOther, setIsErrorOther] = useState(false)
 
@@ -219,15 +222,14 @@ function LixDialog(props) {
     };
 
     useEffect(() => {
-        if (idTypeService !== 0)
-        {
+        if (idTypeService !== 0) {
             instance.get('getAllSVById/' + idTypeService)
-            .then((res) => {
-                setServiceList(res.data)
-            })
-            .catch(err => console.log(err))
+                .then((res) => {
+                    setServiceList(res.data)
+                })
+                .catch(err => console.log(err))
         }
-    },[idTypeService])
+    }, [idTypeService])
 
 
 
@@ -264,7 +266,7 @@ function LixDialog(props) {
     }, [props.idCustomer])
 
     const createSurvey = () => {
-        console.log(service)
+        // console.log(service)
         if (service.KHONG_SD === 1) {
             instance.post('AddEditLix', service)
                 .then(res => {
@@ -427,12 +429,12 @@ function LixDialog(props) {
                     setIsExist(true)
                 } else {
                     var a = res.data;
-                    if(a.KHONG_SD === 1){
+                    if (a.KHONG_SD === 1) {
                         setIsExist(true)
-                    }else{
+                    } else {
                         setIsExist(false)
                     }
-                
+
                     a['ID_KH'] = customer.ID_KH
                     setService(a)
                 }
@@ -452,6 +454,7 @@ function LixDialog(props) {
 
 
     console.log(service)
+    console.log(isExist)
 
 
     return (
@@ -692,7 +695,9 @@ function LixDialog(props) {
                             </FormControl>
                             <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2, display: service.KHONG_SD === 1 ? 'none' : '' }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
-
+                            <FormControl fullwidth sx={{ marginTop: 2}}>
+                                <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm nhanh BO</Button>
+                            </FormControl>
 
                             {Number(service.NHACUNGCAP_CTPKS) !== 1 ?
                                 <FormControlLabel
@@ -761,6 +766,17 @@ function LixDialog(props) {
                     {contentNotifi && contentNotifi}
                 </Alert>
             </Snackbar>
+            <QuickBO
+                open={open}
+                handleClose={closeDiaLog}
+                typeService={typeService}
+                servicePointList={servicePointList}
+                idCustomer={props.idCustomer}
+                provider={props.provider}
+                callAPI={callAPI}
+                reloadApi={props.reloadApi}
+            />
+
         </Dialog>
 
 

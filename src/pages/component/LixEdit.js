@@ -16,6 +16,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import QuickBO2 from './QuickBO2';
 
 function LixEdit(props) {
     const theme = useTheme();
@@ -29,6 +31,7 @@ function LixEdit(props) {
     const [typeOfPay, setTypeOfPay] = useState([])
     const [isError, setIsError] = useState(false)
     const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+    const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 
     const alertError = (string) => {
@@ -718,7 +721,14 @@ function LixEdit(props) {
                             </FormControl>
 
                             <TextField rows={4} label="ý kiến khác" placeholder={"ý kiến khác"} multiline sx={{ marginTop: 2, display: service.KHONG_SD === 1 ? 'none' : '' }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
+                            
 
+
+                            <FormControl fullwidth sx={{ marginTop: 2}}>
+                                <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm nhanh BO</Button>
+                            </FormControl>
+
+                            
 
                             {Number(service.NHACUNGCAP_CTPKS) !== 1 ?
                                 <FormControlLabel
@@ -785,6 +795,16 @@ function LixEdit(props) {
                     {contentNotifi && contentNotifi}
                 </Alert>
             </Snackbar>
+            <QuickBO2
+                open={open}
+                handleClose={closeDiaLog}
+                typeService={typeService}
+                servicePointList={servicePointList}
+                idCustomer={props.idCustomer}
+                provider={props.provider}
+                callAPI={callAPI}
+                // reloadApi={props.reloadApi}
+            />
         </Dialog>
 
 
