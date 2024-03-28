@@ -1431,6 +1431,7 @@ class danhsachkhachhang extends Controller
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('ID_NV', $id_nv)
                     ->where(function ($query) use ($request) {
                         $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
                             ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
@@ -1461,6 +1462,7 @@ class danhsachkhachhang extends Controller
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('ID_NV', $id_nv)
                     ->where(function ($query) use ($request, $id_nv) {
                         $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
                             ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
@@ -1495,8 +1497,8 @@ class danhsachkhachhang extends Controller
             if ($chucvu_nv === 0 || $chucvu_nv === 2) {
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
-
+                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('ID_NV', $id_nv);
                 if ($request->MAHUYEN_KH != 0) {
                     $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
                 }
@@ -1517,7 +1519,7 @@ class danhsachkhachhang extends Controller
                 $customers = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where('id_nv', $id_nv);
+                    ->where('ID_NV', $id_nv);
 
                 if ($request->MAHUYEN_KH != 0) {
                     $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);

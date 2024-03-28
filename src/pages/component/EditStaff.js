@@ -43,6 +43,7 @@ function EditStaff(props) {
         DIACHI_NV: '',
         EMAIL_NV: '',
         CHUCVU_NV: 0,
+        DONVI_ID: 0,
         TAIKHOAN_NV: '',
         MATKHAU_NV: '',
         TRANGTHAI_NV: 0
@@ -75,6 +76,7 @@ function EditStaff(props) {
             DIACHI_NV: user.DIACHI_NV,
             EMAIL_NV: user.EMAIL_NV,
             CHUCVU_NV: user.CHUCVU_NV,
+            DONVI_ID: user.DONVI_ID,
             TAIKHOAN_NV: user.TAIKHOAN_NV,
             MATKHAU_NV: user.MATKHAU_NV,
             TRANGTHAI_NV: user.TRANGTHAI_NV
@@ -125,8 +127,8 @@ function EditStaff(props) {
     }
 
     const roles = [
-        { id: 0, label: 'Nhân viên quản lý' },
-        { id: 1, label: 'Nhân viên' },
+        { id: 0, label: 'Lãnh đạo đơn vị' },
+        { id: 1, label: 'Nhân viên khảo sát' },
     ];
 
 
@@ -168,23 +170,23 @@ function EditStaff(props) {
                         <TextField multiline sx={{ marginTop: 1 }} value={user.TAIKHOAN_NV} name={'TAIKHOAN_NV'} onChange={(e) => { onChangeInput(e) }} />
                     </FormControl>
 
-                    {/* <FormControl sx={{ marginTop: 2 }}>
-                        <Typography variant="h6">Mật khẩu (*) </Typography>
-                        <TextField type="password"
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                        size="large"
-                                    >
-                                        {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                                    </IconButton>
-                                </InputAdornment>}
-                            variant="outlined" sx={{ marginTop: 1 }} value={user.MATKHAU_NV} name={'MATKHAU_NV'} onChange={(e) => { onChangeInput(e) }} />
-                    </FormControl> */}
+                    <FormControl sx={{ marginTop: 2 }}>
+                        <Typography variant="h6">Đơn vị (*) </Typography>
+                        <Select
+                            value={Number(user.DONVI_ID)}
+                            name={'DONVI_ID'}
+                            onChange={(e) => { onChangeInput(e) }}
+                        >
+                            <MenuItem value={0} disabled>Chọn đơn vị</MenuItem>
+                            {props.listUnit.length > 0 ? props.listUnit.map(ele => {
+                                return (<MenuItem key={ele.DONVI_ID} value={ele.DONVI_ID}>
+                                    {ele.TEN_DONVI}
+                                </MenuItem>)
+                            }) : ''
+                            }
+
+                        </Select>
+                    </FormControl>
 
                     <FormControl sx={{ marginTop: 2 }}>
                         <Typography variant="h6">Chức vụ (*) </Typography>

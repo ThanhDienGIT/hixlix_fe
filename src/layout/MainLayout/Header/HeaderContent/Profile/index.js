@@ -117,9 +117,9 @@ const Profile = () => {
           <Stack sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6">{user.ten_nv}</Typography>
             <Typography variant="body2" color="textSecondary">
-              {user.chucvu_nv === 0 ? 'Nhân viên quản lý' : ''}
+              {user.chucvu_nv === 0 ? 'Lãnh đạo đơn vị' : ''}
               {user.chucvu_nv === 2 ? 'Admin' : ''}
-              {user.chucvu_nv === 1 ? 'Nhân viên' : ''}
+              {user.chucvu_nv === 1 ? 'Nhân viên khảo sát' : ''}
             </Typography>
           </Stack>
         </Stack>

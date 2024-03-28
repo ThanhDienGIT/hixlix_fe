@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NhanVienController;
 use App\Http\Controllers\DichVuController;
+use App\Http\Controllers\DonviController;
 use App\Http\Controllers\DonViHanhChinhController;
 
 /*
@@ -91,13 +92,25 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getServiceQualityByID/{id}', [DichVuController::class, 'getServiceQualityByID']);
         
 
-
-
-
         Route::delete('/deleteservice/{id}', [DichVuController::class, 'xoaDichVu']);
         Route::get('/getSVByID/{id}', [DichVuController::class, 'getServiceById']);
         Route::get('/getAllSVById/{id}', [DichVuController::class, 'getAllServiceById']);
         Route::post('/updateService/{id}', [DichVuController::class, 'capNhatDichVu']);
+
+        // Unit
+        Route::post('/addUnit', [DonviController::class, 'addUnit']);
+        Route::get('/getAllUnit/{count}', [DonviController::class, 'getAllUnit']);
+        Route::get('/getAllChildUnit', [DonviController::class, 'getAllChildUnit']);
+        Route::get('/getListUnit', [DonviController::class, 'getAllUnitNoPaginate']);
+        Route::get('/getUnitByID/{id}', [DonviController::class, 'getUnitByID']);
+        Route::delete('/deleteUnit/{id}', [DonviController::class, 'deleteUnit']);
+        Route::post('/updateUnit/{id}', [DonviController::class, 'updateUnit']);
+        Route::post('/search-unit/{count}', [DonviController::class, 'search']);
+        Route::get('/getAllUnitByID/{id}', [DonviController::class, 'getAllUnitByID']);
+        Route::post('/addLocalityManagement/{id}', [DonviController::class, 'addLocalityManagement']);
+        
+        
+        
 
 
 

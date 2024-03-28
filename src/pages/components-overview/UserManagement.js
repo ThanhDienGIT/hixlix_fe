@@ -41,16 +41,8 @@ function UserManagement() {
     const [searchStatus, setSearchStatus] = useState(0)
     const [loadingInitial, setLoadingInitial] = useState(false)
     const [startIndex, setStartIndex] = useState(1);
-    // const [user, setUser] = useState({
-    //     TEN_NV: '',
-    //     SDT_NV: '',
-    //     DIACHI_NV: '',
-    //     EMAIL_NV: '',
-    //     CHUCVU_NV: 0,
-    //     TAIKHOAN_NV: '',
-    //     MATKHAU_NV: '',
-    //     TRANGTHAI_NV: 0
-    // })
+    const [listUnit, setListUnit] = useState([])
+    const [unit, setUnit] = useState(0)
 
     const userString = localStorage.getItem('access_token');
     const user = jwt_decode(userString);
@@ -122,15 +114,15 @@ function UserManagement() {
     }
 
     const CallAPI = async () => {
-            setLoadingInitial(true)
-            await instance.get(`get_danhsachnguoidung/${rowPage}?page=${page}`).then(res => {
-                setMaxPage(res.data.last_page)
-                setData(res.data.data)
-                setAlloption(res.data.data)
-                setLoadingInitial(false)
-                const newStartIndex = (page - 1) * rowPage + 1;
-                setStartIndex(newStartIndex);
-            }).catch(err => console.log(err))
+        setLoadingInitial(true)
+        await instance.get(`get_danhsachnguoidung/${rowPage}?page=${page}`).then(res => {
+            setMaxPage(res.data.last_page)
+            setData(res.data.data)
+            setAlloption(res.data.data)
+            setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
+        }).catch(err => console.log(err))
     }
 
     const CallAPIProps = async () => {
@@ -149,6 +141,16 @@ function UserManagement() {
 
     }
 
+    const getListUnit = async () => {
+        await instance.get('getListUnit')
+            .then((res) => {
+                setListUnit(res.data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
 
     useEffect(() => {
         if (searchStatus === 0) {
@@ -161,6 +163,7 @@ function UserManagement() {
 
     useEffect(() => {
         CallAPI();
+        getListUnit();
     }, []);
 
 
@@ -177,7 +180,8 @@ function UserManagement() {
         const objectSend = {
             keywords: searchInput,
             TRANGTHAI_NV: status,
-            CHUCVU_NV: role
+            CHUCVU_NV: role,
+            DONVI_ID: unit
         }
         await instance.post(`search-user/${rowPage}?page=${page}`, objectSend)
             .then((res) => {
@@ -228,29 +232,28 @@ function UserManagement() {
                         <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                             <Box display={'flex'} flexWrap={'wrap'}>
 
-                                {/* <Autocomplete
-                            id="free-solo-demo"
-                            freeSolo
-                            open={isOpen || (searchInput && searchInput.length > 0)}
-                            value={searchInput}
-                            options={alloption.map((option) => option.TEN_NV)}
-                            onChange={(event, value) => {
-                                handleAutocompleteChange(event, value);
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label='Tìm kiếm...'
-                                    size="small"
-                                    sx={{ marginRight: 1, marginTop: 0.8, width: 150 }}
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                    onInputChange={(e, value) => {
-                                        setSearchInput(value);
-                                        isOpen = value.length > 0;
-                                    }}
-                                />
-                            )}
-                        /> */}
+                                <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
+                                    <InputLabel id="demo-select-small-label">Đơn vị</InputLabel>
+                                    <Select
+                                        labelId="demo-select-small-label"
+                                        id="demo-select-small"
+                                        label="Đơn vị"
+                                        name='DONVI_ID'
+                                        value={unit}
+                                        onChange={(e) => setUnit(e.target.value)}
+                                    >
+                                        <MenuItem value={0}>
+                                            Tất cả
+                                        </MenuItem>
+                                        {listUnit && listUnit.map(ele => {
+                                            return (
+                                                <MenuItem key={ele.DONVI_ID} value={ele.DONVI_ID}>
+                                                    {ele.TEN_DONVI}
+                                                </MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
 
                                 <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
                                     <InputLabel id="demo-select-small-label">Chức vụ</InputLabel>
@@ -266,10 +269,10 @@ function UserManagement() {
                                             Tất cả
                                         </MenuItem>
                                         <MenuItem value={0}>
-                                            Nhân viên quản lý
+                                            Lãnh đạo đơn vị
                                         </MenuItem>
                                         <MenuItem value={1}>
-                                            Nhân viên
+                                            Nhân viên khảo sát
                                         </MenuItem>
                                     </Select>
                                 </FormControl>
@@ -344,7 +347,7 @@ function UserManagement() {
                                         <TableCell sx={{ color: 'white' }}> STT</TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên người dùng </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> SĐT </TableCell>
-                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Đơn vị </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Email </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Tên tài khoản </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Chức vụ </TableCell>
@@ -366,7 +369,7 @@ function UserManagement() {
                                                     {ele.SDT_NV}
                                                 </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                                    {ele.DIACHI_NV}
+                                                    {ele.TEN_DONVI}
                                                 </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.EMAIL_NV}
@@ -375,8 +378,8 @@ function UserManagement() {
                                                     {ele.TAIKHOAN_NV}
                                                 </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                                    {ele.CHUCVU_NV === 0 ? 'Nhân viên quản lý' : ''}
-                                                    {ele.CHUCVU_NV === 1 ? 'Nhân viên' : ''}
+                                                    {ele.CHUCVU_NV === 0 ? 'Lãnh đạo đơn vị' : ''}
+                                                    {ele.CHUCVU_NV === 1 ? 'Nhân viên khảo sát' : ''}
                                                     {ele.CHUCVU_NV === 2 ? 'Admin' : ''}
                                                 </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -451,12 +454,14 @@ function UserManagement() {
                 open={dialogstaff}
                 handleClose={closeDialogStaff}
                 callApi={CallAPIProps}
+                listUnit={listUnit}
             />
             <EditStaff
                 open={dialogEdit}
                 handleClose={closeDialogEdit}
                 callApi={CallAPIProps}
                 idstaff={idstaff}
+                listUnit={listUnit}
             />
             <DiaLogSuccess
                 open={dialogSuccess}

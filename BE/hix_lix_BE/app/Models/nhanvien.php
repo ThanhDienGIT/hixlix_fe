@@ -21,6 +21,7 @@ class nhanvien extends Authenticatable implements JWTSubject
         'diachi_nv',
         'email_nv',
         'chucvu_nv',
+        'donvi_id',
         'taikhoan_nv',
         'matkhau_nv',
         'trangthai_nv',
@@ -49,7 +50,8 @@ class nhanvien extends Authenticatable implements JWTSubject
             'id_nv' => $this->ID_NV,
             'ten_nv' => $this->TEN_NV,
             'email_nv' => $this->EMAIL_NV,
-            'chucvu_nv' => $this->CHUCVU_NV
+            'chucvu_nv' => $this->CHUCVU_NV,
+            'donvi_id' => $this->DONVI_ID
             // Các thông tin khác nếu cần
         ];
     }

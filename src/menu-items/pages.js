@@ -6,6 +6,8 @@ import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded
 import Filter8RoundedIcon from '@mui/icons-material/Filter8Rounded';
 import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
 import FormatBoldRoundedIcon from '@mui/icons-material/FormatBoldRounded';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 
 // icons
 // const icons = {
@@ -61,7 +63,7 @@ const pages = {
       url: '/user-management',
       icon: ManageAccountsRoundedIcon,
       breadcrumbs: false,
-      role: [2,0]
+      role: [2]
     },
     {
       id: 'quality',
@@ -70,7 +72,7 @@ const pages = {
       url: '/quality-management',
       icon: Filter8RoundedIcon,
       breadcrumbs: false,
-      role: [2,0]
+      role: [2]
     },
     {
       id: 'servicequality',
@@ -79,7 +81,7 @@ const pages = {
       url: '/service-quality-management',
       icon: SupportAgentRoundedIcon,
       breadcrumbs: false,
-      role: [2,0]
+      role: [2]
     },
     {
       id: 'BOsetting',
@@ -88,7 +90,25 @@ const pages = {
       url: '/BO-setting-management',
       icon: FormatBoldRoundedIcon,
       breadcrumbs: false,
-      role: [2,0]
+      role: [2]
+    },
+    {
+      id: 'UnitSetting',
+      title: 'Danh mục đơn vị',
+      type: 'item',
+      url: '/unit-setting-management',
+      icon: ApartmentIcon,
+      breadcrumbs: false,
+      role: [2]
+    },
+    {
+      id: 'UnitSettingManagement',
+      title: 'Cấu hình địa bàn quản lý',
+      type: 'item',
+      url: '/locality-setting-management',
+      icon: SettingsRoundedIcon,
+      breadcrumbs: false,
+      role: [2]
     }
   ]
 };

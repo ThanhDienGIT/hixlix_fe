@@ -14,18 +14,23 @@ class NhanVienController extends Controller
     public function search($count, Request $request)
     {
         if (!empty($request->keywords)) {
-
-
-
             $user = DB::table('nhan_vien')
+                ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
+                ->where('nhan_vien.IS_DELETED', 0)
                 ->where(function ($query) use ($request) {
                     $query->where('TEN_NV', 'like', '%' . $request->keywords . '%')
                         ->orWhere('SDT_NV', 'like', '%' . $request->keywords . '%')
                         ->orWhere('DIACHI_NV', 'like', '%' . $request->keywords . '%')
                         ->orWhere('EMAIL_NV', 'like', '%' . $request->keywords . '%')
+                        ->orWhere('don_vi.TEN_DONVI', 'like', '%' . $request->keywords . '%')
                         ->orWhere('TAIKHOAN_NV', 'like', '%' . $request->keywords . '%');
                 })
                 ->where(function ($query) use ($request) {
+                    if ($request->DONVI_ID !== 0) {
+                        $query->where('nhan_vien.DONVI_ID', $request->DONVI_ID);
+                    }
+
+
                     if ($request->TRANGTHAI_NV !== 5) {
                         $query->where('nhan_vien.TRANGTHAI_NV', $request->TRANGTHAI_NV);
                     }
@@ -34,15 +39,17 @@ class NhanVienController extends Controller
                         $query->where('nhan_vien.CHUCVU_NV', $request->CHUCVU_NV);
                     }
                 });
-
-
-
-
-            $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
+            $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, don_vi.TEN_DONVI')
                 ->paginate($count);
             return response()->json(['dsuser' => $user], 200);
         } else {
-            $user = DB::table('nhan_vien');
+            $user = DB::table('nhan_vien')
+                ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
+                ->where('nhan_vien.IS_DELETED', 0);
+
+            if ($request->DONVI_ID !== 0) {
+                $user->where('nhan_vien.DONVI_ID', $request->DONVI_ID);
+            }
 
             if ($request->TRANGTHAI_NV !== 5) {
                 $user->where('nhan_vien.TRANGTHAI_NV', $request->TRANGTHAI_NV);
@@ -52,7 +59,7 @@ class NhanVienController extends Controller
                 $user->where('nhan_vien.CHUCVU_NV', $request->CHUCVU_NV);
             }
 
-            $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
+            $user = $user->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, don_vi.TEN_DONVI')
                 ->paginate($count);
             return response()->json(['dsuser' => $user], 200);
         }
@@ -71,6 +78,7 @@ class NhanVienController extends Controller
                 ],
                 'DIACHI_NV' => 'required',
                 'EMAIL_NV' => ['required', 'email', Rule::unique('nhan_vien', 'EMAIL_NV')],
+                'DONVI_ID' => 'required',
                 'CHUCVU_NV' => 'required',
                 'TAIKHOAN_NV' => ['required', Rule::unique('nhan_vien', 'TAIKHOAN_NV')],
                 'MATKHAU_NV' => 'required',
@@ -85,6 +93,7 @@ class NhanVienController extends Controller
                 'email_nv.required' => 'Vui lòng nhập email nhân viên và kiêm tra đúng định dạng',
                 'EMAIL_NV.email' => 'Vui lòng nhập đúng định dạng Email',
                 'EMAIL_NV.unique' => 'Vui lòng nhập Email không trùng trong hệ thống',
+                'DONVI_ID.required' => 'Vui lòng chọn đơn vị của nhân viên',
                 'CHUCVU_NV.required' => 'Vui lòng chọn chức vụ nhân viên',
                 'TAIKHOAN_NV.required' => 'Vui lòng nhập tài khoản nhân viên',
                 'TAIKHOAN_NV.unique' => 'Vui lòng nhập tài khoản nhân viên không trùng trong hệ thống',
@@ -97,6 +106,7 @@ class NhanVienController extends Controller
                 'sdt_nv' => $request->SDT_NV,
                 'diachi_nv' => $request->DIACHI_NV,
                 'email_nv' => $request->EMAIL_NV,
+                'donvi_id' => $request->DONVI_ID,
                 'chucvu_nv' => $request->CHUCVU_NV,
                 'taikhoan_nv' => $request->TAIKHOAN_NV,
                 'matkhau_nv' => Hash::make($request->MATKHAU_NV),
@@ -136,6 +146,7 @@ class NhanVienController extends Controller
                 'DIACHI_NV' => 'required',
                 'EMAIL_NV' => ['required', 'email', Rule::unique('nhan_vien', 'EMAIL_NV')->ignore($id, 'ID_NV')],
                 'CHUCVU_NV' => 'required',
+                'DONVI_ID' => 'required',
                 'TAIKHOAN_NV' => ['required', Rule::unique('nhan_vien', 'TAIKHOAN_NV')->ignore($id, 'ID_NV')],
                 'MATKHAU_NV' => 'required',
             ],
@@ -150,6 +161,7 @@ class NhanVienController extends Controller
                 'EMAIL_NV.email' => 'Vui lòng nhập đúng định dạng Email',
                 'EMAIL_NV.unique' => 'Vui lòng nhập Email không trùng trong hệ thống',
                 'CHUCVU_NV.required' => 'Vui lòng chọn chức vụ nhân viên',
+                'DONVI_ID.required' => 'Vui lòng chọn đơn vị của nhân viên',
                 'TAIKHOAN_NV.required' => 'Vui lòng nhập tài khoản nhân viên',
                 'TAIKHOAN_NV.unique' => 'Vui lòng nhập tài khoản nhân viên không trùng trong hệ thống',
                 'MATKHAU_NV.required' => 'Vui lòng nhập mật khẩu nhân viên'
@@ -162,6 +174,7 @@ class NhanVienController extends Controller
                 'diachi_nv' => $request->DIACHI_NV,
                 'email_nv' => $request->EMAIL_NV,
                 'chucvu_nv' => $request->CHUCVU_NV,
+                'donvi_id' => $request->DONVI_ID,
                 'taikhoan_nv' => $request->TAIKHOAN_NV,
                 'trangthai_nv' => $request->TRANGTHAI_NV
             ]);
@@ -196,8 +209,10 @@ class NhanVienController extends Controller
 
     public function getAllStaff($count)
     {
-        $result = DB::table('nhan_vien')->where('IS_DELETED', 0)
-            ->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV')
+        $result = DB::table('nhan_vien')
+            ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
+            ->where('nhan_vien.IS_DELETED', 0)
+            ->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, nhan_vien.DONVI_ID, TEN_DONVI')
             ->paginate($count);
         return response()->json($result, 200);
     }

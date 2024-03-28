@@ -64,7 +64,8 @@ class testController extends Controller
                 'id_nv' => $user->ID_NV,
                 'ten_nv' => $user->TEN_NV,
                 'email_nv' => $user->EMAIL_NV,
-                'chucvu_nv' => $user->CHUCVU_NV
+                'chucvu_nv' => $user->CHUCVU_NV,
+                'donvi_id' => $user->DONVI_ID
                 // Các thông tin khác nếu cần
             ];
 

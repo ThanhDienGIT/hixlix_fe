@@ -43,10 +43,13 @@ function AddStaff(props) {
         DIACHI_NV: '',
         EMAIL_NV: '',
         CHUCVU_NV: 0,
+        DONVI_ID: 0,
         TAIKHOAN_NV: '',
         MATKHAU_NV: '',
         TRANGTHAI_NV: 0
     })
+
+
     const [loading, setLoading] = useState(false);
 
 
@@ -79,6 +82,7 @@ function AddStaff(props) {
             SDT_NV: user.SDT_NV,
             DIACHI_NV: user.DIACHI_NV,
             EMAIL_NV: user.EMAIL_NV,
+            DONVI_ID: user.DONVI_ID,
             CHUCVU_NV: user.CHUCVU_NV,
             TAIKHOAN_NV: user.TAIKHOAN_NV,
             MATKHAU_NV: user.MATKHAU_NV,
@@ -122,18 +126,21 @@ function AddStaff(props) {
     }
 
 
-    // const addForm = () => {
-    //     setForm(rev => [...rev, { form: form.length + 1 }])
-    // }
+
+
 
     const roles = [
-        { id: 0, label: 'Nhân viên quản lý' },
-        { id: 1, label: 'Nhân viên' },
+        { id: 0, label: 'Lãnh đạo đơn vị' },
+        { id: 1, label: 'Nhân viên khảo sát' },
     ];
+
+    console.log(props.listUnit)
 
 
     React.useEffect(() => {
     }, []);
+
+
     return (
         <Dialog
             open={props.open}
@@ -185,6 +192,25 @@ function AddStaff(props) {
                                     </IconButton>
                                 </InputAdornment>}
                             variant="outlined" sx={{ marginTop: 1 }} value={user.MATKHAU_NV} name={'MATKHAU_NV'} onChange={(e) => { onChangeInput(e) }} />
+                    </FormControl>
+
+
+                    <FormControl sx={{ marginTop: 2 }}>
+                        <Typography variant="h6">Đơn vị (*) </Typography>
+                        <Select
+                            value={user.DONVI_ID}
+                            name={'DONVI_ID'}
+                            onChange={(e) => { onChangeInput(e) }}
+                        >
+                            <MenuItem value={0} disabled>Chọn đơn vị</MenuItem>
+                            {props.listUnit.length > 0 ? props.listUnit.map(ele => {
+                                return (<MenuItem key={ele.DONVI_ID} value={ele.DONVI_ID}>
+                                    {ele.TEN_DONVI}
+                                </MenuItem>)
+                            }) : ''
+                            }
+
+                        </Select>
                     </FormControl>
 
                     <FormControl sx={{ marginTop: 2 }}>
