@@ -11,31 +11,38 @@ use Illuminate\Validation\Rule;
 
 class DonviController extends Controller
 {
+
+    public function getlocalitybydonvi()
+    {
+        $result = DB::table('dia_ban_quan_ly')
+            ->where('dia_ban_quan_ly.DONVI_ID', auth()->user()->DONVI_ID)
+            ->get();
+
+        return response()->json($result, 200);
+    }
     public function addLocalityManagement($id, Request $request)
     {
         $listDiaBan = $request->HUYEN;
 
         // Lấy danh sách địa bàn quản lý hiện tại của đơn vị
-$currentDiaBan = DB::table('dia_ban_quan_ly')
-->where('DONVI_ID', $id)
-->pluck('TENDIABAN')
-->toArray();
+        $currentDiaBan = DB::table('dia_ban_quan_ly')
+            ->where('DONVI_ID', $id)
+            ->pluck('TENDIABAN')
+            ->toArray();
 
 
 
-// So sánh danh sách địa bàn mới với danh sách địa bàn hiện tại của đơn vị
-$deleteDiaBan = array_diff($currentDiaBan, $listDiaBan);
+        // So sánh danh sách địa bàn mới với danh sách địa bàn hiện tại của đơn vị
+        $deleteDiaBan = array_diff($currentDiaBan, $listDiaBan);
 
-if ($deleteDiaBan)
-{
-    foreach($deleteDiaBan as $deleteDB)
-    {
-        $result = DB::table('dia_ban_quan_ly')
-        ->where('TENDIABAN', $deleteDB)
-        ->where('DONVI_ID', $id)
-        ->delete();
-    }
-}
+        if ($deleteDiaBan) {
+            foreach ($deleteDiaBan as $deleteDB) {
+                $result = DB::table('dia_ban_quan_ly')
+                    ->where('TENDIABAN', $deleteDB)
+                    ->where('DONVI_ID', $id)
+                    ->delete();
+            }
+        }
 
         foreach ($listDiaBan as $diaban) {
             $diaban = DB::table('unit')

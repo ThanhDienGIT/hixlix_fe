@@ -24,6 +24,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
+import jwt_decode from 'jwt-decode';
 
 
 
@@ -61,6 +62,10 @@ function AssignmentCustomerManager() {
     const [loading, setLoading] = useState(false)
     const [loadingInitial, setLoadingInitial] = useState(false)
     const [startIndex, setStartIndex] = useState(1);
+    const [diaban, setDiaban] = useState([])
+
+    const userString = localStorage.getItem('access_token');
+    const user = jwt_decode(userString);
 
 
     const callAPIServiceList = () => {
@@ -162,16 +167,16 @@ function AssignmentCustomerManager() {
     }
 
     const CallAPI = () => {
-            setLoadingInitial(true)
-            instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
-                setMaxPage(res.data.last_page)
-                setData(res.data.data)
-                setAlloption(res.data.data)
-                setLoadingInitial(false)
-                const newStartIndex = (page - 1) * rowPage + 1;
-                setStartIndex(newStartIndex);
-            }).catch(err => console.log(err))
-        
+        setLoadingInitial(true)
+        instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+            setMaxPage(res.data.last_page)
+            setData(res.data.data)
+            setAlloption(res.data.data)
+            setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
+        }).catch(err => console.log(err))
+
 
     }
 
@@ -208,6 +213,13 @@ function AssignmentCustomerManager() {
         // {
         //     console.log(response)
         // }
+    }
+
+    const getAllLocalityByDonvi = async () => {
+        const response = await instance.get('/getlocalitybydonvi')
+        if (response.status === 200) {
+            setDiaban(response.data)
+        }
     }
 
     useEffect(() => {
@@ -274,7 +286,7 @@ function AssignmentCustomerManager() {
                 ID_CHA_DVHC: 1,
             },
         ])
-
+        getAllLocalityByDonvi()
     }, []);
 
 
@@ -326,6 +338,8 @@ function AssignmentCustomerManager() {
             })
     }
 
+    console.log(user)
+
 
 
 
@@ -355,11 +369,16 @@ function AssignmentCustomerManager() {
                                         <MenuItem value={0}>
                                             Tất cả
                                         </MenuItem>
-                                        {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
-                                            return (
+                                        {user.chucvu_nv === 2 ?
+                                            quanhuyen.filter(x => x.parent_code !== null).map(ele => (
                                                 <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
-                                            )
-                                        })}
+                                            ))
+                                            :
+                                            quanhuyen.filter(x => x.parent_code !== null && diaban.map(dia => dia.DIABAN_ID).includes(Number(x.code))).map(ele => (
+                                                <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                                            ))
+                                        }
+
                                     </Select>
                                 </FormControl>
 

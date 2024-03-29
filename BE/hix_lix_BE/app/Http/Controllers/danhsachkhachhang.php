@@ -1546,18 +1546,16 @@ class danhsachkhachhang extends Controller
     {
         $id_nv = auth()->user()->ID_NV;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
+        $dv_id = auth()->user()->DONVI_ID;
+        $diabanql = DB::table('dia_ban_quan_ly')->where('DONVI_ID', $dv_id)->get();
         if (!empty($request->keywords)) {
-            if ($chucvu_nv === 2 || $chucvu_nv === 0) {
+            if ($chucvu_nv === 0) {
+
+
                 $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
                     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    // ->where('ten_kh', 'like', '%' . $request->keywords . '%')
-                    // ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
-                    // ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
-                    // ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
-                    // ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
-                    // ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
                     ->where(function ($query) use ($request) {
                         $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
                             ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
@@ -1587,21 +1585,20 @@ class danhsachkhachhang extends Controller
                                 $query->whereNotNull('khach_hang.ID_NV');
                             }
                         }
-                    });
-
-
-                $customers = $customers
+                    })
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                    ->distinct()
                     ->paginate($count);
+
                 return response()->json(['dskh' => $customers], 200);
             } else {
+
                 $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
                     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where(function ($query) use ($request, $id_nv) {
+                    ->where(function ($query) use ($request) {
                         $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
-                            ->where('khach_hang.id_nv', $id_nv)
                             ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
                             ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
                             ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
@@ -1631,13 +1628,52 @@ class danhsachkhachhang extends Controller
                         }
                     });
 
+
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                    ->distinct()
                     ->paginate($count);
+
+
+
                 return response()->json(['dskh' => $customers], 200);
             }
         } else {
-            if ($chucvu_nv === 2 || $chucvu_nv === 0) {
+            if ($chucvu_nv === 0) {
+
+
+                $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where(function ($query) use ($request) {
+                        if ($request->MAHUYEN_KH != 0) {
+                            $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                        }
+                        if ($request->MAXA_KH != 0) {
+                            $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                        }
+                        if ($request->MAAP_KH !== 0) {
+                            $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                        }
+                        if ($request->status_survey !== 5) {
+                            $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                        }
+
+                        if ($request->PHANCONG !== 5) {
+                            if ($request->PHANCONG === 0) {
+                                $query->whereNull('khach_hang.ID_NV');
+                            } else {
+                                $query->whereNotNull('khach_hang.ID_NV');
+                            }
+                        }
+                    })
+                    ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                    ->distinct()
+                    ->paginate($count);
+
+                return response()->json(['dskh' => $customers], 200);
+            } else {
                 $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
                     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
@@ -1666,38 +1702,7 @@ class danhsachkhachhang extends Controller
 
                 $customers = $customers
                     ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                    ->paginate($count);
-                return response()->json(['dskh' => $customers], 200);
-            } else {
-                $customers = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where('khach_hang.id_nv', $id_nv);
-
-                if ($request->MAHUYEN_KH != 0) {
-                    $customers->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                }
-                if ($request->MAXA_KH != 0) {
-                    $customers->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                }
-                if ($request->MAAP_KH !== 0) {
-                    $customers->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                }
-                if ($request->status_survey !== 5) {
-                    $customers->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                }
-
-                if ($request->PHANCONG !== 5) {
-                    if ($request->PHANCONG === 0) {
-                        $customers->whereNull('khach_hang.ID_NV');
-                    } else {
-                        $customers->whereNotNull('khach_hang.ID_NV');
-                    }
-                }
-
-                $customers = $customers
-                    ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                    ->distinct()
                     ->paginate($count);
                 return response()->json(['dskh' => $customers], 200);
             }
@@ -1955,56 +1960,42 @@ class danhsachkhachhang extends Controller
 
         // $user=auth()->user();
         $id_nv = auth()->user()->ID_NV;
+        $dv_id = auth()->user()->DONVI_ID;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
 
-        if ($chucvu_nv === 2 || $chucvu_nv === 0) {
+        $diabanql = DB::table('dia_ban_quan_ly')->where('DONVI_ID', $dv_id)->get();
+
+        if ($chucvu_nv === 0) {
             try {
-                $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                    ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    // ->where('khach_hang.id_nv', $id_nv)
-                    ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                    ->paginate($count);
+                $DSKHs = collect(); // Khởi tạo một collection để lưu trữ kết quả
 
-                // if ($DSKH->isEmpty()) {
-                //     return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
-                // }
-                // $DSKH_data = [];
+                foreach ($diabanql as $diaban) {
+                    $diaban_id = $diaban->DIABAN_ID;
 
-                // foreach ($DSKH as $_DSKH) {
-                //     $dskh_item = [
-                //         'id_nv' => $id_nv,
-                //         'danhsachkhachhang' => $_DSKH,
-                //     ];
-                //     $DSKH_data[] = $dskh_item;
-                // }
-                return response()->json($DSKH, 200);
+                    $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                        ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                        ->where('khach_hang.MAHUYEN_KH', '935')
+                        ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                        ->distinct()
+                        ->paginate($count);
+
+                    $DSKHs = $DSKHs->merge($DSKH);
+                }
+
+                return response()->json($DSKHs, 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
             }
         } else {
-            // return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
-            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
                 ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                 ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                 ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                ->where('khach_hang.id_nv', $id_nv)
                 ->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                ->distinct()
                 ->paginate($count);
-
-            // if ($DSKH->isEmpty()) {
-            //     return response()->json(['message' => 'Không tìm thấy danh sách khách hàng'], 404);
-            // }
-            // $DSKH_data = [];
-
-            // foreach ($DSKH as $_DSKH) {
-            //     $dskh_item = [
-            //         'id_nv' => $id_nv,
-            //         'danhsachkhachhang' => $_DSKH,
-            //     ];
-            //     $DSKH_data[] = $dskh_item;
-            // }
             return response()->json($DSKH, 200);
         }
     }
