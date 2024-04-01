@@ -74,15 +74,15 @@ function QuickBO2(props) {
             }));
         };
 
-    const onChangeNCC
-        = (e) => {
-            const { name, value } = e.target;
+    // const onChangeNCC
+    //     = (e) => {
+    //         const { name, value } = e.target;
 
-            setService(prevService => ({
-                ...prevService,
-                [name]: value
-            }));
-        };
+    //         setService(prevService => ({
+    //             ...prevService,
+    //             [name]: value
+    //         }));
+    //     };
 
 
     const reloadDataBack = () => {
@@ -177,7 +177,7 @@ function QuickBO2(props) {
             fullWidth={true}
         >
             <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white' }}>
-                Thêm nhanh phiếu BO
+                Thêm nhanh phiếu BO (Dành cho dịch vụ khách hàng chưa sử dụng)
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} padding={1}>
@@ -204,7 +204,7 @@ function QuickBO2(props) {
                         <Select
                             disabled={idTypeService === 0}
                             value={serviceListSecond}
-                            multiple
+                            // multiple
                             input={<OutlinedInput label="Tag" />}
                             renderValue={(selected) => {
                                 if (Array.isArray(selected) && selected.length > 0) {
@@ -229,7 +229,7 @@ function QuickBO2(props) {
                         </Select>
                     </FormControl>
 
-                    <FormControl sx={{ marginTop: 2 }}>
+                    {/* <FormControl sx={{ marginTop: 2 }}>
                         <InputLabel>Nhà cung cấp</InputLabel>
                         <Select
                             value={service.NHACUNGCAP_CTPKS}
@@ -237,7 +237,7 @@ function QuickBO2(props) {
                             onChange={(e) => { onChangeNCC(e) }}
                             label='Nhà cung cấp'
                             disabled={serviceListSecond.length > 0 ? false : true}
-                        // {...(service.NHACUNGCAP_CTPKS === 0 ? { error: isError } : {})}
+                       
                         >
                             <MenuItem value={0}>Chọn nhà cung cấp</MenuItem>
                             {props.provider && props.provider.filter(sp => sp.ID_NCC !== 1)
@@ -248,8 +248,8 @@ function QuickBO2(props) {
                                 })}
 
                         </Select>
-                        {/* <FormHelperText sx={{ color: 'red' }}>{isError && service.NHACUNGCAP_CTPKS === 0 && 'Vui lòng chọn nhà cung cấp dịch vụ'}</FormHelperText> */}
-                    </FormControl>
+                       
+                    </FormControl> */}
 
 
                     <FormControl fullwidth sx={{ marginTop: 2 }}>

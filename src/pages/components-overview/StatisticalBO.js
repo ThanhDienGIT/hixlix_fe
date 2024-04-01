@@ -31,6 +31,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 // import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
+import jwt_decode from 'jwt-decode';
 
 
 function StatisticalBO() {
@@ -77,6 +78,9 @@ function StatisticalBO() {
   const [startIndex, setStartIndex] = useState(1);
   const [use, setUse] = useState(5)
   const [BOSetting, setBOSetting] = useState([])
+  const userString = localStorage.getItem('access_token');
+  const user = jwt_decode(userString);
+  const [diaban, setDiaban] = useState([])
 
 
 
@@ -232,6 +236,12 @@ function StatisticalBO() {
       setProvider(response.data)
     }
   }
+  const getAllLocalityByDonvi = async () => {
+    const response = await instance.get('/getlocalitybydonvi')
+    if (response.status === 200) {
+      setDiaban(response.data)
+    }
+  }
 
 
 
@@ -272,7 +282,7 @@ function StatisticalBO() {
         ID_CHA_DVHC: 1,
       },
     ])
-
+    getAllLocalityByDonvi()
   }, []);
 
   const screenWidth = window.innerWidth
@@ -302,7 +312,8 @@ function StatisticalBO() {
       MAAP_KH: ap,
       NHACUNGCAP: supplier,
       DICHVU: service,
-      USE: use
+      USE: use,
+      DISPLAY: display
     }
     await instance.post(`filter-report-BO/${rowPage}?page=${page}`, objectSend)
       .then((res) => {
@@ -435,11 +446,20 @@ function StatisticalBO() {
                     <MenuItem value={0}>
                       Tất cả
                     </MenuItem>
-                    {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
+                    {/* {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
                       return (
                         <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                       )
-                    })}
+                    })} */}
+                    {user.chucvu_nv === 2 || user.chucvu_nv === 3 ?
+                      quanhuyen.filter(x => x.parent_code !== null).map(ele => (
+                        <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                      ))
+                      :
+                      quanhuyen.filter(x => x.parent_code !== null && diaban.map(dia => dia.DIABAN_ID).includes(Number(x.code))).map(ele => (
+                        <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                      ))
+                    }
                   </Select>
                 </FormControl>
 

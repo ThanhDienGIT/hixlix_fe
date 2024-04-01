@@ -214,7 +214,7 @@ class Lix extends Controller
                     $camnhanphucvu_ctpks = isset($item['camnhanphucvu_ctpks']) ? $item['camnhanphucvu_ctpks'] : null;
                     $ykienkhac = isset($item['ykienkhac']) ? $item['ykienkhac'] : null;
                     $nguoitao_ctpks = isset($item['nguoitao_ctpks']) ? $item['nguoitao_ctpks'] : null;
-                    $ngaytao_ctpks = isset($item['ngaytao_ctpks']) ? $item['ngaytao_ctpks'] : null;
+                    $ngaytao_ctpks = isset($item['ngaytao_ctpks']) ? $item['ngaytao_ctpks'] : $now;
                     // $nguoiupdate_ctpks = isset($item['nguoiupdate_ctpks']) ? $item['nguoiupdate_ctpks'] : null;
                     $nguoiupdate_ctpks = $id_nv;
                     $ngayupdate_ctpks = $now;

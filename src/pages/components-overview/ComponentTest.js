@@ -23,7 +23,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
 import CircularProgress from '@mui/material/CircularProgress';
 import jwt_decode from 'jwt-decode';
-
+import { format } from 'date-fns';
 
 
 
@@ -488,7 +488,7 @@ function ComponentTest() {
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
-                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Trạng thái </TableCell>
+                                        <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ngày khảo sát </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Thao tác </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -527,6 +527,9 @@ function ComponentTest() {
                                                     {ele.DIACHI_KH}
                                                 </TableCell>
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                    {ele.ngaykhaosat ? format(new Date(ele.ngaykhaosat), 'dd/MM/yyyy') : '---'}
+                                                </TableCell>
+                                                {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.TRANGTHAI_KH === 0 ? <Typography color="secondary" variant="h6">
                                                         Chưa khảo sát
                                                     </Typography> : <Typography sx={{
@@ -534,7 +537,7 @@ function ComponentTest() {
                                                     }} variant="h6">
                                                         Đã khảo sát
                                                     </Typography>}
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell>
                                                     {ele.trangthai !== '' ? <>
                                                         <Tooltip title="Chi tiết khách hàng">

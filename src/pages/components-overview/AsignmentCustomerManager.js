@@ -25,6 +25,7 @@ import AssignmentCustomer from 'pages/component/AssignmentCustomer'
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwt_decode from 'jwt-decode';
+import { format } from 'date-fns';
 
 
 
@@ -321,21 +322,6 @@ function AssignmentCustomerManager() {
             PHANCONG: asignment,
             keywords: searchInput
         }
-        if (huyen === 0) {
-            await instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
-                setMaxPage(res.data.last_page)
-                setData(res.data.data)
-                setAlloption(res.data.data)
-                setLoadingInitial(false)
-                setLoading(false)
-                const newStartIndex = (page - 1) * rowPage + 1;
-                setStartIndex(newStartIndex);
-            }).catch(err => {
-                console.log(err)
-                setLoading(false)
-            })
-        }
-        else {
             await instance.post(`searchinasignment/${rowPage}?page=${page}`, objectSend)
                 .then((res) => {
                     console.log(res)
@@ -347,7 +333,7 @@ function AssignmentCustomerManager() {
                     const newStartIndex = (page - 1) * rowPage + 1;
                     setStartIndex(newStartIndex);
                 })
-        }
+        
 
     }
 
@@ -542,8 +528,9 @@ function AssignmentCustomerManager() {
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
-                                        <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
-                                        <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell>
+                                        {/* <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
+                                        <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell> */}
+                                        <TableCell sx={{ color: 'white' }}>Ngày khảo sát</TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên khảo sát</TableCell>
                                         {/* <TableCell sx={{ color: 'white' }}> Thao tác </TableCell> */}
                                     </TableRow>
@@ -590,7 +577,10 @@ function AssignmentCustomerManager() {
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.DIACHI_KH}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                {ele.ngaykhaosat ? format(new Date(ele.ngaykhaosat), 'dd/MM/yyyy') : '---'}
+                                                </TableCell>
+                                                {/* <TableCell>
                                                     {ele.TRANGTHAI_KH === 0 ? <Typography color="secondary" variant="h6">
                                                         Chưa khảo sát
                                                     </Typography> : <Typography sx={{
@@ -607,7 +597,7 @@ function AssignmentCustomerManager() {
                                                     }} variant="h6">
                                                         Đã phân công
                                                     </Typography>}
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.TEN_NV}
                                                 </TableCell>
