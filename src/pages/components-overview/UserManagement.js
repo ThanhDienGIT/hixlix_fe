@@ -232,7 +232,7 @@ function UserManagement() {
                         <Box display={'flex'} sx={{ alignItems: 'center', marginBottom: 1, flexWrap: "wrap" }} justifyContent={'space-between'}>
                             <Box display={'flex'} flexWrap={'wrap'}>
 
-                                <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
+                                {user.chucvu_nv === 2 ? <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
                                     <InputLabel id="demo-select-small-label">Đơn vị</InputLabel>
                                     <Select
                                         labelId="demo-select-small-label"
@@ -254,6 +254,8 @@ function UserManagement() {
                                         })}
                                     </Select>
                                 </FormControl>
+                                    :
+                                    ""}
 
                                 <FormControl sx={{ marginRight: 1, marginTop: 1, width: 150 }} size="small">
                                     <InputLabel id="demo-select-small-label">Chức vụ</InputLabel>

@@ -36,7 +36,7 @@ const dashboard = {
       url: '/table',
       icon: icons2.SolutionOutlined,
       breadcrumbs: false,
-      role: [1, 2]
+      role: [1, 2, 0]
     },
     // {
     //   id: 'surveyform',

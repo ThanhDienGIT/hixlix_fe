@@ -22,6 +22,7 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
 import CircularProgress from '@mui/material/CircularProgress';
+import jwt_decode from 'jwt-decode';
 
 
 
@@ -57,6 +58,13 @@ function ComponentTest() {
     const [loading, setLoading] = useState(false)
     const [loadingInitial, setLoadingInitial] = useState(false)
     const [startIndex, setStartIndex] = useState(1);
+    const [diaban, setDiaban] = useState([])
+    const userString = localStorage.getItem('access_token');
+    const user = jwt_decode(userString);
+
+
+
+
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -66,6 +74,13 @@ function ComponentTest() {
         instance.get('dsnhacungcap')
             .then(res => setProvider(res.data))
             .catch(err => console.log(err))
+    }
+
+    const getAllLocalityByDonvi = async () => {
+        const response = await instance.get('/getlocalitybydonvi')
+        if (response.status === 200) {
+            setDiaban(response.data)
+        }
     }
 
     const openDialogError = (id) => {
@@ -266,6 +281,7 @@ function ComponentTest() {
                 ID_CHA_DVHC: 1,
             },
         ])
+        getAllLocalityByDonvi()
     }, []);
 
 
@@ -278,30 +294,28 @@ function ComponentTest() {
     };
 
     const handleSearch = async () => {
-        setLoading(true)
-        // Thực hiện tìm kiếm dựa trên các giá trị
-        console.log("Trạng thái khảo sát:", statusSurvey);
-        // console.log("Chất lượng dịch vụ:", qualityService);
-        console.log("Tìm kiếm:", searchInput);
-        const objectSend = {
-            MAHUYEN_KH: huyen,
-            MAXA_KH: xa,
-            MAAP_KH: ap,
-            status_survey: statusSurvey,
-            // quality_survey: qualityService,
-            keywords: searchInput
-        }
-        await instance.post(`searchcustomer/${rowPage}?page=${page}`, objectSend)
-            .then((res) => {
-                setData(res.data.dskh.data)
-                setMaxPage(res.data.dskh.last_page)
-                // setAlloption(res.data.dskh.data)
-                setAlloption([])
-                setSearchStatus(1)
-                setLoading(false)
-                const newStartIndex = (page - 1) * rowPage + 1;
-                setStartIndex(newStartIndex);
-            })
+        
+            setLoading(true)
+            const objectSend = {
+                MAHUYEN_KH: huyen,
+                MAXA_KH: xa,
+                MAAP_KH: ap,
+                status_survey: statusSurvey,
+                // quality_survey: qualityService,
+                keywords: searchInput
+            }
+            await instance.post(`searchcustomer/${rowPage}?page=${page}`, objectSend)
+                .then((res) => {
+                    setData(res.data.dskh.data)
+                    setMaxPage(res.data.dskh.last_page)
+                    // setAlloption(res.data.dskh.data)
+                    setAlloption([])
+                    setSearchStatus(1)
+                    setLoading(false)
+                    const newStartIndex = (page - 1) * rowPage + 1;
+                    setStartIndex(newStartIndex);
+                })
+        
     }
 
 
@@ -336,11 +350,20 @@ function ComponentTest() {
                                         <MenuItem value={0}>
                                             Tất cả
                                         </MenuItem>
-                                        {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
+                                        {/* {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
                                             return (
                                                 <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                                             )
-                                        })}
+                                        })} */}
+                                        {user.chucvu_nv === 2 ?
+                                            quanhuyen.filter(x => x.parent_code !== null).map(ele => (
+                                                <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                                            ))
+                                            :
+                                            quanhuyen.filter(x => x.parent_code !== null && diaban.map(dia => dia.DIABAN_ID).includes(Number(x.code))).map(ele => (
+                                                <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                                            ))
+                                        }
                                     </Select>
                                 </FormControl>
 
@@ -519,7 +542,7 @@ function ComponentTest() {
                                                                 <RemoveRedEyeIcon color={'primary'} />
                                                             </IconButton>
                                                         </Tooltip>
-                                                        <Tooltip title="Cập nhật phiếu LIX">
+                                                        <Tooltip sx={{ 'display': user.chucvu_nv !== 1 ? 'none' : '' }} title="Cập nhật phiếu LIX">
                                                             <IconButton>
                                                                 <EditNoteIcon color='warning' onClick={() => { openDialog(ele.ID_KH) }} />
                                                             </IconButton>
@@ -542,7 +565,11 @@ function ComponentTest() {
                                             </TableRow>
                                         )
                                     }) :
-                                        ''
+                                        <TableRow>
+                                            <TableCell colSpan={9} style={{ textAlign: 'center' }}>
+                                                <Typography variant="h3">Không tìm thấy khách hàng hoặc chưa được phân công khảo sát khách hàng</Typography>
+                                            </TableCell>
+                                        </TableRow>
                                     }
 
                                 </TableBody>
@@ -626,6 +653,7 @@ function ComponentTest() {
                 idkhachhang={idKhachHang}
                 serviceList={defaultService}
                 provider={provider}
+                chucvu_nv={user.chucvu_nv}
             />
 
         </ComponentSkeleton >

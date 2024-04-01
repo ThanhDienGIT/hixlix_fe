@@ -52,10 +52,8 @@ function AddStaff(props) {
 
     const [loading, setLoading] = useState(false);
 
-
-
-
-    var currentUser = jwt_decode(localStorage.getItem('access_token'))
+    const userString = localStorage.getItem('access_token');
+    const currentUser = jwt_decode(userString);
 
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => {
@@ -197,20 +195,40 @@ function AddStaff(props) {
 
                     <FormControl sx={{ marginTop: 2 }}>
                         <Typography variant="h6">Đơn vị (*) </Typography>
-                        <Select
-                            value={user.DONVI_ID}
-                            name={'DONVI_ID'}
-                            onChange={(e) => { onChangeInput(e) }}
-                        >
-                            <MenuItem value={0} disabled>Chọn đơn vị</MenuItem>
-                            {props.listUnit.length > 0 ? props.listUnit.map(ele => {
-                                return (<MenuItem key={ele.DONVI_ID} value={ele.DONVI_ID}>
-                                    {ele.TEN_DONVI}
-                                </MenuItem>)
-                            }) : ''
-                            }
+                        {currentUser.chucvu_nv === 2 ?
+                            <Select
+                                value={user.DONVI_ID}
+                                name={'DONVI_ID'}
+                                onChange={(e) => { onChangeInput(e) }}
+                            >
+                                <MenuItem value={0} disabled>Chọn đơn vị</MenuItem>
+                                {props.listUnit.length > 0 ? props.listUnit.map(ele => {
+                                    return (<MenuItem key={ele.DONVI_ID} value={ele.DONVI_ID}>
+                                        {ele.TEN_DONVI}
+                                    </MenuItem>)
+                                }) : ''
+                                }
 
-                        </Select>
+                            </Select>
+                            :
+                            <Select
+                                value={user.DONVI_ID}
+                                name={'DONVI_ID'}
+                                onChange={(e) => { onChangeInput(e) }}
+                            >
+                                <MenuItem value={0} disabled>Chọn đơn vị</MenuItem>
+                                {props.listUnit.length > 0 ? props.listUnit.filter(ele => (Number(ele.DONVI_ID) === currentUser.donvi_id)
+                                    || (Number(ele.DONVICHA === currentUser.donvi_id)))
+                                    .map(ele => {
+                                        return (<MenuItem key={ele.DONVI_ID} value={ele.DONVI_ID}>
+                                            {ele.TEN_DONVI}
+                                        </MenuItem>)
+                                    }) : ''
+                                }
+
+                            </Select>
+                        }
+
                     </FormControl>
 
                     <FormControl sx={{ marginTop: 2 }}>

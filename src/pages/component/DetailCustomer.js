@@ -323,7 +323,7 @@ function DetailCustomer(props) {
                                                         <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) : '---'}</TableCell>
                                                         <TableCell> {survey.BO == 1 ? <CheckCircleOutlineRoundedIcon sx={{ color: '#3ec100' }} /> : <ClearRoundedIcon sx={{ color: '#666666' }} />}</TableCell>
                                                         <TableCell>
-                                                            <Tooltip title="Xem chi tiết khảo sát">
+                                                            <Tooltip sx={{'display': props.chucvu_nv !== 1 ? 'none' : ''}} title="Xem chi tiết khảo sát">
                                                                 <IconButton>
                                                                     <RemoveRedEyeIcon color={'primary'} onClick={() => { openDiaLogDetailLix(survey.ID_PKS, survey.ID_DV) }} />
                                                                 </IconButton>
