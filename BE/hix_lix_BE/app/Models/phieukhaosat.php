@@ -16,6 +16,7 @@ class phieukhaosat extends Model
     protected $fillable = [
         'id_kh',
         'id_nv',
+        'ngaykhaosat',
         'trangthai_pks',
     ];
 

@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormHelperText, Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '../../../node_modules/@mui/material/index';
+import { Checkbox, FormControlLabel } from '../../../node_modules/@mui/material/index';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { format } from 'date-fns';
@@ -16,9 +17,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import QuickBO from './QuickBO';
+import QuickBO from './QuickBO2';
 function LixDialog(props) {
     const theme = useTheme();
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
     const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
     const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
     const [openAlertError, setOpenAlertError] = useState(false);
@@ -230,10 +232,29 @@ function LixDialog(props) {
         console.log(service)
         instance.post('AddEditLix_new', service).then(res => {
             console.log(res.data)
-        }).catch(err => console.log(err))
+            alertSuccess(res.data)
+        }).catch(err => {
+            console.log(err)
+            alertError(err.response.data)
+        })
     }
 
+    const onChangeBo = (e) => {
+        const { name } = e.target;
+        if (e.target.checked === false) {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 0
+            }));
+        }
+        else {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 1
+            }));
+        }
 
+    };
     // const createSurvey = () => {
     //     // console.log(service)
     //     if (service.KHONG_SD === 1) {
@@ -407,13 +428,13 @@ function LixDialog(props) {
         }
     }, [service.ID_DV])
 
-    const handleMissCustomer = () => {
-        instance.post("/missCustomer_ByID_Customer", { id: props.idCustomer })
-            .then(res => { alertSuccess(res.data) })
-            .catch(err => {
-                alertError(err.response.data)
-            })
-    }
+    // const handleMissCustomer = () => {
+    //     instance.post("/missCustomer_ByID_Customer", { id: props.idCustomer })
+    //         .then(res => { alertSuccess(res.data) })
+    //         .catch(err => {
+    //             alertError(err.response.data)
+    //         })
+    // }
     console.log(service)
     return (
         <Dialog
@@ -427,7 +448,6 @@ function LixDialog(props) {
         >
             <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white', width: '900' }}>
                 <Typography>  Khảo sát LIX</Typography>
-
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} padding={1}>
@@ -654,10 +674,36 @@ function LixDialog(props) {
                             <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2, display: service.KHONG_SD === 1 ? 'none' : '' }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
                             <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm nhanh BO</Button>
+                                <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm BO (Dành cho dịch vụ chưa sử dụng)</Button>
                             </FormControl>
-
-
+                            {Number(service.NHACUNGCAP_CTPKS) !== 1 ?
+                                <FormControlLabel
+                                    name="BO"
+                                    label="Đánh giá BO dịch vụ đang khảo sát"
+                                    size={'large'}
+                                    disabled={service.ID_DV !== 0 || service.KHONG_SD === 1 ? false : true}
+                                    {...label}
+                                    control={<Checkbox checked={service.BO} onChange={(e) => { onChangeBo(e) }} />}
+                                />
+                                : ""
+                            }
+                            {service.BO && Number(service.NHACUNGCAP_CTPKS) !== 1 ?
+                                <FormControl fullwidth sx={{ marginTop: 2 }}>
+                                    <InputLabel>Đánh giá BO </InputLabel>
+                                    <Select
+                                        value={service.DIEM_BO}
+                                        name="DIEM_BO"
+                                        onChange={(e) => { onChangeservice(e) }}
+                                        disabled={service.ID_DV !== 0 || service.KHONG_SD === 1 ? false : true}
+                                    >
+                                        {props.servicePointList && props.servicePointList.map(ele => {
+                                            return (
+                                                <MenuItem key={ele} value={ele}>{ele}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+                                : ""}
 
                         </CardContent>
                     </Card>
@@ -665,7 +711,7 @@ function LixDialog(props) {
 
             </DialogContent>
             <DialogActions>
-                <Button variant={'outlined'} color={'warning'} onClick={handleMissCustomer}> Không gặp khách hàng </Button>
+                {/* <Button variant={'outlined'} color={'warning'} onClick={handleMissCustomer}> Không gặp khách hàng </Button> */}
                 <Button
                     disabled={service.ID_DV !== 0 || service.KHONG_SD === 1 ? false : true}
                     variant={'outlined'} color={'primary'} onClick={khaoSat} autoFocus>
