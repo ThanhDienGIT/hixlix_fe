@@ -903,7 +903,7 @@ class danhsachkhachhang extends Controller
 
                 // if ($dateObject != false) {
                 //     $formatDate = $dateObject->format('Y/m/d');
-                //     $query .= ' 
+                //     $query .= '
                 //                 OR chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS = "' . str_replace('/', '-', $formatDate) . '"
                 //                 OR chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS = "' . str_replace('/', '-', $formatDate) . '"
                 //                 OR chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS = "' . str_replace('/', '-', $formatDate) . '"';

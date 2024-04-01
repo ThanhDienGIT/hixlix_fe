@@ -11,7 +11,7 @@ class phieukhaosat extends Model
     protected $table = 'phieu_khao_sat';
     protected $primaryKey = 'id_pks';
     public $timestamps = false;
-   
+
 
     protected $fillable = [
         'id_kh',

@@ -137,18 +137,28 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getAllApById/{id}', [danhsachkhachhang::class, 'getAllApById']);
         Route::get('/getAllAp/{id}', [danhsachkhachhang::class, 'getAllAp']);
         Route::post('/AddEditLix', [Lix::class, 'AddEditLix']);
+        Route::post('/AddEditLix_new', [Lix::class, 'AddEditLix_new']);
 
-        Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}/{idnhanvien}', [Lix::class, 'getLix_By_IdCustomer_and_IdService']);
+        Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}', [Lix::class, 'getLix_By_IdCustomer_and_IdService']);
+        Route::get('/getLix_By_IdCustomer_and_IdService_new/{khachhang}/{Service}', [Lix::class, 'getLix_By_IdCustomer_and_IdService_new']);
         Route::post('/EditLix', [Lix::class, 'EditLix']);
         Route::get('livesearch_lix', [Lix::class, 'livesearch_lix']);
         //Lix
         Route::get('/get_lix', [Lix::class, 'get_lix']);
-
 
         //dichvu
         Route::get('/dichvu', [Lix::class, 'getServiceList']);
 
 
         Route::get('/getKH_ByID_LIX/{id}', [danhsachkhachhang::class, 'getKH_ByID_LIX']);
+
+
+
+
+
+
+        //Thanh Điền
+        Route::post('/missCustomer_ByID_Customer', [Lix::class, 'missCustomer_ByID_Customer']);
+        Route::post('/updateMetCustomer_ByID_Customer', [Lix::class, 'updateMetCustomer_ByID_Customer']);
     });
 });
