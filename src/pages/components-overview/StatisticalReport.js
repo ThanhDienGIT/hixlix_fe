@@ -31,6 +31,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 // import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
+import jwt_decode from 'jwt-decode';
 
 
 function StatisticalReport() {
@@ -79,6 +80,9 @@ function StatisticalReport() {
   const [nv, setNv] = useState([])
   const [quality, setQuality] = useState([])
   const [serviceQuality, setServiceQuality] = useState([])
+  const userString = localStorage.getItem('access_token');
+  const user = jwt_decode(userString);
+  const [diaban, setDiaban] = useState([])
 
   const callAPIServiceList = () => {
     instance.get('dichvu')
@@ -240,6 +244,13 @@ function StatisticalReport() {
     }
   }
 
+  const getAllLocalityByDonvi = async () => {
+    const response = await instance.get('/getlocalitybydonvi')
+    if (response.status === 200) {
+      setDiaban(response.data)
+    }
+  }
+
 
 
   useEffect(() => {
@@ -266,6 +277,7 @@ function StatisticalReport() {
         ID_CHA_DVHC: 1,
       },
     ])
+    getAllLocalityByDonvi()
 
   }, []);
 
@@ -302,7 +314,8 @@ function StatisticalReport() {
       DICHVU: service,
       NHANVIEN: chooseNv,
       TUNGAY: fromDate,
-      DENNGAY: toDate
+      DENNGAY: toDate,
+      DISPLAY: display
     }
     await instance.post(`filter-report/${rowPage}?page=${page}`, objectSend)
       .then((res) => {
@@ -335,10 +348,10 @@ function StatisticalReport() {
       DENNGAY: toDate,
       display: display
     }
-    await instance.post('export-excel', 
-    objectSend
-    // { export_data: objectSend }
-    , { responseType: 'blob' })
+    await instance.post('export-excel',
+      objectSend
+      // { export_data: objectSend }
+      , { responseType: 'blob' })
       .then(response => {
         const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
 
@@ -440,11 +453,20 @@ function StatisticalReport() {
                     <MenuItem value={0}>
                       Tất cả
                     </MenuItem>
-                    {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
+                    {/* {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
                       return (
                         <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
                       )
-                    })}
+                    })} */}
+                    {user.chucvu_nv === 2 || user.chucvu_nv === 3 ?
+                      quanhuyen.filter(x => x.parent_code !== null).map(ele => (
+                        <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                      ))
+                      :
+                      quanhuyen.filter(x => x.parent_code !== null && diaban.map(dia => dia.DIABAN_ID).includes(Number(x.code))).map(ele => (
+                        <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                      ))
+                    }
                   </Select>
                 </FormControl>
 

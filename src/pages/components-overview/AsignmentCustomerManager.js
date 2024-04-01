@@ -313,10 +313,6 @@ function AssignmentCustomerManager() {
 
     const handleSearch = async () => {
         setLoading(true)
-        // Thực hiện tìm kiếm dựa trên các giá trị
-        console.log("Trạng thái khảo sát:", statusSurvey);
-        // console.log("Chất lượng dịch vụ:", qualityService);
-        console.log("Tìm kiếm:", searchInput);
         const objectSend = {
             MAHUYEN_KH: huyen,
             MAXA_KH: xa,
@@ -325,17 +321,34 @@ function AssignmentCustomerManager() {
             PHANCONG: asignment,
             keywords: searchInput
         }
-        await instance.post(`searchinasignment/${rowPage}?page=${page}`, objectSend)
-            .then((res) => {
-                console.log(res)
-                setData(res.data.dskh.data)
-                setMaxPage(res.data.dskh.last_page)
-                setAlloption(res.data.dskh.data)
-                setSearchStatus(1)
+        if (huyen === 0) {
+            await instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+                setMaxPage(res.data.last_page)
+                setData(res.data.data)
+                setAlloption(res.data.data)
+                setLoadingInitial(false)
                 setLoading(false)
                 const newStartIndex = (page - 1) * rowPage + 1;
                 setStartIndex(newStartIndex);
+            }).catch(err => {
+                console.log(err)
+                setLoading(false)
             })
+        }
+        else {
+            await instance.post(`searchinasignment/${rowPage}?page=${page}`, objectSend)
+                .then((res) => {
+                    console.log(res)
+                    setData(res.data.dskh.data)
+                    setMaxPage(res.data.dskh.last_page)
+                    setAlloption(res.data.dskh.data)
+                    setSearchStatus(1)
+                    setLoading(false)
+                    const newStartIndex = (page - 1) * rowPage + 1;
+                    setStartIndex(newStartIndex);
+                })
+        }
+
     }
 
     console.log(user)

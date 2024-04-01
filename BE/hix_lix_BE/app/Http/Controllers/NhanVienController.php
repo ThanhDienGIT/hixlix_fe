@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -209,11 +210,24 @@ class NhanVienController extends Controller
 
     public function getAllStaff($count)
     {
-        $result = DB::table('nhan_vien')
+        $donvi_id = Auth()->user()->DONVI_ID;
+        $chucvu_nv = Auth()->user()->CHUCVU_NV;
+        if ($chucvu_nv === 2) {
+            $result = DB::table('nhan_vien')
+                ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
+                ->where('nhan_vien.IS_DELETED', 0)
+                ->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, nhan_vien.DONVI_ID, TEN_DONVI')
+                ->paginate($count);
+        } else {
+            $result = DB::table('nhan_vien')
             ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
             ->where('nhan_vien.IS_DELETED', 0)
+            ->where('nhan_vien.donvi_id', $donvi_id)
+            ->orWhere('don_vi.donvicha', $donvi_id)
             ->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, nhan_vien.DONVI_ID, TEN_DONVI')
             ->paginate($count);
+        }
+
         return response()->json($result, 200);
     }
 
