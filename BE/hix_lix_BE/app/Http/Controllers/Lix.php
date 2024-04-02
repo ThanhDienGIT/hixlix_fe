@@ -214,7 +214,7 @@ class Lix extends Controller
                     $camnhanphucvu_ctpks = isset($item['camnhanphucvu_ctpks']) ? $item['camnhanphucvu_ctpks'] : null;
                     $ykienkhac = isset($item['ykienkhac']) ? $item['ykienkhac'] : null;
                     $nguoitao_ctpks = isset($item['nguoitao_ctpks']) ? $item['nguoitao_ctpks'] : null;
-                    $ngaytao_ctpks = isset($item['ngaytao_ctpks']) ? $item['ngaytao_ctpks'] : null;
+                    $ngaytao_ctpks = isset($item['ngaytao_ctpks']) ? $item['ngaytao_ctpks'] : $now;
                     // $nguoiupdate_ctpks = isset($item['nguoiupdate_ctpks']) ? $item['nguoiupdate_ctpks'] : null;
                     $nguoiupdate_ctpks = $id_nv;
                     $ngayupdate_ctpks = $now;
@@ -367,7 +367,7 @@ class Lix extends Controller
         if ($result) {
             $today = Carbon::now();
             $today->format('Y-m-d');
-
+            phieukhaosat::where('ID_KH', 1)->orderByDesc('ID_PKS')->update(['ngaykhaosat' => $today ? $today : $today]);
             // $result->update([
             //     'ngaykhaosat' => $today ? $today : $today
             // ]);
@@ -393,7 +393,7 @@ class Lix extends Controller
                     'NGUOIUPDATE_CTPKS' => $request['NGUOIUPDATE_CTPKS'],
                     'NGAYUPDATE_CTPKS' => $request['NGAYUPDATE_CTPKS'],
                 ]);
-                phieukhaosat::where('ID_KH', 1)->orderByDesc('ID_PKS')->update(['ngaykhaosat' => $today ? $today : $today]);
+
                 return response()->json('Cập nhật thành công', 200);
             } else {
                 $data = [
