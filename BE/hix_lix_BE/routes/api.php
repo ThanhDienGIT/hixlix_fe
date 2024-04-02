@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NhanVienController;
 use App\Http\Controllers\DichVuController;
+use App\Http\Controllers\DonviController;
 use App\Http\Controllers\DonViHanhChinhController;
 
 /*
@@ -47,7 +48,7 @@ Route::group(['middleware' => ['api']], function () {
 
         Route::get('/getServiceType', [DichVuController::class, 'getServiceType']);
         Route::get('/getTypeOfPay', [DichVuController::class, 'getTypeOfPay']);
-        
+
         Route::post('/search-dv/{count}', [DichVuController::class, 'search']);
 
 
@@ -59,9 +60,11 @@ Route::group(['middleware' => ['api']], function () {
         Route::post('/search-user/{count}', [NhanVienController::class, 'search']);
         Route::get('/dsnhacungcap', [DichVuController::class, 'dsnhacungcap']);
 
-        Route::post('/getDetailLix',[Lix::class, 'getDetailLix']);
+        Route::post('/getDetailLix', [Lix::class, 'getDetailLix']);
 
 
+        Route::post('/update-add-bo', [Lix::class, 'AddEditLixBO']);
+        Route::post('/search-ds-phieu', [Lix::class, 'SearchDSPhieu']);
 
 
 
@@ -73,7 +76,7 @@ Route::group(['middleware' => ['api']], function () {
         Route::delete('/deletesupplier/{id}', [DichVuController::class, 'deletesupplier']);
         Route::delete('/deletequality/{id}', [DichVuController::class, 'deletequality']);
         Route::delete('/deletebosetting/{id}', [DichVuController::class, 'deletebosetting']);
-        
+
         Route::delete('/deleteservicequality/{id}', [DichVuController::class, 'deleteservicequality']);
         Route::post('/search-suppliler/{count}', [DichVuController::class, 'searchsp']);
         Route::post('/search-quality/{count}', [DichVuController::class, 'searchqlt']);
@@ -87,15 +90,28 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getQualityByID/{id}', [DichVuController::class, 'getQualityByID']);
         Route::get('/getBOByID/{id}', [DichVuController::class, 'getBOByID']);
         Route::get('/getServiceQualityByID/{id}', [DichVuController::class, 'getServiceQualityByID']);
-        
-
-
 
 
         Route::delete('/deleteservice/{id}', [DichVuController::class, 'xoaDichVu']);
         Route::get('/getSVByID/{id}', [DichVuController::class, 'getServiceById']);
         Route::get('/getAllSVById/{id}', [DichVuController::class, 'getAllServiceById']);
         Route::post('/updateService/{id}', [DichVuController::class, 'capNhatDichVu']);
+
+        // Unit
+        Route::post('/addUnit', [DonviController::class, 'addUnit']);
+        Route::get('/getAllUnit/{count}', [DonviController::class, 'getAllUnit']);
+        Route::get('/getAllChildUnit', [DonviController::class, 'getAllChildUnit']);
+        Route::get('/getListUnit', [DonviController::class, 'getAllUnitNoPaginate']);
+        Route::get('/getUnitByID/{id}', [DonviController::class, 'getUnitByID']);
+        Route::delete('/deleteUnit/{id}', [DonviController::class, 'deleteUnit']);
+        Route::post('/updateUnit/{id}', [DonviController::class, 'updateUnit']);
+        Route::post('/search-unit/{count}', [DonviController::class, 'search']);
+        Route::get('/getAllUnitByID/{id}', [DonviController::class, 'getAllUnitByID']);
+        Route::post('/addLocalityManagement/{id}', [DonviController::class, 'addLocalityManagement']);
+        Route::get('/getlocalitybydonvi', [DonviController::class, 'getlocalitybydonvi']);
+
+
+
 
 
 
@@ -113,7 +129,7 @@ Route::group(['middleware' => ['api']], function () {
         //Khach hang Excel
         Route::post('/export-excel', [danhsachkhachhang::class, 'exportExcel']);
         Route::post('/export-excel-bo', [danhsachkhachhang::class, 'exportExcelBO']);
-        
+
         // Route::post('/export-excel', 'App\Http\Controllers\danhsachkhachhang@exportExcel')->name('exportExcel');
         //DVHC
         Route::get('/getallquanhuyen', [danhsachkhachhang::class, 'getallquanhuyen']);
@@ -121,18 +137,28 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getAllApById/{id}', [danhsachkhachhang::class, 'getAllApById']);
         Route::get('/getAllAp/{id}', [danhsachkhachhang::class, 'getAllAp']);
         Route::post('/AddEditLix', [Lix::class, 'AddEditLix']);
-        Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}/{idnhanvien}', [Lix::class, 'getLix_By_IdCustomer_and_IdService']);
+        Route::post('/AddEditLix_new', [Lix::class, 'AddEditLix_new']);
+
+        Route::get('/getLix_By_IdCustomer_and_IdService/{khachhang}/{Service}', [Lix::class, 'getLix_By_IdCustomer_and_IdService']);
+        Route::get('/getLix_By_IdCustomer_and_IdService_new/{khachhang}/{Service}', [Lix::class, 'getLix_By_IdCustomer_and_IdService_new']);
         Route::post('/EditLix', [Lix::class, 'EditLix']);
         Route::get('livesearch_lix', [Lix::class, 'livesearch_lix']);
         //Lix
         Route::get('/get_lix', [Lix::class, 'get_lix']);
-
 
         //dichvu
         Route::get('/dichvu', [Lix::class, 'getServiceList']);
 
 
         Route::get('/getKH_ByID_LIX/{id}', [danhsachkhachhang::class, 'getKH_ByID_LIX']);
-    });
 
+
+
+
+
+
+        //Thanh Điền
+        Route::post('/missCustomer_ByID_Customer', [Lix::class, 'missCustomer_ByID_Customer']);
+        Route::post('/updateMetCustomer_ByID_Customer', [Lix::class, 'updateMetCustomer_ByID_Customer']);
+    });
 });

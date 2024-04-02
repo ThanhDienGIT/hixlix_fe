@@ -13,6 +13,7 @@ import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import LoadingButton from '@mui/lab/LoadingButton';
 // import SaveIcon from '@mui/icons-material/Save';
+import jwt_decode from 'jwt-decode';
 
 // Create an instance of Notyf
 const notyf = new Notyf({
@@ -23,6 +24,9 @@ const notyf = new Notyf({
     },
     dismissible: true
 });
+
+const userString = localStorage.getItem('access_token');
+const user = jwt_decode(userString);
 
 
 function AssignmentCustomer(props) {
@@ -91,8 +95,7 @@ function AssignmentCustomer(props) {
                     }
                 });
         }
-        else
-        {
+        else {
             notyf.error('Chọn ít nhất một khách hàng để phân công!');
         }
     }
@@ -131,11 +134,18 @@ function AssignmentCustomer(props) {
                             onChange={(e) => { setSelectedNV(e.target.value) }}
                         >
                             <MenuItem value={0}>---Chọn nhân viên---</MenuItem>
-                            {props.nv && props.nv.filter(x => x.TEN_NV !== null && (x.CHUCVU_NV !== 0 && x.CHUCVU_NV !== 2)).map(ele => {
-                                return (
-                                    <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
-                                )
-                            })}
+                            {user.chucvu_nv === 2 ?
+                                props.nv && props.nv.filter(x => x.TEN_NV !== null && (x.CHUCVU_NV !== 0 && x.CHUCVU_NV !== 2)).map(ele => {
+                                    return (
+                                        <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
+                                    )
+                                })
+                                :
+                                props.nv && props.nv.filter(x => (x.TEN_NV !== null && user.donvi_id === x.DONVI_ID) && (x.CHUCVU_NV !== 0 && x.CHUCVU_NV !== 2)).map(ele => {
+                                    return (
+                                        <MenuItem key={ele.ID_NV} value={ele.ID_NV}>{ele.TEN_NV}</MenuItem>
+                                    )
+                                })}
                             {/* {props.district && props.district.filter(x => x.parent_code !== null).map(ele => {
                                 return (
                                     <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>

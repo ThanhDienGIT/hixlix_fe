@@ -11,6 +11,8 @@ import StatisticalBO from 'pages/components-overview/StatisticalBO';
 import QualityManagement from 'pages/components-overview/QualityManagement';
 import ServiceQualityManagement from 'pages/components-overview/ServiceQualityManagement';
 import BOSettingManagement from 'pages/components-overview/BOSettingManagement';
+import UnitManagement from 'pages/components-overview/UnitManagement';
+import UnitSettingManagement from 'pages/components-overview/UnitSettingManagement';
 
 
 // render - dashboard
@@ -104,6 +106,14 @@ const MainRoutes = {
     {
       path: 'statistical-bo',
       element: <StatisticalBO/>
+    },
+    {
+      path: 'unit-setting-management',
+      element: <UnitManagement/>
+    },
+    {
+      path: 'locality-setting-management',
+      element: <UnitSettingManagement/>
     }
     
   ]

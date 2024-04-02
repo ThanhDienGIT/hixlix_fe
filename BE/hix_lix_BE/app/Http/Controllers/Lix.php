@@ -14,24 +14,68 @@ use Illuminate\Support\Facades\DB;
 
 class Lix extends Controller
 {
+
+    public function SearchDSPhieu(Request $request)
+    {
+        if (!empty($request->keywords)) {
+
+            $DS = DB::table('chi_tiet_phieu_khao_sat_lix')
+                ->join('phieu_khao_sat', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                ->join('nha_cung_cap', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', '=', 'nha_cung_cap.ID_NCC')
+                ->join('dich_vu', 'chi_tiet_phieu_khao_sat_lix.ID_DV', '=', 'dich_vu.ID_DV')
+                ->where(function ($query) use ($request) {
+                    $query
+                        ->orWhere('nha_cung_cap.TEN_NCC', 'like', '%' . $request->keywords . '%')
+                        ->orWhere('dich_vu.TEN_DV', 'like', '%' . $request->keywords . '%');
+                })
+                ->where('phieu_khao_sat.ID_KH', $request->ID_KH);
+
+
+            if ($request->NCC !== 0) {
+                $DS->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NCC);
+            }
+            if ($request->BO !== 2) {
+                $DS->where('chi_tiet_phieu_khao_sat_lix.BO', $request->BO);
+            }
+
+            $DS = $DS->get();
+            return response()->json($DS, 200);
+        } else {
+            $DS = DB::table('chi_tiet_phieu_khao_sat_lix')
+                ->join('phieu_khao_sat', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                ->join('nha_cung_cap', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', '=', 'nha_cung_cap.ID_NCC')
+                ->join('dich_vu', 'chi_tiet_phieu_khao_sat_lix.ID_DV', '=', 'dich_vu.ID_DV')
+                ->where('phieu_khao_sat.ID_KH', $request->ID_KH);
+
+            if ($request->NCC !== 0) {
+                $DS->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NCC);
+            }
+            if ($request->BO !== 2) {
+                $DS->where('chi_tiet_phieu_khao_sat_lix.BO', $request->BO);
+            }
+
+            $DS = $DS->get();
+            return response()->json($DS, 200);
+        }
+    }
     public function getDetailLix(Request $request)
     {
         $ID_PKS = $request->ID_PKS;
         $ID_KH = $request->ID_KH;
         $ID_DV = $request->ID_DV;
         $result = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-        ->where('phieu_khao_sat.ID_KH', $ID_KH)
-        ->where('chi_tiet_phieu_khao_sat_lix.ID_PKS', $ID_PKS)
-        ->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $ID_DV)
-        ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-        ->first();
+            ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+            ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+            ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+            ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+            ->where('phieu_khao_sat.ID_KH', $ID_KH)
+            ->where('chi_tiet_phieu_khao_sat_lix.ID_PKS', $ID_PKS)
+            ->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $ID_DV)
+            ->select('*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
+            ->first();
 
         return response()->json($result);
     }
@@ -170,7 +214,7 @@ class Lix extends Controller
                     $camnhanphucvu_ctpks = isset($item['camnhanphucvu_ctpks']) ? $item['camnhanphucvu_ctpks'] : null;
                     $ykienkhac = isset($item['ykienkhac']) ? $item['ykienkhac'] : null;
                     $nguoitao_ctpks = isset($item['nguoitao_ctpks']) ? $item['nguoitao_ctpks'] : null;
-                    $ngaytao_ctpks = isset($item['ngaytao_ctpks']) ? $item['ngaytao_ctpks'] : null;
+                    $ngaytao_ctpks = isset($item['ngaytao_ctpks']) ? $item['ngaytao_ctpks'] : $now;
                     // $nguoiupdate_ctpks = isset($item['nguoiupdate_ctpks']) ? $item['nguoiupdate_ctpks'] : null;
                     $nguoiupdate_ctpks = $id_nv;
                     $ngayupdate_ctpks = $now;
@@ -256,17 +300,19 @@ class Lix extends Controller
         }
     }
 
-    public function getLix_By_IdCustomer_and_IdService($khachhang, $Service, $idnhanvien)
+    public function getLix_By_IdCustomer_and_IdService($khachhang, $Service)
     {
-
         try {
-            $phieukhaosat = phieukhaosat::where('ID_KH', $khachhang)->first();
-
+            $nhanVien = auth()->user();
+            $IdNhanVien = $nhanVien->ID_NV;
+            $phieukhaosat = PhieuKhaoSat::where('ID_KH', $khachhang)
+                ->orderByDesc('ID_PKS') // Sắp xếp theo ID_PKS giảm dần
+                ->first();
             if ($phieukhaosat) {
                 $dichvu = chi_tiet_phieu_khao_sat_lix::join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                ->join('loai_dich_vu', 'loai_dich_vu.ID_LDV', '=', 'dich_vu.ID_LDV')
-                ->where("ID_PKS", $phieukhaosat->ID_PKS)->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $Service)
-                ->first();
+                    ->join('loai_dich_vu', 'loai_dich_vu.ID_LDV', '=', 'dich_vu.ID_LDV')
+                    ->where("ID_PKS", $phieukhaosat->ID_PKS)->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $Service)
+                    ->first();
                 if ($dichvu) {
                     return response()->json($dichvu, 200);
                 } else {
@@ -287,24 +333,45 @@ class Lix extends Controller
             return response()->json(['message' => 'Lỗi khi xoá khảo sát: ' . $e->getMessage()], 500);
         }
     }
-    // $PKS = phieukhaosat::query()
-    //     ->with('chitietpks', 'khachhangs', 'nhanviens')
-    //     ->where('id_nv', $id_nv)
-    //     ->where(function ($query) use ($_searchTerm) {
-    //         $query->where('id_dv', 'like', "%$_searchTerm%")
-    //             ->orWhere('kh_ten', 'like', "%$_searchTerm%");
-    //         // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
-    //     })
-    //     ->get();
 
-    public function AddEditLix(Request $request)
+    public function getLix_By_IdCustomer_and_IdService_new($khachhang, $Service)
+    {
+        try {
+            $nhanVien = auth()->user();
+            $phieukhaosat = PhieuKhaoSat::where('ID_KH', $khachhang)
+                ->orderByDesc('ID_PKS') // Sắp xếp theo ID_PKS giảm dần
+                ->first();
+            if ($phieukhaosat) {
+                $dichvu = chi_tiet_phieu_khao_sat_lix::join('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->join('loai_dich_vu', 'loai_dich_vu.ID_LDV', '=', 'dich_vu.ID_LDV')
+                    ->where("ID_PKS", $phieukhaosat->ID_PKS)->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $Service)
+                    ->orderByDesc('ID_CTPKS')->first();
+                if ($dichvu) {
+                    return response()->json($dichvu, 200);
+                } else {
+                    return response()->json('Chưa có dịch vụ này', 200);
+                }
+            } else {
+                return response()->json('Khách hàng chưa khảo sát', 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi xoá khảo sát: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function AddEditLix_new(Request $request)
     {
         $data = $request->all();
-        $result = phieukhaosat::where('ID_KH', $request->ID_KH)->first();
+        $result = phieukhaosat::where('ID_KH', 1)->orderByDesc('ID_PKS')->first();
         // Nếu khách hàng đã có phiếu
         if ($result) {
-
-            $resultDetailBallot = chi_tiet_phieu_khao_sat_lix::find($request->ID_CTPKS);
+            $today = Carbon::now();
+            $today->format('Y-m-d');
+            phieukhaosat::where('ID_KH', 1)->orderByDesc('ID_PKS')->update(['ngaykhaosat' => $today ? $today : $today]);
+            // $result->update([
+            //     'ngaykhaosat' => $today ? $today : $today
+            // ]);
+            $resultDetailBallot = chi_tiet_phieu_khao_sat_lix::where('ID_PKS', $result->ID_PKS)->where('ID_DV', $data['ID_DV'])->orderByDesc('ID_PKS')->first();
             if ($resultDetailBallot) {
                 $resultDetailBallot->update([
                     'TENKHACHHANGDAIDIEN_CTPKS' => $request['TENKHACHHANGDAIDIEN_CTPKS'],
@@ -314,8 +381,8 @@ class Lix extends Controller
                     'HINHTHUCDONG_CTPKS' => $request['HINHTHUCDONG_CTPKS'],
                     'NGAYBATDAUDONGCOC_CTPKS' => $request['NGAYBATDAUDONGCOC_CTPKS'],
                     'NGAYKETTHUCDONGCOC_CTPKS' => $request['NGAYKETTHUCDONGCOC_CTPKS'],
-                    'THOIGIANLAPDAT_CTPKS'=> $request['THOIGIANLAPDAT_CTPKS'],
-                    'THOIGIANNGUNG_CTPKS'=> $request['THOIGIANNGUNG_CTPKS'],
+                    'THOIGIANLAPDAT_CTPKS' => $request['THOIGIANLAPDAT_CTPKS'],
+                    'THOIGIANNGUNG_CTPKS' => $request['THOIGIANNGUNG_CTPKS'],
                     'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
                     'BO' => $request['BO'],
                     'DIEM_BO' => $request['DIEM_BO'],
@@ -325,7 +392,6 @@ class Lix extends Controller
                     'YKIENKHAC' => $request['YKIENKHAC'],
                     'NGUOIUPDATE_CTPKS' => $request['NGUOIUPDATE_CTPKS'],
                     'NGAYUPDATE_CTPKS' => $request['NGAYUPDATE_CTPKS'],
-                    'KHONG_SD' => $request['KHONG_SD']
                 ]);
 
                 return response()->json('Cập nhật thành công', 200);
@@ -340,8 +406,8 @@ class Lix extends Controller
                     'HINHTHUCDONG_CTPKS' => $request->HINHTHUCDONG_CTPKS,
                     'NGAYBATDAUDONGCOC_CTPKS' => $request->NGAYBATDAUDONGCOC_CTPKS,
                     'NGAYKETTHUCDONGCOC_CTPKS' => $request->NGAYKETTHUCDONGCOC_CTPKS,
-                    'THOIGIANLAPDAT_CTPKS'=> $request->THOIGIANLAPDAT_CTPKS,
-                    'THOIGIANNGUNG_CTPKS'=> $request->THOIGIANNGUNG_CTPKS,
+                    'THOIGIANLAPDAT_CTPKS' => $request->THOIGIANLAPDAT_CTPKS,
+                    'THOIGIANNGUNG_CTPKS' => $request->THOIGIANNGUNG_CTPKS,
                     'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
                     'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
                     'BO' => $request->BO,
@@ -354,15 +420,232 @@ class Lix extends Controller
                     'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
                     'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
                     'IS_DELETED' => 0,
-                    'KHONG_SD' => $request->KHONG_SD
+                ];
+                // DB::table('phieukhaosat')->where('ID_PKS', $result->ID_PKS)->update([
+                //     'TRANGTHAI_PKS' => 1
+                // ]);
+                // khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                //     ->where('phieu_khao_sat.ID_PKS', $result->ID_PKS)
+                //     ->update(['TRANGTHAI_KH' => 1]);
+
+                $ketqua = chi_tiet_phieu_khao_sat_lix::insert($data);
+                if ($ketqua) {
+                    return response()->json('Thu thập khảo sát thành công', 200);
+                }
+            }
+        } else {
+            // Khảo sát lần đầu tiênv
+            $data3 = [
+                'id_kh' => $data['ID_KH'],
+                'id_nv' => auth()->user()->ID_NV,
+                'trangthai_pks' => 1,
+            ];
+
+            $create = PhieuKhaoSat::create($data3);
+            $data2 = [
+                'ID_PKS' =>  $create->id_pks,
+                'ID_DV' => $request->ID_DV,
+                'TENKHACHHANGDAIDIEN_CTPKS' => $request->TENKHACHHANGDAIDIEN_CTPKS,
+                'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS' => $request->SODIENTHOAIKHACHHANGDAIDIEN_CTPKS,
+                'ACCOUNTKHACHHANG_CTPKS' => $request->ACCOUNTKHACHHANG_CTPKS,
+                'MUCCUOC_CTPKS' => $request->MUCCUOC_CTPKS,
+                'HINHTHUCDONG_CTPKS' => $request->HINHTHUCDONG_CTPKS,
+                'NGAYBATDAUDONGCOC_CTPKS' => $request->NGAYBATDAUDONGCOC_CTPKS,
+                'NGAYKETTHUCDONGCOC_CTPKS' => $request->NGAYKETTHUCDONGCOC_CTPKS,
+                'THOIGIANLAPDAT_CTPKS' => $request->THOIGIANLAPDAT_CTPKS,
+                'THOIGIANNGUNG_CTPKS' => $request->THOIGIANNGUNG_CTPKS,
+                'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
+                'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
+                'DIEM_BO' => $request->DIEM_BO,
+                'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
+                'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
+                'YKIENKHAC' => $request->YKIENKHAC,
+                'NGUOITAO_CTPKS' => $request->NGUOITAO_CTPKS,
+                'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
+                'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
+                'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
+                'IS_DELETED' => 0,
+            ];
+            $result = chi_tiet_phieu_khao_sat_lix::insert($data2);
+            if ($result) {
+                return response()->json('Thu thập khảo sát thành công', 200);
+            }
+        }
+    }
+
+    // $PKS = phieukhaosat::query()
+    //     ->with('chitietpks', 'khachhangs', 'nhanviens')
+    //     ->where('id_nv', $id_nv)
+    //     ->where(function ($query) use ($_searchTerm) {
+    //         $query->where('id_dv', 'like', "%$_searchTerm%")
+    //             ->orWhere('kh_ten', 'like', "%$_searchTerm%");
+    //         // Thêm các tiêu chí tìm kiếm khác ở đây bằng cách sử dụng method 'orWhere'
+    //     })
+    //     ->get();
+
+
+
+    public function AddEditLixBO(Request $request)
+    {
+        $data = $request->all();
+        $result = phieukhaosat::where('ID_KH', $request->ID_KH)->first();
+        // Nếu khách hàng đã có phiếu
+        if ($result) {
+
+            $success = false;
+            $success2 = false;
+
+            foreach ($request->TEN_DV as $dv) {
+                $dichvu = dichvu::where('TEN_DV', $dv)->first();
+                $resultDetailBallot = chi_tiet_phieu_khao_sat_lix::where('ID_PKS', $result->ID_PKS)
+                    ->where('ID_DV', $dichvu->ID_DV)
+                    ->where('NHACUNGCAP_CTPKS', $request['NHACUNGCAP_CTPKS'])
+                    ->first();
+
+                if ($resultDetailBallot) {
+                    $resultDetailBallot->update([
+                        'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                        'BO' => 1,
+                        'DIEM_BO' => $request['BO'],
+                        'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                        'NGUOIUPDATE_CTPKS' => auth()->user()->ID_NV,
+                        'NGAYUPDATE_CTPKS' => Carbon::now(),
+                    ]);
+
+                    $success = true;
+                } else {
+                    $dv = $request->TEN_DV;
+                    foreach ($dv as $service) {
+                        $dichvu = dichvu::where('TEN_DV', $service)->first();
+                        $data = [
+                            'ID_PKS' =>  $result->ID_PKS,
+                            'ID_DV' => $dichvu->ID_DV,
+                            'BO' => 1,
+                            'DIEM_BO' => $request->BO,
+                            'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                            'NGUOITAO_CTPKS' => auth()->user()->ID_NV,
+                            'NGAYTAO_CTPKS' => Carbon::now(),
+                            'NGUOIUPDATE_CTPKS' => auth()->user()->ID_NV,
+                            'NGAYUPDATE_CTPKS' => Carbon::now(),
+                            'IS_DELETED' => 0,
+                            //
+                        ];
+
+                        $success2 = chi_tiet_phieu_khao_sat_lix::insert($data);
+                    }
+
+                    phieukhaosat::where('ID_PKS', $result->ID_PKS)->update([
+                        'TRANGTHAI_PKS' => 1
+                    ]);
+                    khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                        ->where('phieu_khao_sat.ID_PKS', $result->ID_PKS)
+                        ->update(['TRANGTHAI_KH' => 1]);
+                }
+            }
+            if ($success2) {
+                return response()->json('Thu thập khảo sát thành công', 200);
+            } else if ($success) {
+                return response()->json('Cập nhật thành công', 200);
+            }
+        } else {
+            $data = [
+                'ID_KH' => $request->ID_KH,
+                'ID_NV' => auth()->user()->ID_NV,
+                'TRANGTHAI_PKS' => 1,
+            ];
+            $create = PhieuKhaoSat::create($data);
+
+
+
+            $dv = $request->TEN_DV;
+            foreach ($dv as $service) {
+                $dichvu = dichvu::where('TEN_DV', $service)->first();
+                $data2 = [
+                    'ID_PKS' =>  $create->ID_PKS,
+                    'ID_DV' => $dichvu->ID_DV,
+                    'DIEM_BO' => $request->BO,
+                    'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                    'NGUOITAO_CTPKS' => auth()->user()->ID_NV,
+                    'NGAYTAO_CTPKS' => Carbon::now(),
+                    'NGUOIUPDATE_CTPKS' => auth()->user()->ID_NV,
+                    'NGAYUPDATE_CTPKS' => Carbon::now(),
+                    'IS_DELETED' => 0
+                ];
+                $result = chi_tiet_phieu_khao_sat_lix::insert($data2);
+            }
+
+            if ($result) {
+                return response()->json('Thu thập khảo sát thành công', 200);
+            }
+        }
+    }
+
+    public function AddEditLix(Request $request)
+    {
+        $data = $request->all();
+        $result = phieukhaosat::where('ID_KH', $request->ID_KH)->orderByDesc('ID_PKS')->first();
+
+        // Nếu khách hàng đã có phiếu
+        if ($result) {
+            $resultDetailBallot = chi_tiet_phieu_khao_sat_lix::find($request->ID_CTPKS);
+            if ($resultDetailBallot) {
+                $resultDetailBallot->update([
+                    'TENKHACHHANGDAIDIEN_CTPKS' => $request['TENKHACHHANGDAIDIEN_CTPKS'],
+                    'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS' => $request['SODIENTHOAIKHACHHANGDAIDIEN_CTPKS'],
+                    'ACCOUNTKHACHHANG_CTPKS' => $request['ACCOUNTKHACHHANG_CTPKS'],
+                    'MUCCUOC_CTPKS' => $request['MUCCUOC_CTPKS'],
+                    'HINHTHUCDONG_CTPKS' => $request['HINHTHUCDONG_CTPKS'],
+                    'NGAYBATDAUDONGCOC_CTPKS' => $request['NGAYBATDAUDONGCOC_CTPKS'],
+                    'NGAYKETTHUCDONGCOC_CTPKS' => $request['NGAYKETTHUCDONGCOC_CTPKS'],
+                    'THOIGIANLAPDAT_CTPKS' => $request['THOIGIANLAPDAT_CTPKS'],
+                    'THOIGIANNGUNG_CTPKS' => $request['THOIGIANNGUNG_CTPKS'],
+                    'NHACUNGCAP_CTPKS' => $request['NHACUNGCAP_CTPKS'],
+                    'BO' => $request['BO'],
+                    'DIEM_BO' => $request['DIEM_BO'],
+                    'DIEMHAILONG_CTPKS' => $request['DIEMHAILONG_CTPKS'],
+                    'CAMNHANDICHVU_CTPKS' => $request['CAMNHANDICHVU_CTPKS'],
+                    'CANNHANPHUCVU_CTPKS' => $request['CANNHANPHUCVU_CTPKS'],
+                    'YKIENKHAC' => $request['YKIENKHAC'],
+                    'NGUOIUPDATE_CTPKS' => $request['NGUOIUPDATE_CTPKS'],
+                    'NGAYUPDATE_CTPKS' => $request['NGAYUPDATE_CTPKS'],
+
+                ]);
+
+                return response()->json('Cập nhật thành công', 200);
+            } else {
+                $data = [
+                    'ID_PKS' =>  $result->ID_PKS,
+                    'ID_DV' => $request->ID_DV,
+                    'TENKHACHHANGDAIDIEN_CTPKS' => $request->TENKHACHHANGDAIDIEN_CTPKS,
+                    'SODIENTHOAIKHACHHANGDAIDIEN_CTPKS' => $request->SODIENTHOAIKHACHHANGDAIDIEN_CTPKS,
+                    'ACCOUNTKHACHHANG_CTPKS' => $request->ACCOUNTKHACHHANG_CTPKS,
+                    'MUCCUOC_CTPKS' => $request->MUCCUOC_CTPKS,
+                    'HINHTHUCDONG_CTPKS' => $request->HINHTHUCDONG_CTPKS,
+                    'NGAYBATDAUDONGCOC_CTPKS' => $request->NGAYBATDAUDONGCOC_CTPKS,
+                    'NGAYKETTHUCDONGCOC_CTPKS' => $request->NGAYKETTHUCDONGCOC_CTPKS,
+                    'THOIGIANLAPDAT_CTPKS' => $request->THOIGIANLAPDAT_CTPKS,
+                    'THOIGIANNGUNG_CTPKS' => $request->THOIGIANNGUNG_CTPKS,
+                    'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
+                    'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
+                    'BO' => $request->BO,
+                    'DIEM_BO' => $request->DIEM_BO,
+                    'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
+                    'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
+                    'YKIENKHAC' => $request->YKIENKHAC,
+                    'NGUOITAO_CTPKS' => $request->NGUOITAO_CTPKS,
+                    'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
+                    'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
+                    'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
+                    'IS_DELETED' => 0,
+
                 ];
 
                 phieukhaosat::where('ID_PKS', $result->ID_PKS)->update([
                     'TRANGTHAI_PKS' => 1
                 ]);
                 khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                ->where('phieu_khao_sat.ID_PKS', $result->ID_PKS)
-                ->update(['TRANGTHAI_KH' => 1]);
+                    ->where('phieu_khao_sat.ID_PKS', $result->ID_PKS)
+                    ->update(['TRANGTHAI_KH' => 1]);
 
                 $ketqua = chi_tiet_phieu_khao_sat_lix::insert($data);
                 if ($ketqua) {
@@ -386,8 +669,8 @@ class Lix extends Controller
                 'HINHTHUCDONG_CTPKS' => $request->HINHTHUCDONG_CTPKS,
                 'NGAYBATDAUDONGCOC_CTPKS' => $request->NGAYBATDAUDONGCOC_CTPKS,
                 'NGAYKETTHUCDONGCOC_CTPKS' => $request->NGAYKETTHUCDONGCOC_CTPKS,
-                'THOIGIANLAPDAT_CTPKS'=> $request->THOIGIANLAPDAT_CTPKS,
-                'THOIGIANNGUNG_CTPKS'=> $request->THOIGIANNGUNG_CTPKS,
+                'THOIGIANLAPDAT_CTPKS' => $request->THOIGIANLAPDAT_CTPKS,
+                'THOIGIANNGUNG_CTPKS' => $request->THOIGIANNGUNG_CTPKS,
                 'NHACUNGCAP_CTPKS' => $request->NHACUNGCAP_CTPKS,
                 'DIEMHAILONG_CTPKS' => $request->DIEMHAILONG_CTPKS,
                 'DIEM_BO' => $request->DIEM_BO,
@@ -399,7 +682,7 @@ class Lix extends Controller
                 'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
                 'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
                 'IS_DELETED' => 0,
-                'KHONG_SD' => $request->KHONG_SD
+
             ];
             $result = chi_tiet_phieu_khao_sat_lix::insert($data2);
             if ($result) {
@@ -407,6 +690,8 @@ class Lix extends Controller
             }
         }
     }
+
+
 
     public function livesearch_lix(Request $request)
     {
@@ -467,8 +752,53 @@ class Lix extends Controller
         }
     }
 
-    public function getServiceList(){
+    public function getServiceList()
+    {
         $services = dichvu::get();
-        return response()->json( $services, 200);
+        return response()->json($services, 200);
+    }
+
+    // 0 là chưa đến, 1 là vắng, 2 là đã khảo sát
+    public function missCustomer_ByID_Customer(Request $request)
+    {
+        try {
+            $today = Carbon::now()->format('Y--m--d');
+            $kh = khachhang::where('ID_KH', $request->id)->first();
+            if ($kh) {
+                if ($kh->CHUAGAPDUOC_KH !== 1) {
+                    DB::table('khach_hang')
+                        ->where('ID_KH', $request->id)
+                        ->update([
+                            'CHUAGAPDUOC_KH' => 1,
+                            'NGAYDIKHAOSATNHUNGKHONGGAP_KH' => $today
+                        ]);
+                    return response()->json('Đã cập nhật không gặp được khách hàng', 200);
+                } else {
+                    return response()->json('Đã đánh dấu chưa gặp khách hàng này', 400);
+                }
+            } else {
+                return response()->json("Không tìm thấy khách hàng", 400);
+            }
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi : ' . $th->getMessage()], 500);
+        }
+    }
+
+    public function updateMetCustomer_ByID_Customer(Request $request)
+    {
+        try {
+
+            $kh = khachhang::where('ID_KH', $request->id)->first();
+            if ($kh) {
+                DB::table('khach_hang')
+                    ->where('ID_KH', $request->id)
+                    ->update(['CHUAGAPDUOC_KH' => 2]);
+                return response()->json('Đã gặp khách hàng', 200);
+            } else {
+                return response()->json("Không tìm thấy khách hàng", 400);
+            }
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi : ' . $th->getMessage()], 500);
+        }
     }
 }

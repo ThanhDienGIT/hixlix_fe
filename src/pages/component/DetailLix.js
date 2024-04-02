@@ -51,7 +51,7 @@ function DetailLix(props) {
 
 
     React.useEffect(() => {
-            getDetailLix()
+        getDetailLix()
     }, [props.open])
 
 
@@ -134,16 +134,18 @@ function DetailLix(props) {
                             </Grid>
 
                             <Grid item xs={6}>
-                                <Typography sx={Number(detail.CAMNHANDICHVU_CTPKS) < 5 ? {color:'red'} : ""} ><b>Điểm chất lượng dịch vụ:</b> <br /> {detail.CAMNHANDICHVU_CTPKS || detail.CAMNHANDICHVU_CTPKS === 0  ? detail.CAMNHANDICHVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
+                                <Typography ><b>Điểm chất lượng dịch vụ:</b> <br /> <Typography sx={Number(detail.CAMNHANDICHVU_CTPKS) < 5 ? { color: 'red' } : ""}>{detail.CAMNHANDICHVU_CTPKS || detail.CAMNHANDICHVU_CTPKS === 0 ? detail.CAMNHANDICHVU_CTPKS + ' điểm' : 'Chưa có'}</Typography></Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography sx={Number(detail.CANNHANPHUCVU_CTPKS) < 5 ? {color:'red'} : ""}><b>Điểm chất lượng phục vụ:</b> <br /> {detail.CANNHANPHUCVU_CTPKS || detail.CANNHANPHUCVU_CTPKS === 0 ? detail.CANNHANPHUCVU_CTPKS + ' điểm' : 'Chưa có'}</Typography>
+                                <Typography><b>Điểm chất lượng phục vụ:</b> <br /> <Typography sx={Number(detail.CANNHANPHUCVU_CTPKS) < 5 ? { color: 'red' } : ""}>{detail.CANNHANPHUCVU_CTPKS || detail.CANNHANPHUCVU_CTPKS === 0 ? detail.CANNHANPHUCVU_CTPKS + ' điểm' : 'Chưa có'}</Typography></Typography>
                             </Grid>
 
-
+                            <Grid item xs={6}>
+                                <Typography><b>Điểm BO:</b> <br /> <Typography sx={Number(detail.DIEM_BO) > 5 ? { color: 'green' } : ""}>{detail.DIEM_BO || detail.DIEM_BO === 0 ? detail.DIEM_BO + ' điểm' : 'Chưa có'}</Typography></Typography>
+                            </Grid>
 
                             <Grid item xs={6}>
-                                <Typography ><b>Hình thức cước BRCĐ:</b> <br /> {detail.HINHTHUCDONG_CTPKS !== '' ? detail.HINHTHUCDONG_CTPKS : 'Chưa có'}</Typography>
+                                <Typography ><b>Hình thức cước BRCĐ:</b> <br /> {detail.HINHTHUCDONG_CTPKS === null ? 'Chưa có' : detail.HINHTHUCDONG_CTPKS }</Typography>
                             </Grid>
                             <Grid item xs={6}>
                                 <Typography ><b>Tháng bắt đầu đặt cọc:</b> <br /> {formatDate(detail.NGAYBATDAUDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(detail.NGAYBATDAUDONGCOC_CTPKS) : 'Chưa có'}</Typography>
@@ -165,12 +167,12 @@ function DetailLix(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button variant={'outlined'} onClick={
-                    () => {
-                        props.handleClose()
-                        setDetail([])
-                    }
+                        () => {
+                            props.handleClose()
+                            setDetail([])
+                        }
 
-                }>
+                    }>
                         Quay lại
                     </Button>
                 </DialogActions>

@@ -24,6 +24,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import AssignmentCustomer from 'pages/component/AssignmentCustomer'
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
+import jwt_decode from 'jwt-decode';
+import { format } from 'date-fns';
 
 
 
@@ -61,6 +63,10 @@ function AssignmentCustomerManager() {
     const [loading, setLoading] = useState(false)
     const [loadingInitial, setLoadingInitial] = useState(false)
     const [startIndex, setStartIndex] = useState(1);
+    const [diaban, setDiaban] = useState([])
+
+    const userString = localStorage.getItem('access_token');
+    const user = jwt_decode(userString);
 
 
     const callAPIServiceList = () => {
@@ -162,16 +168,16 @@ function AssignmentCustomerManager() {
     }
 
     const CallAPI = () => {
-            setLoadingInitial(true)
-            instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
-                setMaxPage(res.data.last_page)
-                setData(res.data.data)
-                setAlloption(res.data.data)
-                setLoadingInitial(false)
-                const newStartIndex = (page - 1) * rowPage + 1;
-                setStartIndex(newStartIndex);
-            }).catch(err => console.log(err))
-        
+        setLoadingInitial(true)
+        instance.get(`get_danhsachkhachhang/${rowPage}?page=${page}`).then(res => {
+            setMaxPage(res.data.last_page)
+            setData(res.data.data)
+            setAlloption(res.data.data)
+            setLoadingInitial(false)
+            const newStartIndex = (page - 1) * rowPage + 1;
+            setStartIndex(newStartIndex);
+        }).catch(err => console.log(err))
+
 
     }
 
@@ -208,6 +214,13 @@ function AssignmentCustomerManager() {
         // {
         //     console.log(response)
         // }
+    }
+
+    const getAllLocalityByDonvi = async () => {
+        const response = await instance.get('/getlocalitybydonvi')
+        if (response.status === 200) {
+            setDiaban(response.data)
+        }
     }
 
     useEffect(() => {
@@ -274,7 +287,7 @@ function AssignmentCustomerManager() {
                 ID_CHA_DVHC: 1,
             },
         ])
-
+        getAllLocalityByDonvi()
     }, []);
 
 
@@ -301,10 +314,6 @@ function AssignmentCustomerManager() {
 
     const handleSearch = async () => {
         setLoading(true)
-        // Thực hiện tìm kiếm dựa trên các giá trị
-        console.log("Trạng thái khảo sát:", statusSurvey);
-        // console.log("Chất lượng dịch vụ:", qualityService);
-        console.log("Tìm kiếm:", searchInput);
         const objectSend = {
             MAHUYEN_KH: huyen,
             MAXA_KH: xa,
@@ -313,18 +322,22 @@ function AssignmentCustomerManager() {
             PHANCONG: asignment,
             keywords: searchInput
         }
-        await instance.post(`searchinasignment/${rowPage}?page=${page}`, objectSend)
-            .then((res) => {
-                console.log(res)
-                setData(res.data.dskh.data)
-                setMaxPage(res.data.dskh.last_page)
-                setAlloption(res.data.dskh.data)
-                setSearchStatus(1)
-                setLoading(false)
-                const newStartIndex = (page - 1) * rowPage + 1;
-                setStartIndex(newStartIndex);
-            })
+            await instance.post(`searchinasignment/${rowPage}?page=${page}`, objectSend)
+                .then((res) => {
+                    console.log(res)
+                    setData(res.data.dskh.data)
+                    setMaxPage(res.data.dskh.last_page)
+                    setAlloption(res.data.dskh.data)
+                    setSearchStatus(1)
+                    setLoading(false)
+                    const newStartIndex = (page - 1) * rowPage + 1;
+                    setStartIndex(newStartIndex);
+                })
+        
+
     }
+
+    console.log(user)
 
 
 
@@ -355,11 +368,16 @@ function AssignmentCustomerManager() {
                                         <MenuItem value={0}>
                                             Tất cả
                                         </MenuItem>
-                                        {quanhuyen && quanhuyen.filter(x => x.parent_code !== null).map(ele => {
-                                            return (
+                                        {user.chucvu_nv === 2 ?
+                                            quanhuyen.filter(x => x.parent_code !== null).map(ele => (
                                                 <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
-                                            )
-                                        })}
+                                            ))
+                                            :
+                                            quanhuyen.filter(x => x.parent_code !== null && diaban.map(dia => dia.DIABAN_ID).includes(Number(x.code))).map(ele => (
+                                                <MenuItem key={ele.code} value={ele.code}>{ele.name}</MenuItem>
+                                            ))
+                                        }
+
                                     </Select>
                                 </FormControl>
 
@@ -510,8 +528,9 @@ function AssignmentCustomerManager() {
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Xã/ Phường </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Ấp/ Khu vực </TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Địa chỉ </TableCell>
-                                        <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
-                                        <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell>
+                                        {/* <TableCell sx={{ color: 'white' }}> Trạng thái khảo sát</TableCell>
+                                        <TableCell sx={{ color: 'white' }}> Trạng thái phân công</TableCell> */}
+                                        <TableCell sx={{ color: 'white' }}>Ngày khảo sát</TableCell>
                                         <TableCell sx={{ color: 'white', whiteSpace: 'nowrap' }}> Nhân viên khảo sát</TableCell>
                                         {/* <TableCell sx={{ color: 'white' }}> Thao tác </TableCell> */}
                                     </TableRow>
@@ -558,7 +577,10 @@ function AssignmentCustomerManager() {
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.DIACHI_KH}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                                {ele.ngaykhaosat ? format(new Date(ele.ngaykhaosat), 'dd/MM/yyyy') : '---'}
+                                                </TableCell>
+                                                {/* <TableCell>
                                                     {ele.TRANGTHAI_KH === 0 ? <Typography color="secondary" variant="h6">
                                                         Chưa khảo sát
                                                     </Typography> : <Typography sx={{
@@ -575,7 +597,7 @@ function AssignmentCustomerManager() {
                                                     }} variant="h6">
                                                         Đã phân công
                                                     </Typography>}
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                                                     {ele.TEN_NV}
                                                 </TableCell>
