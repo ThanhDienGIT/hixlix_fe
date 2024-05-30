@@ -113,9 +113,9 @@ function QuickBO(props) {
         else if (idTypeService === 0) {
             notyf.error("Vui lòng chọn loại dịch vụ")
         }
-        else if (service.NHACUNGCAP_CTPKS === 0) {
-            notyf.error("Vui lòng chọn nhà cung cấp cho dịch vụ muốn đánh giá BO")
-        }
+        // else if (service.NHACUNGCAP_CTPKS === 0) {
+        //     notyf.error("Vui lòng chọn nhà cung cấp cho dịch vụ muốn đánh giá BO")
+        // }
         else {
             const objectSend = {
                 TEN_DV: serviceListSecond,

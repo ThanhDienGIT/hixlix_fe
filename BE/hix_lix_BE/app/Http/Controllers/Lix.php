@@ -362,12 +362,12 @@ class Lix extends Controller
     public function AddEditLix_new(Request $request)
     {
         $data = $request->all();
-        $result = phieukhaosat::where('ID_KH', 1)->orderByDesc('ID_PKS')->first();
+        $result = phieukhaosat::where('ID_KH', $data['ID_KH'])->orderByDesc('ID_PKS')->first();
         // Nếu khách hàng đã có phiếu
         if ($result) {
             $today = Carbon::now();
             $today->format('Y-m-d');
-            phieukhaosat::where('ID_KH', 1)->orderByDesc('ID_PKS')->update(['ngaykhaosat' => $today ? $today : $today]);
+            phieukhaosat::where('ID_KH', $data['ID_KH'])->orderByDesc('ID_PKS')->update(['ngaykhaosat' => $today ? $today : $today]);
             // $result->update([
             //     'ngaykhaosat' => $today ? $today : $today
             // ]);

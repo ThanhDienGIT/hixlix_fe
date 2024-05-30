@@ -3419,11 +3419,11 @@ class danhsachkhachhang extends Controller
                 foreach ($diabanql as $diaban) {
                     $diaban_id = $diaban->DIABAN_ID;
 
-                    $queryForDiaban = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                        ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                         ->where('khach_hang.MAHUYEN_KH', $diaban_id)
                         ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
 
@@ -3457,20 +3457,20 @@ class danhsachkhachhang extends Controller
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
             }
         } else if ($chucvu_nv === 2) {
-            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                 ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
                 ->paginate($count);
             return response()->json($DSKH, 200);
         } else {
-            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                 ->where('khach_hang.ID_NV', $id_nv)
                 ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
                 ->paginate($count);
