@@ -14,24 +14,26 @@ import {
   Paper,
   Popper,
   Stack,
-  // Tab,
-  // Tabs,
+  Tab,
+  Tabs,
   Typography
 } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
-// import ProfileTab from './ProfileTab';
-// import SettingTab from './SettingTab';
+import ProfileTab from './ProfileTab';
+import SettingTab from './SettingTab';
 
 // assets
 import avatar1 from 'assets/images/users/avatar-5.jpg';
 import {
   LogoutOutlined
-  // , SettingOutlined, UserOutlined 
+  , SettingOutlined,
+  UserOutlined
 } from '@ant-design/icons';
-import jwt_decode from 'jwt-decode';
+// import jwt_decode from 'jwt-decode';
+import instance from '../../../../../axios/instance';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -48,12 +50,12 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-// function a11yProps(index) {
-//   return {
-//     id: `profile-tab-${index}`,
-//     'aria-controls': `profile-tabpanel-${index}`
-//   };
-// }
+function a11yProps(index) {
+  return {
+    id: `profile-tab-${index}`,
+    'aria-controls': `profile-tabpanel-${index}`
+  };
+}
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
@@ -70,6 +72,15 @@ const Profile = () => {
 
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
+
+  const [user, setUser] = useState({
+    TEN_NV: '',
+    SDT_NV: '',
+    DIACHI_NV: '',
+    EMAIL_NV: '', 
+    CHUCVU_NV: ''
+  });
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -81,19 +92,28 @@ const Profile = () => {
     setOpen(false);
   };
 
-  // const [value, setValue] = useState(0);
+  const [value, setValue] = useState(1);
 
-  // const handleChange = (event, newValue) => {
-  //   setValue(newValue);
-  // };
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const iconBackColorOpen = 'grey.300';
 
-  useEffect(() => {
+  const CallAPI = async () => {
+    await instance.get('get-user-profile/').then(res => {
+        if (res.data.status === 'success') {
+            setUser(res.data.data)
+        }
 
+    }).catch(err => console.log(err))
+}
+
+  useEffect(() => {
+    CallAPI()
   }, [])
-  const userString = localStorage.getItem('access_token');
-  const user = jwt_decode(userString);
+  // const userString = localStorage.getItem('access_token');
+  // const user = jwt_decode(userString);
 
 
 
@@ -115,11 +135,11 @@ const Profile = () => {
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
           <Stack sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6">{user.ten_nv}</Typography>
+            <Typography variant="h6">{user.TEN_NV}</Typography>
             <Typography variant="body2" color="textSecondary">
-              {user.chucvu_nv === 0 ? 'Lãnh đạo đơn vị' : ''}
-              {user.chucvu_nv === 2 ? 'Admin' : ''}
-              {user.chucvu_nv === 1 ? 'Nhân viên khảo sát' : ''}
+              {user.CHUCVU_NV === 0 ? 'Lãnh đạo đơn vị' : ''}
+              {user.CHUCVU_NV === 2 ? 'Admin' : ''}
+              {user.CHUCVU_NV === 1 ? 'Nhân viên khảo sát' : ''}
             </Typography>
           </Stack>
         </Stack>
@@ -164,11 +184,11 @@ const Profile = () => {
                           <Stack direction="row" spacing={1.25} alignItems="center">
                             <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                             <Stack>
-                              <Typography variant="h6">{user.ten_nv}</Typography>
+                              <Typography variant="h6">{user.TEN_NV}</Typography>
                               <Typography variant="body2" color="textSecondary">
-                              {user.chucvu_nv === 0 ? 'Lãnh đạo đơn vị' : ''}
-              {user.chucvu_nv === 2 ? 'Admin' : ''}
-              {user.chucvu_nv === 1 ? 'Nhân viên khảo sát' : ''}
+                                {user.CHUCVU_NV === 0 ? 'Lãnh đạo đơn vị' : ''}
+                                {user.CHUCVU_NV === 2 ? 'Admin' : ''}
+                                {user.CHUCVU_NV === 1 ? 'Nhân viên khảo sát' : ''}
                               </Typography>
                             </Stack>
                           </Stack>
@@ -182,7 +202,7 @@ const Profile = () => {
                     </CardContent>
                     {open && (
                       <>
-                        {/* <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                           <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
                             <Tab
                               sx={{
@@ -193,7 +213,7 @@ const Profile = () => {
                                 textTransform: 'capitalize'
                               }}
                               icon={<UserOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                              label="Profile"
+                              label="Hồ sơ"
                               {...a11yProps(0)}
                             />
                             <Tab
@@ -205,17 +225,17 @@ const Profile = () => {
                                 textTransform: 'capitalize'
                               }}
                               icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                              label="Setting"
+                              label="Thiết lập"
                               {...a11yProps(1)}
                             />
                           </Tabs>
-                        </Box> */}
-                        {/* <TabPanel value={value} index={0} dir={theme.direction}>
-                          <ProfileTab handleLogout={handleLogout} />
+                        </Box>
+                        <TabPanel value={value} index={0} dir={theme.direction}>
+                          <ProfileTab handleLogout={handleLogout} CallAPI={CallAPI}/>
                         </TabPanel>
                         <TabPanel value={value} index={1} dir={theme.direction}>
                           <SettingTab />
-                        </TabPanel> */}
+                        </TabPanel>
                       </>
                     )}
                   </MainCard>

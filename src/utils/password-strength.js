@@ -9,11 +9,11 @@ const hasSpecial = (number) => new RegExp(/[!#@$%^&*)(+=._-]/).test(number);
 
 // set color based on password strength
 export const strengthColor = (count) => {
-  if (count < 2) return { label: 'Poor', color: 'error.main' };
-  if (count < 3) return { label: 'Weak', color: 'warning.main' };
-  if (count < 4) return { label: 'Normal', color: 'warning.dark' };
-  if (count < 5) return { label: 'Good', color: 'success.main' };
-  if (count < 6) return { label: 'Strong', color: 'success.dark' };
+  if (count < 2) return { label: 'Mật khẩu rất yếu', color: 'error.main' };
+  if (count < 3) return { label: 'Mật khẩu yếu', color: 'warning.main' };
+  if (count < 4) return { label: 'Mật khẩu bình thường', color: 'warning.dark' };
+  if (count < 5) return { label: 'Mật khẩu khá', color: 'success.dark' };
+  if (count < 6) return { label: 'Mật khẩu mạnh', color: 'success.main' };
   return { label: 'Poor', color: 'error.main' };
 };
 

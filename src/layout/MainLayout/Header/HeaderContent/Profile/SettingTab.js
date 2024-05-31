@@ -1,31 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 // assets
-import { CommentOutlined, LockOutlined, QuestionCircleOutlined, UserOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import {
+  // CommentOutlined, 
+  LockOutlined,
+  // QuestionCircleOutlined, 
+  // UserOutlined, 
+  // UnorderedListOutlined
+} from '@ant-design/icons';
+import ChangePassDialog from 'pages/component/ChangePassDialog';
 
 // ==============================|| HEADER PROFILE - SETTING TAB ||============================== //
 
 const SettingTab = () => {
   const theme = useTheme();
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState('');
+  const [openChangePass, setOpenChangePass] = useState(false);
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
 
+  useEffect(() => {
+    if (selectedIndex === 0) {
+      setOpenChangePass(true)
+    }
+  }, [selectedIndex])
+
+  const CloseChangePass = () => {
+    setOpenChangePass(false)
+    setSelectedIndex('')
+  }
+
   return (
-    <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32, color: theme.palette.grey[500] } }}>
-      <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
-        <ListItemIcon>
-          <QuestionCircleOutlined />
-        </ListItemIcon>
-        <ListItemText primary="Support" />
-      </ListItemButton>
-      <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+    <>
+      <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32, color: theme.palette.grey[500] } }}>
+        <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
+          <ListItemIcon>
+            <LockOutlined />
+          </ListItemIcon>
+          <ListItemText primary="Đổi mật khẩu" />
+        </ListItemButton>
+        {/* <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
@@ -48,8 +68,11 @@ const SettingTab = () => {
           <UnorderedListOutlined />
         </ListItemIcon>
         <ListItemText primary="History" />
-      </ListItemButton>
-    </List>
+      </ListItemButton> */}
+      </List>
+      <ChangePassDialog open={openChangePass} title={'Đổi mật khẩu'} handleClose={CloseChangePass} />
+    </>
+
   );
 };
 

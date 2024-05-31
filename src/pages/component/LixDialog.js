@@ -18,6 +18,8 @@ import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import QuickBO from './QuickBO';
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
+import ProofUploadDialog from './ProofUploadDialog';
 
 function LixDialog(props) {
     const theme = useTheme();
@@ -35,6 +37,10 @@ function LixDialog(props) {
     // const [isErrorOther, setIsErrorOther] = useState(false)
 
     // const [statusBO, setStatusBO] = useState(false)
+
+    const [openProof, setOpenProof] = useState(false)
+
+
     const alertError = (string) => {
         setContenNotifi(string)
         setOpenAlertError(true)
@@ -453,8 +459,39 @@ function LixDialog(props) {
     }, [service.ID_DV])
 
 
-    console.log(service)
-    console.log(isExist)
+    // const uploadAndReset = () => {
+    //     // Update/reset user image of account page
+    //     let Image = document.getElementById('uploadImg');
+    //     const fileInput = document.querySelector('.account-file-input');
+
+
+    //     if (Image) {
+    //         // const resetImage = Image.src;
+    //         fileInput.onchange = () => {
+    //             if (fileInput.files[0]) {
+    //                 Image.src = window.URL.createObjectURL(fileInput.files[0]);
+    //                 setImgFile(fileInput.files[0]);
+    //                 console.log(imgFile)
+    //             }
+    //         };
+
+    //     }
+    // }
+
+
+
+
+
+    const handleOpenProofDialog = () => {
+        setOpenProof(true)
+    }
+
+    const handleCloseProof = () => {
+        setOpenProof(false)
+    }
+
+
+
 
 
     return (
@@ -695,7 +732,7 @@ function LixDialog(props) {
                             </FormControl>
                             <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2, display: service.KHONG_SD === 1 ? 'none' : '' }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
-                            <FormControl fullwidth sx={{ marginTop: 2}}>
+                            <FormControl fullwidth sx={{ marginTop: 2 }}>
                                 <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm nhanh BO</Button>
                             </FormControl>
 
@@ -729,13 +766,27 @@ function LixDialog(props) {
                                 : ""}
 
 
-
                         </CardContent>
                     </Card>
                 </Box>
 
             </DialogContent>
             <DialogActions>
+                <Button
+                    variant="contained"
+                    component="label"
+                    onClick={handleOpenProofDialog}
+                >
+                    <FileUploadRoundedIcon /> Upload minh chứng
+                    {/* <input
+                        id="upload"
+                        className="account-file-input"
+                        type="file"
+                        hidden
+                        onChange={handleOpenProofDialog}
+                    /> */}
+                </Button>
+
                 <Button
                     disabled={service.ID_DV !== 0 || service.KHONG_SD === 1 ? false : true}
                     variant={'outlined'} color={'primary'} onClick={createSurvey} autoFocus>
@@ -776,6 +827,7 @@ function LixDialog(props) {
                 callAPI={callAPI}
                 reloadApi={props.reloadApi}
             />
+            <ProofUploadDialog open={openProof} handleClose={handleCloseProof} idCustomer={props.idCustomer}/>
 
         </Dialog>
 

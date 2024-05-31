@@ -875,199 +875,199 @@ class danhsachkhachhang extends Controller
 
     public function filterreport($count, Request $request)
     {
-       
+
         $dateObject = date_create_from_format('d/m/Y', $request->keywords);
         $id_nv = auth()->user()->ID_NV;
         $chucvu_nv = auth()->user()->CHUCVU_NV;
         $dv_id = auth()->user()->DONVI_ID;
         $diabanql = DB::table('dia_ban_quan_ly')->where('DONVI_ID', $dv_id)->get();
 
-        
-            if (!empty($request->keywords)) {
-                if ($chucvu_nv === 2 || $chucvu_nv === 3) {
-    
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where(function ($query) use ($request, $dateObject) {
-                            $query
-                                ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-    
-                            if ($dateObject != false) {
-                                $formatDate = $dateObject->format('Y/m/d');
-                                $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
-                            }
-                        });
-    
-                         // Chuyển đổi định dạng ngày
-            if ($request->DISPLAY !== 0) {
-                $startDate = str_replace('/', '-', $request->TUNGAY);
-                $endDate = str_replace('/', '-', $request->DENNGAY);
-    
-                $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-            }
-                        
-    
-                    if ($request->MAHUYEN_KH != 0) {
-                        $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    }
-                    if ($request->MAXA_KH != 0) {
-                        $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    }
-                    if ($request->MAAP_KH !== 0) {
-                        $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    }
-                    if ($request->quality_survey !== 0) {
-                        $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->CHATLUONG_PV !== 0) {
-                        $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->NHACUNGCAP !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                    }
-                    if ($request->DICHVU !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                    }
-                    if ($request->NHANVIEN !== 0) {
-                        $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
-                    }
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-    
-                    return response()->json(['dstk' => $report], 200);
-                } else if ($chucvu_nv === 1) {
-    
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('phieu_khao_sat.ID_NV', $id_nv)
-                        ->where(function ($query) use ($request, $dateObject) {
-                            $query
-                                ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-    
-    
-                            if ($dateObject != false) {
-                                $formatDate = $dateObject->format('Y/m/d');
-                                $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
-                            }
-                        });
-                        if ($request->DISPLAY !== 0) {
-                            $startDate = str_replace('/', '-', $request->TUNGAY);
-                            $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                            $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                        }
-    
-                    if ($request->MAHUYEN_KH != 0) {
-                        $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    }
-                    if ($request->MAXA_KH != 0) {
-                        $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    }
-                    if ($request->MAAP_KH !== 0) {
-                        $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    }
-                    if ($request->quality_survey !== 0) {
-                        $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->CHATLUONG_PV !== 0) {
-                        $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->NHACUNGCAP !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                    }
-                    if ($request->DICHVU !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                    }
-                    if ($request->NHANVIEN !== 0) {
-                        $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
-                    }
-    
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-                    return response()->json(['dstk' => $report], 200);
-                } else {
 
-                    try {
-                        $query = null;
-        
-                        foreach ($diabanql as $diaban) {
-                            $diaban_id = $diaban->DIABAN_ID;
-        
-                            $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+        if (!empty($request->keywords)) {
+            if ($chucvu_nv === 2 || $chucvu_nv === 3) {
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where(function ($query) use ($request, $dateObject) {
+                        $query
+                            ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
+
+                        if ($dateObject != false) {
+                            $formatDate = $dateObject->format('Y/m/d');
+                            $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
+                        }
+                    });
+
+                // Chuyển đổi định dạng ngày
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+                if ($request->quality_survey !== 0) {
+                    $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->CHATLUONG_PV !== 0) {
+                    $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+                if ($request->NHANVIEN !== 0) {
+                    $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                }
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+
+                return response()->json(['dstk' => $report], 200);
+            } else if ($chucvu_nv === 1) {
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('phieu_khao_sat.ID_NV', $id_nv)
+                    ->where(function ($query) use ($request, $dateObject) {
+                        $query
+                            ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
+
+
+                        if ($dateObject != false) {
+                            $formatDate = $dateObject->format('Y/m/d');
+                            $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
+                        }
+                    });
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+                if ($request->quality_survey !== 0) {
+                    $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->CHATLUONG_PV !== 0) {
+                    $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+                if ($request->NHANVIEN !== 0) {
+                    $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                }
+
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+                return response()->json(['dstk' => $report], 200);
+            } else {
+
+                try {
+                    $query = null;
+
+                    foreach ($diabanql as $diaban) {
+                        $diaban_id = $diaban->DIABAN_ID;
+
+                        $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
                             ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
                             ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
                             ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
@@ -1083,7 +1083,7 @@ class danhsachkhachhang extends Controller
                                     ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
                                     ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
                                     ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-        
+
                                 if ($dateObject != false) {
                                     $formatDate = $dateObject->format('Y/m/d');
                                     $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
@@ -1091,18 +1091,16 @@ class danhsachkhachhang extends Controller
                                         ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
                                 }
                             });
-                            if ($request->DISPLAY !== 0) {
-                                $startDate = str_replace('/', '-', $request->TUNGAY);
-                                $endDate = str_replace('/', '-', $request->DENNGAY);
-                    
-                                $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                            }
-        
+                        if ($request->DISPLAY !== 0) {
+                            $startDate = str_replace('/', '-', $request->TUNGAY);
+                            $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                            $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                        }
+
                         if ($request->MAHUYEN_KH != 0) {
                             $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                        }
-                        else
-                        {
+                        } else {
                             $queryForDiaban->where('khach_hang.MAHUYEN_KH', $diaban_id);
                         }
                         if ($request->MAXA_KH != 0) {
@@ -1128,9 +1126,9 @@ class danhsachkhachhang extends Controller
                         if ($request->NHANVIEN !== 0) {
                             $queryForDiaban->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
                         }
-        
+
                         $queryForDiaban = $queryForDiaban
-        
+
                             ->select(
                                 'nhan_vien.TEN_NV',
                                 'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
@@ -1151,274 +1149,274 @@ class danhsachkhachhang extends Controller
                                 'dvhc_xa.name as TEN_XA',
                                 'dvhc_ap.name as TEN_AP'
                             );
-        
-                            if (!$query) {
-                                $query = $queryForDiaban;
-                            } else {
-                                $query = $query->union($queryForDiaban);
-                            }
+
+                        if (!$query) {
+                            $query = $queryForDiaban;
+                        } else {
+                            $query = $query->union($queryForDiaban);
                         }
-        
-                        $total = $query->count(); // Tính tổng số bản ghi
-        
-                        // Số lượng mục trên mỗi trang
-                        $perPage = $count;
-        
-                        // Trang hiện tại
-                        $page = request()->get('page') ?: 1;
-        
-                        // Tính toán offset
-                        $offset = ($page - 1) * $perPage;
-        
-        
-                        // Lấy dữ liệu phân trang
-                        $paginatedData = $query->offset($offset)->limit($perPage)->get();
-        
-                        // Tạo đối tượng Paginator để trả về dữ liệu phân trang
-                        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-        
-                        return response()->json(['dstk' => $paginator], 200);
-                    } catch (\Throwable $th) {
-                        return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                     }
 
+                    $total = $query->count(); // Tính tổng số bản ghi
+
+                    // Số lượng mục trên mỗi trang
+                    $perPage = $count;
+
+                    // Trang hiện tại
+                    $page = request()->get('page') ?: 1;
+
+                    // Tính toán offset
+                    $offset = ($page - 1) * $perPage;
 
 
+                    // Lấy dữ liệu phân trang
+                    $paginatedData = $query->offset($offset)->limit($perPage)->get();
 
+                    // Tạo đối tượng Paginator để trả về dữ liệu phân trang
+                    $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
 
-
-
-
-                    // $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    //     ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    //     ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    //     ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    //     ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    //     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    //     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    //     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    //     ->where(function ($query) use ($request, $dateObject) {
-                    //         $query
-                    //             ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
-                    //             ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
-                    //             ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
-                    //             ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
-                    //             ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
-                    //             ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-    
-                    //         if ($dateObject != false) {
-                    //             $formatDate = $dateObject->format('Y/m/d');
-                    //             $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                    //                 ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                    //                 ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
-                    //         }
-                    //     });
-                    //     if ($request->DISPLAY !== 0) {
-                    //         $startDate = str_replace('/', '-', $request->TUNGAY);
-                    //         $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                    //         $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                    //     }
-    
-                    // if ($request->MAHUYEN_KH != 0) {
-                    //     $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    // }
-                    // if ($request->MAXA_KH != 0) {
-                    //     $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    // }
-                    // if ($request->MAAP_KH !== 0) {
-                    //     $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    // }
-                    // if ($request->quality_survey !== 0) {
-                    //     $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
-                    //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    // }
-                    // if ($request->CHATLUONG_PV !== 0) {
-                    //     $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
-                    //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    // }
-                    // if ($request->NHACUNGCAP !== 0) {
-                    //     $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                    // }
-                    // if ($request->DICHVU !== 0) {
-                    //     $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                    // }
-                    // if ($request->NHANVIEN !== 0) {
-                    //     $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
-                    // }
-    
-                    // $report = $report
-    
-                    //     ->select(
-                    //         'nhan_vien.TEN_NV',
-                    //         'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                    //         'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                    //         'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                    //         'phieu_khao_sat.ID_KH',
-                    //         'phieu_khao_sat.ID_NV',
-                    //         'phieu_khao_sat.TRANGTHAI_PKS',
-                    //         'nha_cung_cap.TEN_NCC',
-                    //         'khach_hang.TEN_KH',
-                    //         'dich_vu.TEN_DV',
-                    //         'dvhc_huyen.name as TEN_HUYEN',
-                    //         'dvhc_xa.name as TEN_XA',
-                    //         'dvhc_ap.name as TEN_AP'
-                    //     )
-                    //     ->paginate($count);
-                    // return response()->json(['dstk' => $report], 200);
+                    return response()->json(['dstk' => $paginator], 200);
+                } catch (\Throwable $th) {
+                    return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                 }
+
+
+
+
+
+
+
+
+                // $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                //     ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                //     ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                //     ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                //     ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                //     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                //     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                //     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                //     ->where(function ($query) use ($request, $dateObject) {
+                //         $query
+                //             ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
+                //             ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
+                //             ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
+                //             ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
+                //             ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
+                //             ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
+
+                //         if ($dateObject != false) {
+                //             $formatDate = $dateObject->format('Y/m/d');
+                //             $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                //                 ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                //                 ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
+                //         }
+                //     });
+                //     if ($request->DISPLAY !== 0) {
+                //         $startDate = str_replace('/', '-', $request->TUNGAY);
+                //         $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                //         $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                //     }
+
+                // if ($request->MAHUYEN_KH != 0) {
+                //     $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                // }
+                // if ($request->MAXA_KH != 0) {
+                //     $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                // }
+                // if ($request->MAAP_KH !== 0) {
+                //     $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                // }
+                // if ($request->quality_survey !== 0) {
+                //     $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
+                //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                // }
+                // if ($request->CHATLUONG_PV !== 0) {
+                //     $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
+                //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                // }
+                // if ($request->NHACUNGCAP !== 0) {
+                //     $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                // }
+                // if ($request->DICHVU !== 0) {
+                //     $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                // }
+                // if ($request->NHANVIEN !== 0) {
+                //     $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                // }
+
+                // $report = $report
+
+                //     ->select(
+                //         'nhan_vien.TEN_NV',
+                //         'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                //         'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                //         'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                //         'phieu_khao_sat.ID_KH',
+                //         'phieu_khao_sat.ID_NV',
+                //         'phieu_khao_sat.TRANGTHAI_PKS',
+                //         'nha_cung_cap.TEN_NCC',
+                //         'khach_hang.TEN_KH',
+                //         'dich_vu.TEN_DV',
+                //         'dvhc_huyen.name as TEN_HUYEN',
+                //         'dvhc_xa.name as TEN_XA',
+                //         'dvhc_ap.name as TEN_AP'
+                //     )
+                //     ->paginate($count);
+                // return response()->json(['dstk' => $report], 200);
+            }
+        } else {
+            if ($chucvu_nv === 2 || $chucvu_nv === 3) {
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+                if ($request->quality_survey !== 0) {
+                    $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->CHATLUONG_PV !== 0) {
+                    $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+                if ($request->NHANVIEN !== 0) {
+                    $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                }
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+                return response()->json(['dstk' => $report], 200);
+            } else if ($chucvu_nv === 1) {
+
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('phieu_khao_sat.ID_NV', $id_nv);
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+                if ($request->quality_survey !== 0) {
+                    $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->CHATLUONG_PV !== 0) {
+                    $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                }
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+                if ($request->NHANVIEN !== 0) {
+                    $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                }
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+                return response()->json(['dstk' => $report], 200);
             } else {
-                if ($chucvu_nv === 2 || $chucvu_nv === 3) {
-                  
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
-                        if ($request->DISPLAY !== 0) {
-                            $startDate = str_replace('/', '-', $request->TUNGAY);
-                            $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                            $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                        }
-    
-                    if ($request->MAHUYEN_KH != 0) {
-                        $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    }
-                    if ($request->MAXA_KH != 0) {
-                        $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    }
-                    if ($request->MAAP_KH !== 0) {
-                        $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    }
-                    if ($request->quality_survey !== 0) {
-                        $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->CHATLUONG_PV !== 0) {
-                        $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->NHACUNGCAP !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                    }
-                    if ($request->DICHVU !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                    }
-                    if ($request->NHANVIEN !== 0) {
-                        $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
-                    }
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-                    return response()->json(['dstk' => $report], 200);
-                } else if ($chucvu_nv === 1) {
-                
-    
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('phieu_khao_sat.ID_NV', $id_nv);
-                        if ($request->DISPLAY !== 0) {
-                            $startDate = str_replace('/', '-', $request->TUNGAY);
-                            $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                            $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                        }
-    
-                    if ($request->MAHUYEN_KH != 0) {
-                        $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    }
-                    if ($request->MAXA_KH != 0) {
-                        $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    }
-                    if ($request->MAAP_KH !== 0) {
-                        $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    }
-                    if ($request->quality_survey !== 0) {
-                        $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->CHATLUONG_PV !== 0) {
-                        $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
-                        $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    }
-                    if ($request->NHACUNGCAP !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                    }
-                    if ($request->DICHVU !== 0) {
-                        $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                    }
-                    if ($request->NHANVIEN !== 0) {
-                        $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
-                    }
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-                    return response()->json(['dstk' => $report], 200);
-                } else {
-                    try {
-                        $query = null;
-        
-                        foreach ($diabanql as $diaban) {
-                            $diaban_id = $diaban->DIABAN_ID;
-        
-                            $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                try {
+                    $query = null;
+
+                    foreach ($diabanql as $diaban) {
+                        $diaban_id = $diaban->DIABAN_ID;
+
+                        $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
                             ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
                             ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
                             ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
@@ -1426,18 +1424,16 @@ class danhsachkhachhang extends Controller
                             ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
                             ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                             ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
-                            if ($request->DISPLAY !== 0) {
-                                $startDate = str_replace('/', '-', $request->TUNGAY);
-                                $endDate = str_replace('/', '-', $request->DENNGAY);
-                    
-                                $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                            }
-        
+                        if ($request->DISPLAY !== 0) {
+                            $startDate = str_replace('/', '-', $request->TUNGAY);
+                            $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                            $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                        }
+
                         if ($request->MAHUYEN_KH != 0) {
                             $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                        }
-                        else
-                        {
+                        } else {
                             $queryForDiaban->where('khach_hang.MAHUYEN_KH', $diaban_id);
                         }
                         if ($request->MAXA_KH != 0) {
@@ -1463,9 +1459,9 @@ class danhsachkhachhang extends Controller
                         if ($request->NHANVIEN !== 0) {
                             $queryForDiaban->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
                         }
-        
+
                         $queryForDiaban = $queryForDiaban
-        
+
                             ->select(
                                 'nhan_vien.TEN_NV',
                                 'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
@@ -1486,121 +1482,119 @@ class danhsachkhachhang extends Controller
                                 'dvhc_xa.name as TEN_XA',
                                 'dvhc_ap.name as TEN_AP'
                             );
-        
-                            if (!$query) {
-                                $query = $queryForDiaban;
-                            } else {
-                                $query = $query->union($queryForDiaban);
-                            }
+
+                        if (!$query) {
+                            $query = $queryForDiaban;
+                        } else {
+                            $query = $query->union($queryForDiaban);
                         }
-        
-                        $total = $query->count(); // Tính tổng số bản ghi
-        
-                        // Số lượng mục trên mỗi trang
-                        $perPage = $count;
-        
-                        // Trang hiện tại
-                        $page = request()->get('page') ?: 1;
-        
-                        // Tính toán offset
-                        $offset = ($page - 1) * $perPage;
-        
-        
-                        // Lấy dữ liệu phân trang
-                        $paginatedData = $query->offset($offset)->limit($perPage)->get();
-        
-                        // Tạo đối tượng Paginator để trả về dữ liệu phân trang
-                        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-        
-                        return response()->json(['dstk' => $paginator], 200);
-                    } catch (\Throwable $th) {
-                        return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                     }
 
+                    $total = $query->count(); // Tính tổng số bản ghi
+
+                    // Số lượng mục trên mỗi trang
+                    $perPage = $count;
+
+                    // Trang hiện tại
+                    $page = request()->get('page') ?: 1;
+
+                    // Tính toán offset
+                    $offset = ($page - 1) * $perPage;
 
 
+                    // Lấy dữ liệu phân trang
+                    $paginatedData = $query->offset($offset)->limit($perPage)->get();
 
+                    // Tạo đối tượng Paginator để trả về dữ liệu phân trang
+                    $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
 
-
-
-
-
-
-
-
-
-
-
-                    // $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    //     ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    //     ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    //     ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    //     ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    //     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    //     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    //     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
-                    //     if ($request->DISPLAY !== 0) {
-                    //         $startDate = str_replace('/', '-', $request->TUNGAY);
-                    //         $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                    //         $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                    //     }
-    
-                    // if ($request->MAHUYEN_KH != 0) {
-                    //     $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    // }
-                    // if ($request->MAXA_KH != 0) {
-                    //     $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    // }
-                    // if ($request->MAAP_KH !== 0) {
-                    //     $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    // }
-                    // if ($request->quality_survey !== 0) {
-                    //     $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
-                    //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    // }
-                    // if ($request->CHATLUONG_PV !== 0) {
-                    //     $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
-                    //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
-                    // }
-                    // if ($request->NHACUNGCAP !== 0) {
-                    //     $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                    // }
-                    // if ($request->DICHVU !== 0) {
-                    //     $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                    // }
-                    // if ($request->NHANVIEN !== 0) {
-                    //     $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
-                    // }
-    
-                    // $report = $report
-    
-                    //     ->select(
-                    //         'nhan_vien.TEN_NV',
-                    //         'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                    //         'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                    //         'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                    //         'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                    //         'phieu_khao_sat.ID_KH',
-                    //         'phieu_khao_sat.ID_NV',
-                    //         'phieu_khao_sat.TRANGTHAI_PKS',
-                    //         'nha_cung_cap.TEN_NCC',
-                    //         'khach_hang.TEN_KH',
-                    //         'dich_vu.TEN_DV',
-                    //         'dvhc_huyen.name as TEN_HUYEN',
-                    //         'dvhc_xa.name as TEN_XA',
-                    //         'dvhc_ap.name as TEN_AP'
-                    //     )
-                    //     ->paginate($count);
-                    // return response()->json(['dstk' => $report], 200);
+                    return response()->json(['dstk' => $paginator], 200);
+                } catch (\Throwable $th) {
+                    return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                //     ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                //     ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                //     ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                //     ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                //     ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                //     ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                //     ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
+                //     if ($request->DISPLAY !== 0) {
+                //         $startDate = str_replace('/', '-', $request->TUNGAY);
+                //         $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                //         $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                //     }
+
+                // if ($request->MAHUYEN_KH != 0) {
+                //     $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                // }
+                // if ($request->MAXA_KH != 0) {
+                //     $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                // }
+                // if ($request->MAAP_KH !== 0) {
+                //     $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                // }
+                // if ($request->quality_survey !== 0) {
+                //     $quality = DB::table('chat_luong_dich_vu')->where('ID_CHATLUONG', $request->quality_survey)->first();
+                //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                // }
+                // if ($request->CHATLUONG_PV !== 0) {
+                //     $quality = DB::table('chat_luong_phuc_vu')->where('ID_CHATLUONGPV', $request->CHATLUONG_PV)->first();
+                //     $report->whereBetween('chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS', [$quality->DIEMTU, $quality->DENDIEM]);
+                // }
+                // if ($request->NHACUNGCAP !== 0) {
+                //     $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                // }
+                // if ($request->DICHVU !== 0) {
+                //     $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                // }
+                // if ($request->NHANVIEN !== 0) {
+                //     $report->where('phieu_khao_sat.ID_NV', $request->NHANVIEN);
+                // }
+
+                // $report = $report
+
+                //     ->select(
+                //         'nhan_vien.TEN_NV',
+                //         'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                //         'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                //         'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                //         'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                //         'phieu_khao_sat.ID_KH',
+                //         'phieu_khao_sat.ID_NV',
+                //         'phieu_khao_sat.TRANGTHAI_PKS',
+                //         'nha_cung_cap.TEN_NCC',
+                //         'khach_hang.TEN_KH',
+                //         'dich_vu.TEN_DV',
+                //         'dvhc_huyen.name as TEN_HUYEN',
+                //         'dvhc_xa.name as TEN_XA',
+                //         'dvhc_ap.name as TEN_AP'
+                //     )
+                //     ->paginate($count);
+                // return response()->json(['dstk' => $report], 200);
             }
-
-
+        }
     }
 
     public function filterreportBO($count, Request $request)
@@ -1611,192 +1605,192 @@ class danhsachkhachhang extends Controller
         $dv_id = auth()->user()->DONVI_ID;
         $diabanql = DB::table('dia_ban_quan_ly')->where('DONVI_ID', $dv_id)->get();
 
-        
-            if (!empty($request->keywords)) {
-                if ($chucvu_nv === 2 || $chucvu_nv === 3) {
-    
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
-                        ->where(function ($query) use ($request, $dateObject) {
-                            $query
-                                ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-    
-                            if ($dateObject != false) {
-                                $formatDate = $dateObject->format('Y/m/d');
-                                $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
-                            }
-                        });
-    
-                         // Chuyển đổi định dạng ngày
-            if ($request->DISPLAY !== 0) {
-                $startDate = str_replace('/', '-', $request->TUNGAY);
-                $endDate = str_replace('/', '-', $request->DENNGAY);
-    
-                $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-            }
-                        
-    
-            if ($request->MAHUYEN_KH != 0) {
-                $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-            }
-            if ($request->MAXA_KH != 0) {
-                $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-            }
-            if ($request->MAAP_KH !== 0) {
-                $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-            }
 
-            if ($request->USE !== 5) {
-                $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
-            }
+        if (!empty($request->keywords)) {
+            if ($chucvu_nv === 2 || $chucvu_nv === 3) {
 
-            if ($request->NHACUNGCAP !== 0) {
-                $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-            }
-            if ($request->DICHVU !== 0) {
-                $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-            }
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
+                    ->where(function ($query) use ($request, $dateObject) {
+                        $query
+                            ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
 
-            if ($request->quality_survey !== 0) {
-                $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
-                $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
-            }
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-    
-                    return response()->json(['dstk' => $report], 200);
-                } else if ($chucvu_nv === 1) {
-    
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
-                        ->where('phieu_khao_sat.ID_NV', $id_nv)
-                        ->where(function ($query) use ($request, $dateObject) {
-                            $query
-                                ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
-                                ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-    
-    
-                            if ($dateObject != false) {
-                                $formatDate = $dateObject->format('Y/m/d');
-                                $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
-                                    ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
-                            }
-                        });
-                        if ($request->DISPLAY !== 0) {
-                            $startDate = str_replace('/', '-', $request->TUNGAY);
-                            $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                            $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                        if ($dateObject != false) {
+                            $formatDate = $dateObject->format('Y/m/d');
+                            $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
                         }
-    
-                        if ($request->MAHUYEN_KH != 0) {
-                            $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                        }
-                        if ($request->MAXA_KH != 0) {
-                            $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                        }
-                        if ($request->MAAP_KH !== 0) {
-                            $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                        }
-        
-                        if ($request->USE !== 5) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
-                        }
-        
-                        if ($request->NHACUNGCAP !== 0) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                        }
-                        if ($request->DICHVU !== 0) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                        }
-        
-                        if ($request->quality_survey !== 0) {
-                            $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
-                            $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
-                        }
-    
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-                    return response()->json(['dstk' => $report], 200);
-                } else {
+                    });
 
-                    try {
-                        $query = null;
-        
-                        foreach ($diabanql as $diaban) {
-                            $diaban_id = $diaban->DIABAN_ID;
-        
-                            $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                // Chuyển đổi định dạng ngày
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+
+                if ($request->USE !== 5) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                }
+
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+
+                if ($request->quality_survey !== 0) {
+                    $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
+                }
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+
+                return response()->json(['dstk' => $report], 200);
+            } else if ($chucvu_nv === 1) {
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
+                    ->where('phieu_khao_sat.ID_NV', $id_nv)
+                    ->where(function ($query) use ($request, $dateObject) {
+                        $query
+                            ->orWhere('TEN_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TENKHACHHANGDAIDIEN_CTPKS', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('chi_tiet_phieu_khao_sat_lix.DIACHI_KH', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
+                            ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
+
+
+                        if ($dateObject != false) {
+                            $formatDate = $dateObject->format('Y/m/d');
+                            $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYKETTHUCDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
+                                ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
+                        }
+                    });
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+
+                if ($request->USE !== 5) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                }
+
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+
+                if ($request->quality_survey !== 0) {
+                    $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
+                }
+
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+                return response()->json(['dstk' => $report], 200);
+            } else {
+
+                try {
+                    $query = null;
+
+                    foreach ($diabanql as $diaban) {
+                        $diaban_id = $diaban->DIABAN_ID;
+
+                        $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
                             ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
                             ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
                             ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
@@ -1813,7 +1807,7 @@ class danhsachkhachhang extends Controller
                                     ->orWhere('nha_cung_cap.TEN_NCC', 'LIKE', '%' . $request->keywords . '%')
                                     ->orWhere('dich_vu.TEN_DV', 'LIKE', '%' . $request->keywords . '%')
                                     ->orWhere('TEN_NV', 'LIKE', '%' . $request->keywords . '%');
-        
+
                                 if ($dateObject != false) {
                                     $formatDate = $dateObject->format('Y/m/d');
                                     $query->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS', '=', str_replace('/', '-', $formatDate))
@@ -1821,45 +1815,43 @@ class danhsachkhachhang extends Controller
                                         ->orWhere('chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS', '=', str_replace('/', '-', $formatDate));
                                 }
                             });
-                            if ($request->DISPLAY !== 0) {
-                                $startDate = str_replace('/', '-', $request->TUNGAY);
-                                $endDate = str_replace('/', '-', $request->DENNGAY);
-                    
-                                $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                            }
-        
-                            if ($request->MAHUYEN_KH != 0) {
-                                $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $queryForDiaban->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $queryForDiaban->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $queryForDiaban->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-            
-                            if ($request->USE !== 5) {
-                                $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
-                            }
-            
-                            if ($request->NHACUNGCAP !== 0) {
-                                $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                            }
-                            if ($request->DICHVU !== 0) {
-                                $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                            }
-            
-                            if ($request->quality_survey !== 0) {
-                                $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
-                                $queryForDiaban->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
-                            }
-        
+                        if ($request->DISPLAY !== 0) {
+                            $startDate = str_replace('/', '-', $request->TUNGAY);
+                            $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                            $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                        }
+
+                        if ($request->MAHUYEN_KH != 0) {
+                            $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                        } else {
+                            $queryForDiaban->where('khach_hang.MAHUYEN_KH', $diaban_id);
+                        }
+                        if ($request->MAXA_KH != 0) {
+                            $queryForDiaban->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                        }
+                        if ($request->MAAP_KH !== 0) {
+                            $queryForDiaban->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                        }
+
+                        if ($request->USE !== 5) {
+                            $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                        }
+
+                        if ($request->NHACUNGCAP !== 0) {
+                            $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                        }
+                        if ($request->DICHVU !== 0) {
+                            $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                        }
+
+                        if ($request->quality_survey !== 0) {
+                            $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
+                            $queryForDiaban->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
+                        }
+
                         $queryForDiaban = $queryForDiaban
-        
+
                             ->select(
                                 'nhan_vien.TEN_NV',
                                 'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
@@ -1880,185 +1872,184 @@ class danhsachkhachhang extends Controller
                                 'dvhc_xa.name as TEN_XA',
                                 'dvhc_ap.name as TEN_AP'
                             );
-        
-                            if (!$query) {
-                                $query = $queryForDiaban;
-                            } else {
-                                $query = $query->union($queryForDiaban);
-                            }
+
+                        if (!$query) {
+                            $query = $queryForDiaban;
+                        } else {
+                            $query = $query->union($queryForDiaban);
                         }
-        
-                        $total = $query->count(); // Tính tổng số bản ghi
-        
-                        // Số lượng mục trên mỗi trang
-                        $perPage = $count;
-        
-                        // Trang hiện tại
-                        $page = request()->get('page') ?: 1;
-        
-                        // Tính toán offset
-                        $offset = ($page - 1) * $perPage;
-        
-        
-                        // Lấy dữ liệu phân trang
-                        $paginatedData = $query->offset($offset)->limit($perPage)->get();
-        
-                        // Tạo đối tượng Paginator để trả về dữ liệu phân trang
-                        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-        
-                        return response()->json(['dstk' => $paginator], 200);
-                    } catch (\Throwable $th) {
-                        return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                     }
 
+                    $total = $query->count(); // Tính tổng số bản ghi
+
+                    // Số lượng mục trên mỗi trang
+                    $perPage = $count;
+
+                    // Trang hiện tại
+                    $page = request()->get('page') ?: 1;
+
+                    // Tính toán offset
+                    $offset = ($page - 1) * $perPage;
+
+
+                    // Lấy dữ liệu phân trang
+                    $paginatedData = $query->offset($offset)->limit($perPage)->get();
+
+                    // Tạo đối tượng Paginator để trả về dữ liệu phân trang
+                    $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
+
+                    return response()->json(['dstk' => $paginator], 200);
+                } catch (\Throwable $th) {
+                    return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                 }
+            }
+        } else {
+            if ($chucvu_nv === 2 || $chucvu_nv === 3) {
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('chi_tiet_phieu_khao_sat_lix.BO', 1);
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+
+                if ($request->USE !== 5) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                }
+
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+
+                if ($request->quality_survey !== 0) {
+                    $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
+                }
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+                return response()->json(['dstk' => $report], 200);
+            } else if ($chucvu_nv === 1) {
+
+
+                $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
+                    ->where('phieu_khao_sat.ID_NV', $id_nv);
+                if ($request->DISPLAY !== 0) {
+                    $startDate = str_replace('/', '-', $request->TUNGAY);
+                    $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                    $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                }
+
+                if ($request->MAHUYEN_KH != 0) {
+                    $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                }
+                if ($request->MAXA_KH != 0) {
+                    $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                }
+                if ($request->MAAP_KH !== 0) {
+                    $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                }
+
+                if ($request->USE !== 5) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                }
+
+                if ($request->NHACUNGCAP !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                }
+                if ($request->DICHVU !== 0) {
+                    $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                }
+
+                if ($request->quality_survey !== 0) {
+                    $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
+                    $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
+                }
+
+                $report = $report
+
+                    ->select(
+                        'nhan_vien.TEN_NV',
+                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                        'phieu_khao_sat.ID_KH',
+                        'phieu_khao_sat.ID_NV',
+                        'phieu_khao_sat.TRANGTHAI_PKS',
+                        'nha_cung_cap.TEN_NCC',
+                        'khach_hang.TEN_KH',
+                        'dich_vu.TEN_DV',
+                        'dvhc_huyen.name as TEN_HUYEN',
+                        'dvhc_xa.name as TEN_XA',
+                        'dvhc_ap.name as TEN_AP'
+                    )
+                    ->paginate($count);
+                return response()->json(['dstk' => $report], 200);
             } else {
-                if ($chucvu_nv === 2 || $chucvu_nv === 3) {
-                  
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('chi_tiet_phieu_khao_sat_lix.BO', 1);
-                        if ($request->DISPLAY !== 0) {
-                            $startDate = str_replace('/', '-', $request->TUNGAY);
-                            $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                            $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                        }
-    
-                        if ($request->MAHUYEN_KH != 0) {
-                            $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                        }
-                        if ($request->MAXA_KH != 0) {
-                            $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                        }
-                        if ($request->MAAP_KH !== 0) {
-                            $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                        }
-        
-                        if ($request->USE !== 5) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
-                        }
-        
-                        if ($request->NHACUNGCAP !== 0) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                        }
-                        if ($request->DICHVU !== 0) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                        }
-        
-                        if ($request->quality_survey !== 0) {
-                            $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
-                            $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
-                        }
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-                    return response()->json(['dstk' => $report], 200);
-                } else if ($chucvu_nv === 1) {
-                
-    
-                    $report = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
-                        ->where('phieu_khao_sat.ID_NV', $id_nv);
-                        if ($request->DISPLAY !== 0) {
-                            $startDate = str_replace('/', '-', $request->TUNGAY);
-                            $endDate = str_replace('/', '-', $request->DENNGAY);
-                
-                            $report->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                        }
-    
-                        if ($request->MAHUYEN_KH != 0) {
-                            $report->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                        }
-                        if ($request->MAXA_KH != 0) {
-                            $report->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                        }
-                        if ($request->MAAP_KH !== 0) {
-                            $report->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                        }
-        
-                        if ($request->USE !== 5) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
-                        }
-        
-                        if ($request->NHACUNGCAP !== 0) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                        }
-                        if ($request->DICHVU !== 0) {
-                            $report->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                        }
-        
-                        if ($request->quality_survey !== 0) {
-                            $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
-                            $report->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
-                        }
-    
-                    $report = $report
-    
-                        ->select(
-                            'nhan_vien.TEN_NV',
-                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                            'phieu_khao_sat.ID_KH',
-                            'phieu_khao_sat.ID_NV',
-                            'phieu_khao_sat.TRANGTHAI_PKS',
-                            'nha_cung_cap.TEN_NCC',
-                            'khach_hang.TEN_KH',
-                            'dich_vu.TEN_DV',
-                            'dvhc_huyen.name as TEN_HUYEN',
-                            'dvhc_xa.name as TEN_XA',
-                            'dvhc_ap.name as TEN_AP'
-                        )
-                        ->paginate($count);
-                    return response()->json(['dstk' => $report], 200);
-                } else {
-                    try {
-                        $query = null;
-        
-                        foreach ($diabanql as $diaban) {
-                            $diaban_id = $diaban->DIABAN_ID;
-        
-                            $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
+                try {
+                    $query = null;
+
+                    foreach ($diabanql as $diaban) {
+                        $diaban_id = $diaban->DIABAN_ID;
+
+                        $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
                             ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
                             ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
                             ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
@@ -2067,45 +2058,43 @@ class danhsachkhachhang extends Controller
                             ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
                             ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                             ->where('chi_tiet_phieu_khao_sat_lix.BO', 1);
-                            if ($request->DISPLAY != 0) {
-                                $startDate = str_replace('/', '-', $request->TUNGAY);
-                                $endDate = str_replace('/', '-', $request->DENNGAY);
-                    
-                                $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
-                            }
-        
-                            if ($request->MAHUYEN_KH != 0) {
-                                $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $queryForDiaban->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $queryForDiaban->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $queryForDiaban->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-            
-                            if ($request->USE !== 5) {
-                                $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
-                            }
-            
-                            if ($request->NHACUNGCAP !== 0) {
-                                $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
-                            }
-                            if ($request->DICHVU !== 0) {
-                                $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
-                            }
-            
-                            if ($request->quality_survey !== 0) {
-                                $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
-                                $queryForDiaban->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
-                            }
-        
+                        if ($request->DISPLAY != 0) {
+                            $startDate = str_replace('/', '-', $request->TUNGAY);
+                            $endDate = str_replace('/', '-', $request->DENNGAY);
+
+                            $queryForDiaban->whereBetween("chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS", [$startDate, $endDate]);
+                        }
+
+                        if ($request->MAHUYEN_KH != 0) {
+                            $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                        } else {
+                            $queryForDiaban->where('khach_hang.MAHUYEN_KH', $diaban_id);
+                        }
+                        if ($request->MAXA_KH != 0) {
+                            $queryForDiaban->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                        }
+                        if ($request->MAAP_KH !== 0) {
+                            $queryForDiaban->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                        }
+
+                        if ($request->USE !== 5) {
+                            $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.KHONG_SD', $request->USE);
+                        }
+
+                        if ($request->NHACUNGCAP !== 0) {
+                            $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS', $request->NHACUNGCAP);
+                        }
+                        if ($request->DICHVU !== 0) {
+                            $queryForDiaban->where('chi_tiet_phieu_khao_sat_lix.ID_DV', $request->DICHVU);
+                        }
+
+                        if ($request->quality_survey !== 0) {
+                            $BO = DB::table('cau_hinh_bo')->where('ID_BO', $request->quality_survey)->first();
+                            $queryForDiaban->whereBetween('chi_tiet_phieu_khao_sat_lix.DIEM_BO', [$BO->DIEMTU, $BO->DENDIEM]);
+                        }
+
                         $queryForDiaban = $queryForDiaban
-        
+
                             ->select(
                                 'nhan_vien.TEN_NV',
                                 'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
@@ -2126,40 +2115,38 @@ class danhsachkhachhang extends Controller
                                 'dvhc_xa.name as TEN_XA',
                                 'dvhc_ap.name as TEN_AP'
                             );
-        
-                            if (!$query) {
-                                $query = $queryForDiaban;
-                            } else {
-                                $query = $query->union($queryForDiaban);
-                            }
+
+                        if (!$query) {
+                            $query = $queryForDiaban;
+                        } else {
+                            $query = $query->union($queryForDiaban);
                         }
-        
-                        $total = $query->count(); // Tính tổng số bản ghi
-        
-                        // Số lượng mục trên mỗi trang
-                        $perPage = $count;
-        
-                        // Trang hiện tại
-                        $page = request()->get('page') ?: 1;
-        
-                        // Tính toán offset
-                        $offset = ($page - 1) * $perPage;
-        
-        
-                        // Lấy dữ liệu phân trang
-                        $paginatedData = $query->offset($offset)->limit($perPage)->get();
-        
-                        // Tạo đối tượng Paginator để trả về dữ liệu phân trang
-                        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-        
-                        return response()->json(['dstk' => $paginator], 200);
-                    } catch (\Throwable $th) {
-                        return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                     }
 
+                    $total = $query->count(); // Tính tổng số bản ghi
 
+                    // Số lượng mục trên mỗi trang
+                    $perPage = $count;
+
+                    // Trang hiện tại
+                    $page = request()->get('page') ?: 1;
+
+                    // Tính toán offset
+                    $offset = ($page - 1) * $perPage;
+
+
+                    // Lấy dữ liệu phân trang
+                    $paginatedData = $query->offset($offset)->limit($perPage)->get();
+
+                    // Tạo đối tượng Paginator để trả về dữ liệu phân trang
+                    $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
+
+                    return response()->json(['dstk' => $paginator], 200);
+                } catch (\Throwable $th) {
+                    return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                 }
             }
+        }
 
 
 
@@ -2408,16 +2395,16 @@ class danhsachkhachhang extends Controller
         $diabanql = DB::table('dia_ban_quan_ly')->where('DONVI_ID', $dv_id)->get();
         if (!empty($request->keywords)) {
             if ($chucvu_nv === 0 || $chucvu_nv === 2) {
-                    try {
-                        $query = null;
-        
-                        foreach ($diabanql as $diaban) {
-                            $diaban_id = $diaban->DIABAN_ID;
-        
-                            $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                            ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                            ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                            ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                try {
+                    $query = null;
+
+                    foreach ($diabanql as $diaban) {
+                        $diaban_id = $diaban->DIABAN_ID;
+
+                        $queryForDiaban = khachhang::leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                             ->where(function ($query) use ($request) {
                                 $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
                                     ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
@@ -2429,9 +2416,7 @@ class danhsachkhachhang extends Controller
                             ->where(function ($query) use ($request, $diaban_id) {
                                 if ($request->MAHUYEN_KH != 0) {
                                     $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                                }
-                                else
-                                {
+                                } else {
                                     $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
                                 }
                                 if ($request->MAXA_KH != 0) {
@@ -2445,38 +2430,37 @@ class danhsachkhachhang extends Controller
                                 }
                             });
 
-                            $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                    ;
-        
-                            if (!$query) {
-                                $query = $queryForDiaban;
-                            } else {
-                                $query = $query->union($queryForDiaban);
-                            }
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+
+                        if (!$query) {
+                            $query = $queryForDiaban;
+                        } else {
+                            $query = $query->union($queryForDiaban);
                         }
-        
-                        $total = $query->count(); // Tính tổng số bản ghi
-        
-                        // Số lượng mục trên mỗi trang
-                        $perPage = $count;
-        
-                        // Trang hiện tại
-                        $page = request()->get('page') ?: 1;
-        
-                        // Tính toán offset
-                        $offset = ($page - 1) * $perPage;
-        
-        
-                        // Lấy dữ liệu phân trang
-                        $paginatedData = $query->offset($offset)->limit($perPage)->get();
-        
-                        // Tạo đối tượng Paginator để trả về dữ liệu phân trang
-                        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-        
-                        return response()->json(['dskh' => $paginator], 200);
-                    } catch (\Throwable $th) {
-                        return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
                     }
+
+                    $total = $query->count(); // Tính tổng số bản ghi
+
+                    // Số lượng mục trên mỗi trang
+                    $perPage = $count;
+
+                    // Trang hiện tại
+                    $page = request()->get('page') ?: 1;
+
+                    // Tính toán offset
+                    $offset = ($page - 1) * $perPage;
+
+
+                    // Lấy dữ liệu phân trang
+                    $paginatedData = $query->offset($offset)->limit($perPage)->get();
+
+                    // Tạo đối tượng Paginator để trả về dữ liệu phân trang
+                    $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
+
+                    return response()->json(['dskh' => $paginator], 200);
+                } catch (\Throwable $th) {
+                    return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
+                }
 
 
 
@@ -2513,70 +2497,67 @@ class danhsachkhachhang extends Controller
             } else {
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('khach_hang.ID_NV', $id_nv)
-                        ->where(function ($query) use ($request) {
-                            $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%');
-                        })
-                        ->where(function ($query) use ($request, $diaban_id) {
-                            if ($request->MAHUYEN_KH != 0) {
-                                $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-                            if ($request->status_survey !== 5) {
-                                $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                            }
-                        });
 
-                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                ;
-    
+                        $queryForDiaban = khachhang::leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where('khach_hang.ID_NV', $id_nv)
+                            ->where(function ($query) use ($request) {
+                                $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%');
+                            })
+                            ->where(function ($query) use ($request, $diaban_id) {
+                                if ($request->MAHUYEN_KH != 0) {
+                                    $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                                } else {
+                                    $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
+                                }
+                                if ($request->MAXA_KH != 0) {
+                                    $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                                }
+                                if ($request->MAAP_KH !== 0) {
+                                    $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                                }
+                                if ($request->status_survey !== 5) {
+                                    $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                                }
+                            });
+
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -2621,61 +2602,58 @@ class danhsachkhachhang extends Controller
             if ($chucvu_nv === 0 || $chucvu_nv === 2) {
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where(function ($query) use ($request, $diaban_id) {
-                            if ($request->MAHUYEN_KH != 0) {
-                                $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-                            if ($request->status_survey !== 5) {
-                                $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                            }
-                        });
 
-                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                ;
-    
+                        $queryForDiaban = khachhang::leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where(function ($query) use ($request, $diaban_id) {
+                                if ($request->MAHUYEN_KH != 0) {
+                                    $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                                } else {
+                                    $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
+                                }
+                                if ($request->MAXA_KH != 0) {
+                                    $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                                }
+                                if ($request->MAAP_KH !== 0) {
+                                    $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                                }
+                                if ($request->status_survey !== 5) {
+                                    $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                                }
+                            });
+
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -2710,62 +2688,59 @@ class danhsachkhachhang extends Controller
             } else {
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where('khach_hang.ID_NV', $id_nv)
-                        ->where(function ($query) use ($request, $diaban_id) {
-                            if ($request->MAHUYEN_KH != 0) {
-                                $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-                            if ($request->status_survey !== 5) {
-                                $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                            }
-                        });
 
-                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP')
-                ;
-    
+                        $queryForDiaban = khachhang::leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where('khach_hang.ID_NV', $id_nv)
+                            ->where(function ($query) use ($request, $diaban_id) {
+                                if ($request->MAHUYEN_KH != 0) {
+                                    $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
+                                } else {
+                                    $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
+                                }
+                                if ($request->MAXA_KH != 0) {
+                                    $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                                }
+                                if ($request->MAAP_KH !== 0) {
+                                    $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                                }
+                                if ($request->status_survey !== 5) {
+                                    $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                                }
+                            });
+
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -2823,76 +2798,74 @@ class danhsachkhachhang extends Controller
 
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
+
                         $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where(function ($query) use ($request) {
-                            $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
-                        })
-                        ->where(function ($query) use ($request, $diaban_id) {
-                            if ($request->MAHUYEN_KH != 0) {
-                                $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-                            if ($request->status_survey !== 5) {
-                                $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                            }
-    
-                            if ($request->PHANCONG !== 5) {
-                                if ($request->PHANCONG === 0) {
-                                    $query->whereNull('khach_hang.ID_NV');
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where(function ($query) use ($request) {
+                                $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
+                            })
+                            ->where(function ($query) use ($request, $diaban_id) {
+                                if ($request->MAHUYEN_KH != 0) {
+                                    $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
                                 } else {
-                                    $query->whereNotNull('khach_hang.ID_NV');
+                                    $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
                                 }
-                            }
-                        })
-                        ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
-    
+                                if ($request->MAXA_KH != 0) {
+                                    $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                                }
+                                if ($request->MAAP_KH !== 0) {
+                                    $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                                }
+                                if ($request->status_survey !== 5) {
+                                    $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                                }
+
+                                if ($request->PHANCONG !== 5) {
+                                    if ($request->PHANCONG === 0) {
+                                        $query->whereNull('khach_hang.ID_NV');
+                                    } else {
+                                        $query->whereNotNull('khach_hang.ID_NV');
+                                    }
+                                }
+                            })
+                            ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -2950,79 +2923,77 @@ class danhsachkhachhang extends Controller
             } else {
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
+
                         $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where(function ($query) use ($request) {
-                            $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
-                                ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
-                        })
-                        ->where(function ($query) use ($request, $diaban_id) {
-                            if ($request->MAHUYEN_KH != 0) {
-                                $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-                            if ($request->status_survey !== 5) {
-                                $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                            }
-    
-                            if ($request->PHANCONG !== 5) {
-                                if ($request->PHANCONG === 0) {
-                                    $query->whereNull('khach_hang.ID_NV');
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where(function ($query) use ($request) {
+                                $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_huyen.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_xa.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('dvhc_ap.name', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('diachi_kh', 'like', '%' . $request->keywords . '%')
+                                    ->orWhere('nhan_vien.ten_nv', 'like', '%' . $request->keywords . '%');
+                            })
+                            ->where(function ($query) use ($request, $diaban_id) {
+                                if ($request->MAHUYEN_KH != 0) {
+                                    $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
                                 } else {
-                                    $query->whereNotNull('khach_hang.ID_NV');
+                                    $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
                                 }
-                            }
-                        });
-    
-    
-                    $queryForDiaban = $queryForDiaban
-                        ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
-    
+                                if ($request->MAXA_KH != 0) {
+                                    $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                                }
+                                if ($request->MAAP_KH !== 0) {
+                                    $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                                }
+                                if ($request->status_survey !== 5) {
+                                    $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                                }
+
+                                if ($request->PHANCONG !== 5) {
+                                    if ($request->PHANCONG === 0) {
+                                        $query->whereNull('khach_hang.ID_NV');
+                                    } else {
+                                        $query->whereNotNull('khach_hang.ID_NV');
+                                    }
+                                }
+                            });
+
+
+                        $queryForDiaban = $queryForDiaban
+                            ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -3078,68 +3049,66 @@ class danhsachkhachhang extends Controller
             if ($chucvu_nv === 0) {
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
+
                         $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                        ->where(function ($query) use ($request, $diaban_id) {
-                            if ($request->MAHUYEN_KH != 0) {
-                                $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                            }
-                            else
-                            {
-                                $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
-                            }
-                            if ($request->MAXA_KH != 0) {
-                                $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                            }
-                            if ($request->MAAP_KH !== 0) {
-                                $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                            }
-                            if ($request->status_survey !== 5) {
-                                $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                            }
-    
-                            if ($request->PHANCONG !== 5) {
-                                if ($request->PHANCONG === 0) {
-                                    $query->whereNull('khach_hang.ID_NV');
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where(function ($query) use ($request, $diaban_id) {
+                                if ($request->MAHUYEN_KH != 0) {
+                                    $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
                                 } else {
-                                    $query->whereNotNull('khach_hang.ID_NV');
+                                    $query->where('khach_hang.MAHUYEN_KH', $diaban_id);
                                 }
-                            }
-                        })
-                        ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
-    
+                                if ($request->MAXA_KH != 0) {
+                                    $query->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                                }
+                                if ($request->MAAP_KH !== 0) {
+                                    $query->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                                }
+                                if ($request->status_survey !== 5) {
+                                    $query->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                                }
+
+                                if ($request->PHANCONG !== 5) {
+                                    if ($request->PHANCONG === 0) {
+                                        $query->whereNull('khach_hang.ID_NV');
+                                    } else {
+                                        $query->whereNotNull('khach_hang.ID_NV');
+                                    }
+                                }
+                            })
+                            ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -3185,65 +3154,65 @@ class danhsachkhachhang extends Controller
             } else {
                 try {
                     $query = null;
-    
+
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
-    
+
                         $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
-    
-                    if ($request->MAHUYEN_KH != 0) {
-                        $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
-                    }
-                    if ($request->MAXA_KH != 0) {
-                        $queryForDiaban->where('khach_hang.MAXA_KH', $request->MAXA_KH);
-                    }
-                    if ($request->MAAP_KH !== 0) {
-                        $queryForDiaban->where('khach_hang.MAAP_KH', $request->MAAP_KH);
-                    }
-                    if ($request->status_survey !== 5) {
-                        $queryForDiaban->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
-                    }
-    
-                    if ($request->PHANCONG !== 5) {
-                        if ($request->PHANCONG === 0) {
-                            $queryForDiaban->whereNull('khach_hang.ID_NV');
-                        } else {
-                            $queryForDiaban->whereNotNull('khach_hang.ID_NV');
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH');
+
+                        if ($request->MAHUYEN_KH != 0) {
+                            $queryForDiaban->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
                         }
-                    }
-    
-                    $queryForDiaban = $queryForDiaban
-                        ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
-    
+                        if ($request->MAXA_KH != 0) {
+                            $queryForDiaban->where('khach_hang.MAXA_KH', $request->MAXA_KH);
+                        }
+                        if ($request->MAAP_KH !== 0) {
+                            $queryForDiaban->where('khach_hang.MAAP_KH', $request->MAAP_KH);
+                        }
+                        if ($request->status_survey !== 5) {
+                            $queryForDiaban->where('khach_hang.TRANGTHAI_KH', $request->status_survey);
+                        }
+
+                        if ($request->PHANCONG !== 5) {
+                            if ($request->PHANCONG === 0) {
+                                $queryForDiaban->whereNull('khach_hang.ID_NV');
+                            } else {
+                                $queryForDiaban->whereNotNull('khach_hang.ID_NV');
+                            }
+                        }
+
+                        $queryForDiaban = $queryForDiaban
+                            ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
+
                         if (!$query) {
                             $query = $queryForDiaban;
                         } else {
                             $query = $query->union($queryForDiaban);
                         }
                     }
-    
+
                     $total = $query->count(); // Tính tổng số bản ghi
-    
+
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
-    
+
                     // Trang hiện tại
                     $page = request()->get('page') ?: 1;
-    
+
                     // Tính toán offset
                     $offset = ($page - 1) * $perPage;
-    
-    
+
+
                     // Lấy dữ liệu phân trang
                     $paginatedData = $query->offset($offset)->limit($perPage)->get();
-    
+
                     // Tạo đối tượng Paginator để trả về dữ liệu phân trang
                     $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
-    
+
                     return response()->json(['dskh' => $paginator], 200);
                 } catch (\Throwable $th) {
                     return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
@@ -3549,13 +3518,25 @@ class danhsachkhachhang extends Controller
                 foreach ($diabanql as $diaban) {
                     $diaban_id = $diaban->DIABAN_ID;
 
-                    $queryForDiaban = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                        ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                        ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                        ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                        ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                    $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                         ->where('khach_hang.MAHUYEN_KH', $diaban_id)
-                        ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
+                        ->select(
+                            'phieu_khao_sat.ngaykhaosat',
+                            // 'khach_hang.*', 
+                            'khach_hang.ID_KH',
+                            'khach_hang.ID_NV',
+                            'khach_hang.TEN_KH',
+                            'khach_hang.SODIENTHOAI_KH',
+                            'khach_hang.DIACHI_KH',
+                            'dvhc_huyen.name as TEN_HUYEN',
+                            'dvhc_xa.name as TEN_XA',
+                            'dvhc_ap.name as TEN_AP',
+                            'nhan_vien.TEN_NV'
+                        );
 
                     if (!$query) {
                         $query = $queryForDiaban;
@@ -3587,22 +3568,48 @@ class danhsachkhachhang extends Controller
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
             }
         } else if ($chucvu_nv === 2) {
-            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-            ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                ->select(
+                    'phieu_khao_sat.ngaykhaosat',
+                    // 'khach_hang.*', 
+                    'khach_hang.ID_KH',
+                    'khach_hang.ID_NV',
+                    'khach_hang.TEN_KH',
+                    'khach_hang.SODIENTHOAI_KH',
+                    'khach_hang.DIACHI_KH',
+                    'dvhc_huyen.name as TEN_HUYEN',
+                    'dvhc_xa.name as TEN_XA',
+                    'dvhc_ap.name as TEN_AP',
+                    'nhan_vien.TEN_NV',
+                    'nhan_vien.ID_NV'
+                )
                 ->paginate($count);
             return response()->json($DSKH, 200);
         } else {
-            $DSKH = khachhang::join('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-            ->join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                ->join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                 ->where('khach_hang.ID_NV', $id_nv)
-                ->select('phieu_khao_sat.ngaykhaosat','khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
+                ->select(
+                    'phieu_khao_sat.ngaykhaosat',
+                    // 'khach_hang.*', 
+                    'khach_hang.ID_KH',
+                    'khach_hang.ID_NV',
+                    'khach_hang.TEN_KH',
+                    'khach_hang.SODIENTHOAI_KH',
+                    'khach_hang.DIACHI_KH',
+                    'dvhc_huyen.name as TEN_HUYEN',
+                    'dvhc_xa.name as TEN_XA',
+                    'dvhc_ap.name as TEN_AP',
+                    'nhan_vien.TEN_NV',
+                    'nhan_vien.ID_NV'
+                )
                 ->paginate($count);
             return response()->json($DSKH, 200);
         }
@@ -3849,9 +3856,7 @@ class danhsachkhachhang extends Controller
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
             }
-        }
-        else
-        {
+        } else {
             try {
                 $query = null;
 
@@ -3859,35 +3864,35 @@ class danhsachkhachhang extends Controller
                     $diaban_id = $diaban->DIABAN_ID;
 
                     $queryForDiaban = phieukhaosat::leftJoin('chi_tiet_phieu_khao_sat_lix', 'chi_tiet_phieu_khao_sat_lix.ID_PKS', '=', 'phieu_khao_sat.ID_PKS')
-                    ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
-                    ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
-                    ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
-                    ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
-                    ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                    ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                    ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                    ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
-                    ->where('khach_hang.MAHUYEN_KH', $diaban_id)
-                    ->select(
-                        'nhan_vien.TEN_NV',
-                        'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
-                        'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
-                        'chi_tiet_phieu_khao_sat_lix.ID_DV',
-                        'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
-                        'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
-                        'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
-                        'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
-                        'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
-                        'phieu_khao_sat.ID_KH',
-                        'phieu_khao_sat.ID_NV',
-                        'phieu_khao_sat.TRANGTHAI_PKS',
-                        'nha_cung_cap.TEN_NCC',
-                        'khach_hang.TEN_KH',
-                        'dich_vu.TEN_DV',
-                        'dvhc_huyen.name as TEN_HUYEN',
-                        'dvhc_xa.name as TEN_XA',
-                        'dvhc_ap.name as TEN_AP'
-                    );
+                        ->leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'phieu_khao_sat.ID_NV')
+                        ->leftJoin('nha_cung_cap', 'nha_cung_cap.ID_NCC', '=', 'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS')
+                        ->leftJoin('khach_hang', 'khach_hang.ID_KH', '=', 'phieu_khao_sat.ID_KH')
+                        ->leftJoin('dich_vu', 'dich_vu.ID_DV', '=', 'chi_tiet_phieu_khao_sat_lix.ID_DV')
+                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                        ->where('chi_tiet_phieu_khao_sat_lix.BO', 1)
+                        ->where('khach_hang.MAHUYEN_KH', $diaban_id)
+                        ->select(
+                            'nhan_vien.TEN_NV',
+                            'chi_tiet_phieu_khao_sat_lix.TENKHACHHANGDAIDIEN_CTPKS',
+                            'chi_tiet_phieu_khao_sat_lix.NHACUNGCAP_CTPKS',
+                            'chi_tiet_phieu_khao_sat_lix.ID_DV',
+                            'chi_tiet_phieu_khao_sat_lix.NGAYBATDAUDONGCOC_CTPKS',
+                            'chi_tiet_phieu_khao_sat_lix.DIEM_BO',
+                            'chi_tiet_phieu_khao_sat_lix.CAMNHANDICHVU_CTPKS',
+                            'chi_tiet_phieu_khao_sat_lix.CANNHANPHUCVU_CTPKS',
+                            'chi_tiet_phieu_khao_sat_lix.NGAYTAO_CTPKS',
+                            'phieu_khao_sat.ID_KH',
+                            'phieu_khao_sat.ID_NV',
+                            'phieu_khao_sat.TRANGTHAI_PKS',
+                            'nha_cung_cap.TEN_NCC',
+                            'khach_hang.TEN_KH',
+                            'dich_vu.TEN_DV',
+                            'dvhc_huyen.name as TEN_HUYEN',
+                            'dvhc_xa.name as TEN_XA',
+                            'dvhc_ap.name as TEN_AP'
+                        );
 
                     if (!$query) {
                         $query = $queryForDiaban;
