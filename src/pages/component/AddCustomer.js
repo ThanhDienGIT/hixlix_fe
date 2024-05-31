@@ -72,7 +72,7 @@ function AddCustomer(props) {
             setCustomer(rev => ({
                 ...rev, ['MAXA_KH']: ''
             }))
-            console.log(xaphuong)
+          
         }
 
     }
@@ -86,7 +86,7 @@ function AddCustomer(props) {
             setCustomer(rev => ({
                 ...rev, ['MAAP_KH']: ''
             }))
-            console.log(ap)
+         
         }
     }
     const onChangeInputAp = (e) => {
@@ -100,7 +100,7 @@ function AddCustomer(props) {
         }))
     }
     const onChangeInputDOB = (e) => {
-        console.log(e)
+
         setCustomer(rev => ({
             ...rev, ['NGAYSINH_KH']: format(e, 'yyyy-MM-dd')
         }))
@@ -175,7 +175,6 @@ function AddCustomer(props) {
 
     React.useEffect(() => {
     }, []);
-    console.log(customer)
     return (
         <Dialog
             open={props.open}

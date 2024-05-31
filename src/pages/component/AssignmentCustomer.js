@@ -61,7 +61,6 @@ function AssignmentCustomer(props) {
     //         console.log(ap)
     //     }
     // }
-    console.log(props.phancong)
     const handleAddCustomer = async () => {
         if (props.phancong.length !== 0) {
             const objectSend = {

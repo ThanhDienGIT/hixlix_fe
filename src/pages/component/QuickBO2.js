@@ -49,9 +49,7 @@ function QuickBO2(props) {
     const [loading, setLoading] = useState(false);
 
     const onChangeservice = (e) => {
-        console.log(e)
         const { value } = e.target;
-
         // setService(prevService => ({
         //     ...prevService,
         //     [name]: value
@@ -60,8 +58,7 @@ function QuickBO2(props) {
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
-        console.log(service)
-        console.log(serviceListSecond)
+
     };
 
     const onChangeservicePoint
@@ -142,8 +139,6 @@ function QuickBO2(props) {
 
     }
 
-
-
     const CallAPIByidquality = async (id) => {
         await instance.get('getQualityByID/' + id).then(res => {
             setQuality(res.data)
@@ -165,7 +160,6 @@ function QuickBO2(props) {
         CallAPIByidquality(props.idquality)
     }, [props.idquality]);
 
-    console.log(props.provider)
     return (
         <Dialog
             open={props.open}

@@ -33,7 +33,6 @@ function LixDialog(props) {
     const servicePointList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     // const [notUse, setNotUse] = useState(false)
     // const [isErrorOther, setIsErrorOther] = useState(false)
-
     // const [statusBO, setStatusBO] = useState(false)
     const alertError = (string) => {
         setContenNotifi(string)
@@ -102,7 +101,6 @@ function LixDialog(props) {
         IS_DELETED: 0,
     })
 
-
     const [open, setOpen] = useState(false)
 
     // const openDiaLog = () => {
@@ -157,11 +155,6 @@ function LixDialog(props) {
         }));
     };
 
-
-
-
-
-
     const onChangeTypeOfPay = (e) => {
         const { name, value } = e.target;
 
@@ -170,7 +163,6 @@ function LixDialog(props) {
             [name]: value
         }));
     };
-
 
     const onChangeTypeOfservice = async (e) => {
         reloadDataBack()
@@ -192,10 +184,6 @@ function LixDialog(props) {
                 .catch(err => console.log(err))
         }
     }, [idTypeService])
-
-
-
-
 
     const getInfoCustomer = (id) => {
         instance.get('getKH_ByID_LIX/' + id).then(res => setCustomer(res.data)).catch(err => console.log(err))
@@ -229,12 +217,10 @@ function LixDialog(props) {
 
 
     const khaoSat = () => {
-        console.log(service)
         instance.post('AddEditLix_new', service).then(res => {
             console.log(res.data)
-            alertSuccess(res.data)
+           // alertSuccess(res.data)
         }).catch(err => {
-            console.log(err)
             alertError(err.response.data)
         })
     }
@@ -380,9 +366,7 @@ function LixDialog(props) {
     const callAPI = async () => {
         instance.get(`getLix_By_IdCustomer_and_IdService_new/${props.idCustomer}/${service.ID_DV}`)
             .then(res => {
-                console.log(res.data)
                 if (res.data === 'Khách hàng chưa khảo sát' || res.data === 'Chưa có dịch vụ này') {
-                    console.log('có chạy vào đây không 1')
                     setService(prev => ({
                         ...prev,
                         ID_PKS: 0,
@@ -408,9 +392,7 @@ function LixDialog(props) {
                         IS_DELETED: 0,
                     }))
                 } else {
-                    console.log('có chạy vào đây không 2')
                     var a = res.data;
-                    console.log(a)
                     a['ID_KH'] = customer.ID_KH
                     setService(a)
                 }
@@ -435,7 +417,6 @@ function LixDialog(props) {
     //             alertError(err.response.data)
     //         })
     // }
-    console.log(service)
     return (
         <Dialog
             open={props.open}
@@ -708,7 +689,6 @@ function LixDialog(props) {
                         </CardContent>
                     </Card>
                 </Box>
-
             </DialogContent>
             <DialogActions>
                 {/* <Button variant={'outlined'} color={'warning'} onClick={handleMissCustomer}> Không gặp khách hàng </Button> */}
@@ -753,11 +733,7 @@ function LixDialog(props) {
                 callAPI={callAPI}
                 reloadApi={props.reloadApi}
             />
-
         </Dialog>
-
-
-
     )
 }
 

@@ -39,6 +39,7 @@ class chi_tiet_phieu_khao_sat_lix extends Model
         'NGUOIUPDATE_CTPKS',
         'NGAYUPDATE_CTPKS',
         'IS_DELETED',
+        'ID_NV'
     ];
 
     public function phieukhaosat()

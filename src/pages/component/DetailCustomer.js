@@ -58,7 +58,6 @@ function DetailCustomer(props) {
         setIdDV(iddv)
         setIdctpks(idctpks)
     }
-    console.log(openDiaLogDetail)
 
     const openDiaLogDetailLix = (idpks, iddv) => {
         setOpenDialogDetail(true)
@@ -79,7 +78,6 @@ function DetailCustomer(props) {
     const CallAPIByIdCustomer = async (id) => {
         await instance.get('getKHByID/' + id).then(res => {
             setInfoCustomer(res.data)
-            console.log(res.data)
         }).catch(err => console.log(err))
     }
 
@@ -87,7 +85,6 @@ function DetailCustomer(props) {
         setLoading(true)
         await instance.get('getsurveybyKH/' + id).then(res => {
             setSurveycustomer(res.data)
-            console.log(res.data)
             setLoading(false)
         }).catch(err => console.log(err))
     }
@@ -136,10 +133,6 @@ function DetailCustomer(props) {
             CallAPIGetSurveyOfCustomer(props.idkhachhang)
         }
     }, [props.idkhachhang])
-
-
-    console.log(infoCustomer)
-    console.log(surveycustomer)
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));

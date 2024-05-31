@@ -63,8 +63,6 @@ function ComponentTest() {
     const user = jwt_decode(userString);
 
 
-
-
     const callAPIServiceList = () => {
         instance.get('dichvu')
             .then(res => setDefaultService(res.data))
@@ -218,16 +216,9 @@ function ComponentTest() {
 
     const getAllQuanHuyen = async () => {
         const response = await instance.get('getallquanhuyen');
-
         if (response.status === 200) {
-            console.log(response.status)
             setQuanhuyen(response.data.dvhc)
-
         }
-        // else
-        // {
-        //     console.log(response)
-        // }
     }
 
     useEffect(() => {
@@ -258,7 +249,6 @@ function ComponentTest() {
         }
     }
 
-
     useEffect(() => {
         CallAPI()
         getAllQuanHuyen()
@@ -284,17 +274,13 @@ function ComponentTest() {
         getAllLocalityByDonvi()
     }, []);
 
-
     const screenWidth = window.innerWidth
-
-
 
     const handleAutocompleteChange = (event, value) => {
         setSearchInput(value); // Cập nhật giá trị của trường TextField khi người dùng chọn một gợi ý
     };
 
     const handleSearch = async () => {
-        
             setLoading(true)
             const objectSend = {
                 MAHUYEN_KH: huyen,
@@ -317,10 +303,6 @@ function ComponentTest() {
                 })
         
     }
-
-
-
-
 
     return (
         <ComponentSkeleton>
@@ -410,11 +392,6 @@ function ComponentTest() {
                                         })}
                                     </Select>
                                 </FormControl>
-
-
-
-
-
 
                                 <FormControl sx={{ width: 150, marginRight: 1, marginTop: 2 }} size="small">
                                     <InputLabel id="demo-select-small-label">Trạng thái khảo sát</InputLabel>

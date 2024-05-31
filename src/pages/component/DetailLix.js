@@ -42,7 +42,6 @@ function DetailLix(props) {
         await instance.post('getDetailLix', objectSend)
             .then((res) => {
                 setDetail(res.data)
-                console.log(detail)
             })
             .catch((err) => {
                 console.log(err)
@@ -54,10 +53,6 @@ function DetailLix(props) {
         getDetailLix()
     }, [props.open])
 
-
-
-
-    console.log(props.iddv)
     return (
 
         <>

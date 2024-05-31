@@ -111,14 +111,10 @@ function EditCustomer(props) {
         }
     }, [props.idkhachhang])
 
-
-    console.log(infoCustomer)
-
     const getXaPhuongById = async (id) => {
         const response = await Axios.get('getAllXaPhuong/' + id);
         if (response.status === 200) {
             setXaphuong(response.data.xaphuong)
-            console.log(xaphuong)
         }
     }
 
@@ -129,7 +125,6 @@ function EditCustomer(props) {
             // setInfocustomer(rev => ({
             //     ...rev, ['MAAP_KH']: ''
             // }))
-            console.log(ap)
         }
     }
     // const formatDate = (dateString) => {
@@ -163,7 +158,6 @@ function EditCustomer(props) {
             setInfocustomer(rev => ({
                 ...rev, ['MAXA_KH']: ''
             }))
-            console.log(xaphuong)
         }
 
     }
@@ -177,7 +171,6 @@ function EditCustomer(props) {
             setInfocustomer(rev => ({
                 ...rev, ['MAAP_KH']: ''
             }))
-            console.log(ap)
         }
     }
     const onChangeInputAp = (e) => {
@@ -191,13 +184,10 @@ function EditCustomer(props) {
         }))
     }
     const onChangeInputDOB = (e) => {
-        console.log(e)
         setInfocustomer(rev => ({
             ...rev, ['NGAYSINH_KH']: format(e, 'yyyy-MM-dd')
         }))
     }
-
-    console.log(infoCustomer)
 
     const handleUpdateCustomer = async () => {
         const objectSend = {
@@ -243,14 +233,9 @@ function EditCustomer(props) {
             });
     }
 
-
-
     // const onChangeInputap = (e) => {
     //     setAp(e.target.value);
     // }
-
-    console.log(infoCustomer.NGAYSINH_KH)
-
 
     return (
         <Dialog

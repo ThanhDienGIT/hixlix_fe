@@ -362,6 +362,7 @@ class Lix extends Controller
     public function AddEditLix_new(Request $request)
     {
         $data = $request->all();
+        $nhanVien = auth()->user();
         $result = phieukhaosat::where('ID_KH', $data['ID_KH'])->orderByDesc('ID_PKS')->first();
         // Nếu khách hàng đã có phiếu
         if ($result) {
@@ -390,8 +391,10 @@ class Lix extends Controller
                     'CAMNHANDICHVU_CTPKS' => $request['CAMNHANDICHVU_CTPKS'],
                     'CANNHANPHUCVU_CTPKS' => $request['CANNHANPHUCVU_CTPKS'],
                     'YKIENKHAC' => $request['YKIENKHAC'],
+                    'NGUOITAO_CTPKS' => $nhanVien->ID_NV,
                     'NGUOIUPDATE_CTPKS' => $request['NGUOIUPDATE_CTPKS'],
                     'NGAYUPDATE_CTPKS' => $request['NGAYUPDATE_CTPKS'],
+                    'ID_NV'=>$nhanVien->ID_NV
                 ]);
 
                 return response()->json('Cập nhật thành công', 200);
@@ -415,14 +418,13 @@ class Lix extends Controller
                     'CAMNHANDICHVU_CTPKS' => $request->CAMNHANDICHVU_CTPKS,
                     'CANNHANPHUCVU_CTPKS' => $request->CANNHANPHUCVU_CTPKS,
                     'YKIENKHAC' => $request->YKIENKHAC,
-                    'NGUOITAO_CTPKS' => $request->NGUOITAO_CTPKS,
-                    'NGAYTAO_CTPKS' => $request->NGAYTAO_CTPKS,
-                    'NGUOIUPDATE_CTPKS' => $request->NGUOIUPDATE_CTPKS,
+                    'NGUOIUPDATE_CTPKS' => $nhanVien->ID_NV,
                     'NGAYUPDATE_CTPKS' => $request->NGAYUPDATE_CTPKS,
+                    'ID_NV'=>$nhanVien->ID_NV,
                     'IS_DELETED' => 0,
                 ];
                 // DB::table('phieukhaosat')->where('ID_PKS', $result->ID_PKS)->update([
-                //     'TRANGTHAI_PKS' => 1
+                //     'TRANGTHAI_PKS' => 1s
                 // ]);
                 // khachhang::join('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
                 //     ->where('phieu_khao_sat.ID_PKS', $result->ID_PKS)

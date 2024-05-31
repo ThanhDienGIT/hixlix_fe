@@ -170,8 +170,6 @@ function LixEdit(props) {
         }));
     };
 
-
-
     const onChangeTypeOfservice = async (e) => {
         reloadDataBack()
         setIdTypeService(e.target.value);
@@ -182,7 +180,6 @@ function LixEdit(props) {
             .catch(err => console.log(err))
 
     };
-
 
     const getInfoCustomer = (id) => {
         instance.get('getKH_ByID_LIX/' + id).then(res => setCustomer(res.data)).catch(err => console.log(err))
@@ -398,7 +395,6 @@ function LixEdit(props) {
         // alert(props.idctpks)
         instance.get(`getLix_By_IdCustomer_and_IdService/${props.idCustomer}/${service.ID_DV}/${1}`)
             .then(res => {
-                console.log(res.data)
                 if (res.data === 'Khách hàng không có phiếu khảo sát đã tạo thành công' || res.data === 'Chưa có dịch vụ này') {
                     setService({
                         ID_PKS: 0,
@@ -458,8 +454,6 @@ function LixEdit(props) {
     useEffect(() => {
         if (props.idCustomer !== 0 && service.ID_DV !== 0) {
             callAPI()
-            console.log(serviceList)
-
         }
         if (service.ID_DV === 0) {
             reloadData()
@@ -475,16 +469,6 @@ function LixEdit(props) {
     //     }
 
     // }, [props.open])
-
-
-
-
-
-
-
-
-
-    console.log(props.open)
 
     return (
         <Dialog
