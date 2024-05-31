@@ -193,7 +193,14 @@ function ProofUploadDialog(props) {
             }).then(res => {
                 console.log(res)
                 if (res.data.status === 'success') {
-                    props.callApi()
+                    if (props.isLixDialog === 1) { 
+                        console.log('do nothing')
+                    }
+                    else
+                    {
+                        props.callApi()
+                    }
+                    
                     notyf.success(res.data.message)
                     setLoading(false)
                     props.handleClose()

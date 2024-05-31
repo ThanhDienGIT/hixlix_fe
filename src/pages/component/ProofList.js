@@ -296,7 +296,7 @@ function ProofList(props) {
                     }>Đóng</Button>
                 </DialogActions>
             </Dialog>
-            <ProofUploadDialog open={openProof} handleClose={handleCloseProof} callApi={get_proof_list} idCustomer={props.idCustomer} />
+            <ProofUploadDialog open={openProof} handleClose={handleCloseProof} callApi={get_proof_list} idCustomer={props.idCustomer} isLixDialog={0}/>
             <ConfirmDialog title={'Thông báo'}
                 content={'Bạn sẽ không thể hoàn tác, file minh chứng sẽ bị xóa. Bạn chắc chứ?'}
                 open={openConfirm}

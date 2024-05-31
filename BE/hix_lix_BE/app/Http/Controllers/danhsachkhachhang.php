@@ -2306,9 +2306,11 @@ class danhsachkhachhang extends Controller
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
 
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                            ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                            ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                        $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                             ->where(function ($query) use ($request) {
                                 $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
                                     ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
@@ -2334,7 +2336,7 @@ class danhsachkhachhang extends Controller
                                 }
                             });
 
-                        $queryForDiaban = $queryForDiaban->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
 
                         if (!$query) {
                             $query = $queryForDiaban;
@@ -2405,10 +2407,12 @@ class danhsachkhachhang extends Controller
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
 
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                            ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                            ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                            ->where('ID_NV', $id_nv)
+                        $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where('khach_hang.ID_NV', $id_nv)
                             ->where(function ($query) use ($request) {
                                 $query->where('ten_kh', 'like', '%' . $request->keywords . '%')
                                     ->orWhere('sodienthoai_kh', 'like', '%' . $request->keywords . '%')
@@ -2434,7 +2438,7 @@ class danhsachkhachhang extends Controller
                                 }
                             });
 
-                        $queryForDiaban = $queryForDiaban->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
 
                         if (!$query) {
                             $query = $queryForDiaban;
@@ -2509,9 +2513,11 @@ class danhsachkhachhang extends Controller
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
 
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                            ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                            ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                        $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
                             ->where(function ($query) use ($request, $diaban_id) {
                                 if ($request->MAHUYEN_KH != 0) {
                                     $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -2529,7 +2535,7 @@ class danhsachkhachhang extends Controller
                                 }
                             });
 
-                        $queryForDiaban = $queryForDiaban->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
 
                         if (!$query) {
                             $query = $queryForDiaban;
@@ -2594,10 +2600,12 @@ class danhsachkhachhang extends Controller
                     foreach ($diabanql as $diaban) {
                         $diaban_id = $diaban->DIABAN_ID;
 
-                        $queryForDiaban = khachhang::join('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                            ->join('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                            ->join('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                            ->where('ID_NV', $id_nv)
+                        $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                            ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                            ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                            ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                            ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                            ->where('khach_hang.ID_NV', $id_nv)
                             ->where(function ($query) use ($request, $diaban_id) {
                                 if ($request->MAHUYEN_KH != 0) {
                                     $query->where('khach_hang.MAHUYEN_KH', $request->MAHUYEN_KH);
@@ -2615,7 +2623,7 @@ class danhsachkhachhang extends Controller
                                 }
                             });
 
-                        $queryForDiaban = $queryForDiaban->select('khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP');
+                        $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
 
                         if (!$query) {
                             $query = $queryForDiaban;
@@ -3466,15 +3474,51 @@ class danhsachkhachhang extends Controller
                 ->paginate($count);
             return response()->json($DSKH, 200);
         } else {
-            $DSKH = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
-                ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
-                ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
-                ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
-                ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
-                ->where('khach_hang.ID_NV', $id_nv)
-                ->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV', 'nhan_vien.ID_NV')
-                ->paginate($count);
-            return response()->json($DSKH, 200);
+            try {
+                $query = null;
+
+                foreach ($diabanql as $diaban) {
+                    $diaban_id = $diaban->DIABAN_ID;
+
+                    $queryForDiaban = khachhang::leftJoin('nhan_vien', 'nhan_vien.ID_NV', '=', 'khach_hang.ID_NV')
+                        ->leftJoin('phieu_khao_sat', 'phieu_khao_sat.ID_KH', '=', 'khach_hang.ID_KH')
+                        ->leftJoin('unit as dvhc_huyen', 'dvhc_huyen.code', '=', 'khach_hang.MAHUYEN_KH')
+                        ->leftJoin('unit as dvhc_xa', 'dvhc_xa.code', '=', 'khach_hang.MAXA_KH')
+                        ->leftJoin('unit_village as dvhc_ap', 'dvhc_ap.id', '=', 'khach_hang.MAAP_KH')
+                        ->where('khach_hang.ID_NV', $id_nv)
+                        ->where('khach_hang.MAHUYEN_KH', $diaban_id);
+
+                    $queryForDiaban = $queryForDiaban->select('phieu_khao_sat.ngaykhaosat', 'khach_hang.*', 'dvhc_huyen.name as TEN_HUYEN', 'dvhc_xa.name as TEN_XA', 'dvhc_ap.name as TEN_AP', 'nhan_vien.TEN_NV');
+
+                    if (!$query) {
+                        $query = $queryForDiaban;
+                    } else {
+                        $query = $query->union($queryForDiaban);
+                    }
+                }
+
+                $total = $query->count(); // Tính tổng số bản ghi
+
+                // Số lượng mục trên mỗi trang
+                $perPage = $count;
+
+                // Trang hiện tại
+                $page = request()->get('page') ?: 1;
+
+                // Tính toán offset
+                $offset = ($page - 1) * $perPage;
+
+
+                // Lấy dữ liệu phân trang
+                $paginatedData = $query->offset($offset)->limit($perPage)->get();
+
+                // Tạo đối tượng Paginator để trả về dữ liệu phân trang
+                $paginator = new \Illuminate\Pagination\LengthAwarePaginator($paginatedData, $total, $perPage, $page);
+
+                return response()->json($paginator, 200);
+            } catch (\Throwable $th) {
+                return response()->json(['message' => 'Lỗi khi lấy thông tin chức vụ nhân viên: ' . $th->getMessage()], 500);
+            }
         }
     }
 

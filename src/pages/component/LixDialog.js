@@ -40,7 +40,6 @@ function LixDialog(props) {
 
     const [openProof, setOpenProof] = useState(false)
 
-
     const alertError = (string) => {
         setContenNotifi(string)
         setOpenAlertError(true)
@@ -827,7 +826,7 @@ function LixDialog(props) {
                 callAPI={callAPI}
                 reloadApi={props.reloadApi}
             />
-            <ProofUploadDialog open={openProof} handleClose={handleCloseProof} idCustomer={props.idCustomer}/>
+            <ProofUploadDialog open={openProof} handleClose={handleCloseProof} idCustomer={props.idCustomer} isLixDialog={1}/>
 
         </Dialog>
 
