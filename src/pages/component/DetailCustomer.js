@@ -19,6 +19,8 @@ import DetailLix from './DetailLix';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import SearchIcon from '@mui/icons-material/Search';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ProofList from './ProofList';
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -51,6 +53,7 @@ function DetailCustomer(props) {
     const [searchInput, setSearchInput] = React.useState('')
     const [supplier, setSupplier] = React.useState(0)
     const [LoadingButton, setLoadingButon] = React.useState(false)
+    const [openProof, setOpenProof] = React.useState(false)
 
     const openDiaLogEdit = (idpks, iddv, idctpks) => {
         setOpenDialog(true)
@@ -134,10 +137,21 @@ function DetailCustomer(props) {
         }
     }, [props.idkhachhang])
 
+
+
+
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     // const screenWidth = window.innerWidth
+
+    const handleOpenProofDialog = () => {
+        setOpenProof(true)
+    }
+
+    const handleCloseProof = () => {
+        setOpenProof(false)
+    }
     return (
 
         <>
@@ -269,21 +283,20 @@ function DetailCustomer(props) {
                                     </> : <><SearchIcon /><Typography >Tìm kiếm</Typography></>}
                                 </Button>
 
+                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                    <Button
+                                        sx={{ display: 'flex', mr: 1, mt: 1, width: 150 }}
+                                        color="primary"
+                                        variant="contained"
+                                        onClick={handleOpenProofDialog}
+                                    >
+                                        <ViewListIcon /> Minh chứng
+                                    </Button>
+                                </div>
+
                             </Box>
 
-
-
-
-
-
-
-
-
                         </Box>
-
-
-
-
 
                         <TableContainer component={Paper} sx={{ marginTop: 1 }}>
                             <Table size={'small'}>
@@ -316,7 +329,7 @@ function DetailCustomer(props) {
                                                         <TableCell> {formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) !== '01/01/1970' ? formatDate(survey.NGAYKETTHUCDONGCOC_CTPKS) : '---'}</TableCell>
                                                         <TableCell> {survey.BO == 1 ? <CheckCircleOutlineRoundedIcon sx={{ color: '#3ec100' }} /> : <ClearRoundedIcon sx={{ color: '#666666' }} />}</TableCell>
                                                         <TableCell>
-                                                            <Tooltip sx={{'display': props.chucvu_nv !== 1 ? 'none' : ''}} title="Xem chi tiết khảo sát">
+                                                            <Tooltip sx={{ 'display': props.chucvu_nv !== 1 ? 'none' : '' }} title="Xem chi tiết khảo sát">
                                                                 <IconButton>
                                                                     <RemoveRedEyeIcon color={'primary'} onClick={() => { openDiaLogDetailLix(survey.ID_PKS, survey.ID_DV) }} />
                                                                 </IconButton>
@@ -377,6 +390,11 @@ function DetailCustomer(props) {
                 provider={props.provider}
                 idCustomer={props.idkhachhang}
                 iddv={idDV}
+            />
+            <ProofList
+                open={openProof}
+                handleClose={handleCloseProof}
+                idCustomer={props.idkhachhang}
             />
         </>
     )

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Models\nhanvien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,93 @@ use Illuminate\Validation\Rule;
 
 class NhanVienController extends Controller
 {
+    public function update_user_profile(Request $request)
+    {
+        $id = auth()->user()->ID_NV;
+        $validatedData = Validator::make(
+            $request->all(),
+            [
+                'TEN_NV' => 'required',
+                'SDT_NV' => [
+                    'required',
+                    'numeric',
+                    'digits:10',
+                    Rule::unique('nhan_vien', 'SDT_NV')->ignore($id, 'ID_NV')
+                ],
+                'DIACHI_NV' => 'required',
+                'EMAIL_NV' => ['required', 'email', Rule::unique('nhan_vien', 'EMAIL_NV')->ignore($id, 'ID_NV')]
+            ],
+            [
+                'TEN_NV.required' => 'Vui lòng nhập tên nhân viên',
+                'SDT_NV.required' => 'Vui lòng nhập SĐT nhân viên',
+                'SDT_NV.numeric' => 'Vui lòng nhập SĐT nhân viên là số',
+                'SDT_NV.digits' => 'Vui lòng nhập SĐT nhân viên tối đa 10 số',
+                'SDT_NV.unique' => 'Vui lòng nhập SĐT không trùng trong hệ thống',
+                'DIACHI_NV.required' => 'Vui lòng nhập địa chỉ nhân viên',
+                'EMAIL_NV.required' => 'Vui lòng nhập email nhân viên và kiêm tra đúng định dạng',
+                'EMAIL_NV.email' => 'Vui lòng nhập đúng định dạng Email',
+                'EMAIL_NV.unique' => 'Vui lòng nhập Email không trùng trong hệ thống'
+            ]
+        );
+        if ($validatedData->passes()) {
+            $result = DB::table('nhan_vien')->where('ID_NV', $id)->update([
+                'ten_nv' => $request->TEN_NV,
+                'sdt_nv' => $request->SDT_NV,
+                'diachi_nv' => $request->DIACHI_NV,
+                'email_nv' => $request->EMAIL_NV
+            ]);
+            return response()->json(['status' => 'success', 'message' => 'Cập nhật thông tin người dùng thành công'], 201);
+        } else {
+            // Lấy danh sách các lỗi từ validatedData
+            $errors = $validatedData->errors();
+
+            // Lặp qua danh sách lỗi và tạo một mảng thông báo lỗi
+            $errorMessages = $errors->all();
+
+            // Gộp các thông báo lỗi thành một chuỗi duy nhất
+            $errorMessage = implode(', ', $errorMessages);
+
+            // Trả về chuỗi thông báo lỗi gộp lại
+            return response()->json([
+                'status' => 'failed',
+                'message' => $errorMessage,
+            ], 400);
+        }
+    }
+    public function get_user_profile()
+    {
+        $user_profile = nhanvien::where('ID_NV', auth()->user()->ID_NV)->first();
+
+        if ($user_profile) {
+            return response()->json([
+                "status" => "success",
+                "data" => $user_profile
+            ], 200);
+        } else {
+            return response()->json([
+                "status" => "failed",
+                "message" => "Truy xuất thông tin không thành công"
+            ], 400);
+        }
+    }
+    public function changepass(Request $request)
+    {
+
+        $input_data = ["matkhau_nv" => Hash::make($request->mat_khau)];
+
+        $result = nhanvien::where('ID_NV', auth()->user()->ID_NV)->update($input_data);
+        if ($result) {
+            return response()->json([
+                "status" => "success",
+                "message" => "Cập nhật mật khẩu mới thành công!"
+            ], 201);
+        } else {
+            return response()->json([
+                "status" => "failed",
+                "message" => "Cập nhật mật khẩu mới thất bại!"
+            ], 400);
+        }
+    }
     public function search($count, Request $request)
     {
         if (!empty($request->keywords)) {
@@ -220,12 +308,12 @@ class NhanVienController extends Controller
                 ->paginate($count);
         } else {
             $result = DB::table('nhan_vien')
-            ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
-            ->where('nhan_vien.IS_DELETED', 0)
-            ->where('nhan_vien.donvi_id', $donvi_id)
-            ->orWhere('don_vi.donvicha', $donvi_id)
-            ->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, nhan_vien.DONVI_ID, TEN_DONVI')
-            ->paginate($count);
+                ->leftJoin('don_vi', 'nhan_vien.DONVI_ID', '=', 'don_vi.DONVI_ID')
+                ->where('nhan_vien.IS_DELETED', 0)
+                ->where('nhan_vien.donvi_id', $donvi_id)
+                ->orWhere('don_vi.donvicha', $donvi_id)
+                ->selectRaw('CHUCVU_NV, DIACHI_NV, EMAIL_NV, ID_NV, nhan_vien.IS_DELETED, SDT_NV, TAIKHOAN_NV, TEN_NV, TRANGTHAI_NV, nhan_vien.DONVI_ID, TEN_DONVI')
+                ->paginate($count);
         }
 
         return response()->json($result, 200);

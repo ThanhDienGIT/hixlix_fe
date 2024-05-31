@@ -17,10 +17,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import viLocale from 'date-fns/locale/vi';
 import { viVN } from '@mui/x-date-pickers/locales';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import QuickBO from './QuickBO2';
+import QuickBO from './QuickBO';
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
+import ProofUploadDialog from './ProofUploadDialog';
+
 function LixDialog(props) {
     const theme = useTheme();
-    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
     const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
     const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
     const [openAlertError, setOpenAlertError] = useState(false);
@@ -30,10 +32,13 @@ function LixDialog(props) {
     const [idTypeService, setIdTypeService] = useState(1)
     const [typeOfPay, setTypeOfPay] = useState([])
     const [isError, setIsError] = useState(false)
-    const servicePointList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    const servicePointList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     // const [notUse, setNotUse] = useState(false)
     // const [isErrorOther, setIsErrorOther] = useState(false)
     // const [statusBO, setStatusBO] = useState(false)
+
+    const [openProof, setOpenProof] = useState(false)
+
     const alertError = (string) => {
         setContenNotifi(string)
         setOpenAlertError(true)
@@ -79,6 +84,7 @@ function LixDialog(props) {
     const [service, setService] = useState({
         ID_PKS: 0,
         ID_DV: 0,
+        DIACHI_KH: "",
         ID_KH: props.customer,
         TENKHACHHANGDAIDIEN_CTPKS: "",
         SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
@@ -92,13 +98,16 @@ function LixDialog(props) {
         NHACUNGCAP_CTPKS: 0,
         BO: 0,
         DIEM_BO: 0,
+        DIEMHAILONG_CTPKS: 0,
         CAMNHANDICHVU_CTPKS: 0,
         CANNHANPHUCVU_CTPKS: 0,
         YKIENKHAC: "",
         NGUOITAO_CTPKS: 0,
         NGAYTAO_CTPKS: format(new Date(), 'yyyy-MM-dd'),
         NGUOIUPDATE_CTPKS: 0,
+        NGAYUPDATE_CTPKS: "",
         IS_DELETED: 0,
+        KHONG_SD: 0
     })
 
     const [open, setOpen] = useState(false)
@@ -154,6 +163,45 @@ function LixDialog(props) {
             [name]: value
         }));
     };
+
+    const onChangeBo = (e) => {
+        const { name } = e.target;
+        if (e.target.checked === false) {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 0
+            }));
+        }
+        else {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 1
+            }));
+        }
+
+    };
+
+    const onChangeNotUse = (e) => {
+        const { name } = e.target;
+
+        if (e.target.checked === false) {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 0
+            }));
+        }
+        else {
+            setService(prevService => ({
+                ...prevService,
+                [name]: 1
+            }));
+        }
+
+
+    };
+
+
+
 
     const onChangeTypeOfPay = (e) => {
         const { name, value } = e.target;
@@ -218,102 +266,18 @@ function LixDialog(props) {
 
     const khaoSat = () => {
         instance.post('AddEditLix_new', service).then(res => {
-            console.log(res.data)
-           // alertSuccess(res.data)
+           alertSuccess(res.data)
         }).catch(err => {
             alertError(err.response.data)
         })
     }
 
-    const onChangeBo = (e) => {
-        const { name } = e.target;
-        if (e.target.checked === false) {
-            setService(prevService => ({
-                ...prevService,
-                [name]: 0
-            }));
-        }
-        else {
-            setService(prevService => ({
-                ...prevService,
-                [name]: 1
-            }));
-        }
-
-    };
-    // const createSurvey = () => {
-    //     // console.log(service)
-    //     if (service.KHONG_SD === 1) {
-    //         console.log('Chạy vào đây KHONG_SD = 1')
-    //         instance.post('AddEditLix', service)
-    //             .then(res => {
-    //                 alertSuccess(res.data);
-    //                 callAPI()
-    //                 props.reloadApi()
-    //             })
-    //             .catch(err => {
-    //                 alertError(err.response.data)
-    //                 console.log(err)
-    //             })
-    //     }
-    //     else {
-    //         if (service.ID_DV !== 0) {
-    //             console.log('Chạy vào ID_DV != 0')
-    //             if (service.NHACUNGCAP_CTPKS === 1) {
-    //                 console.log('Chạy vào NHACUNGCAP_CTPKS === 1')
-    //                 if (service.HINHTHUCDONG_CTPKS === 0 || (service.TENKHACHHANGDAIDIEN_CTPKS === '' || service.TENKHACHHANGDAIDIEN_CTPKS === null)
-    //                     || (service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null) || (service.ACCOUNTKHACHHANG_CTPKS === '' || service.ACCOUNTKHACHHANG_CTPKS === null)
-    //                     || (service.NGAYBATDAUDONGCOC_CTPKS === '' || service.NGAYBATDAUDONGCOC_CTPKS === null || service.NGAYBATDAUDONGCOC_CTPKS === '0000-00-00') || (service.NGAYKETTHUCDONGCOC_CTPKS === '' || service.NGAYKETTHUCDONGCOC_CTPKS === null || service.NGAYKETTHUCDONGCOC_CTPKS === '0000-00-00')) {
-    //                     service.NHACUNGCAP_CTPKS === 1 ? setIsError(true) : setIsError(true)
-    //                 }
-    //                 else {
-    //                     console.log('Chạy vào NHACUNGCAP_CTPKS !== 1')
-    //                     instance.post('AddEditLix', service)
-    //                         .then(res => {
-    //                             alertSuccess(res.data);
-    //                             callAPI()
-    //                             props.reloadApi()
-    //                         })
-    //                         .catch(err => {
-    //                             alertError(err.response.data)
-    //                             console.log(err)
-    //                         })
-    //                 }
-    //             }
-    //             else {
-    //                 console.log('Chạy vào ID_DV === 0')
-    //                 if (Number(service.HINHTHUCDONG_CTPKS) === 0 || (service.TENKHACHHANGDAIDIEN_CTPKS === '' || service.TENKHACHHANGDAIDIEN_CTPKS === null)
-    //                     || (service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === '' || service.SODIENTHOAIKHACHHANGDAIDIEN_CTPKS === null)) {
-    //                     Number(service.NHACUNGCAP_CTPKS) === 1 ? setIsError(true) : setIsError(true)
-    //                 }
-    //                 else {
-    //                     instance.post('AddEditLix', service)
-    //                         .then(res => {
-    //                             alertSuccess(res.data);
-    //                             callAPI()
-    //                             props.reloadApi()
-    //                         })
-    //                         .catch(err => {
-    //                             alertError(err.response.data)
-    //                             console.log(err)
-    //                         })
-    //                 }
-    //             }
-
-
-    //         }
-    //         else {
-    //             alertError('Xin vui lòng chọn dịch vụ khảo sát')
-    //         }
-    //     }
-    // }
-
     const reloadData = () => {
-
         setService({
             ID_PKS: 0,
-            ID_DV: 0,
-            ID_KH: props.customer,
+            ID_DV: service.ID_DV !== 0 ? service.ID_DV : 0,
+            ID_KH: props.idCustomer !== 0 ? props.idCustomer : 0,
+            DIACHI_KH: "",
             TENKHACHHANGDAIDIEN_CTPKS: "",
             SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
             ACCOUNTKHACHHANG_CTPKS: "",
@@ -326,20 +290,24 @@ function LixDialog(props) {
             NHACUNGCAP_CTPKS: 0,
             BO: 0,
             DIEM_BO: 0,
+            DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
             YKIENKHAC: "",
             NGUOITAO_CTPKS: 0,
-            NGAYTAO_CTPKS: format(new Date(), 'yyyy-MM-dd'),
+            NGAYTAO_CTPKS: "",
             NGUOIUPDATE_CTPKS: 0,
+            NGAYUPDATE_CTPKS: "",
             IS_DELETED: 0,
+            KHONG_SD: 0
         })
     }
     const reloadDataBack = () => {
         setService({
             ID_PKS: 0,
             ID_DV: 0,
-            ID_KH: props.customer,
+            ID_KH: 0,
+            DIACHI_KH: "",
             TENKHACHHANGDAIDIEN_CTPKS: "",
             SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
             ACCOUNTKHACHHANG_CTPKS: "",
@@ -352,25 +320,31 @@ function LixDialog(props) {
             NHACUNGCAP_CTPKS: 0,
             BO: 0,
             DIEM_BO: 0,
+            DIEMHAILONG_CTPKS: 0,
             CAMNHANDICHVU_CTPKS: 0,
             CANNHANPHUCVU_CTPKS: 0,
             YKIENKHAC: "",
             NGUOITAO_CTPKS: 0,
-            NGAYTAO_CTPKS: format(new Date(), 'yyyy-MM-dd'),
+            NGAYTAO_CTPKS: "",
             NGUOIUPDATE_CTPKS: 0,
+            NGAYUPDATE_CTPKS: "",
             IS_DELETED: 0,
+            KHONG_SD: 0
         })
         setIdTypeService(0)
     }
-
-    const callAPI = async () => {
-        instance.get(`getLix_By_IdCustomer_and_IdService_new/${props.idCustomer}/${service.ID_DV}`)
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+    const [isExist, setIsExist] = useState(false)
+    const callAPI = () => {
+        instance.get(`getLix_By_IdCustomer_and_IdService/${props.idCustomer}/${service.ID_DV}/${1}`)
             .then(res => {
-                if (res.data === 'Khách hàng chưa khảo sát' || res.data === 'Chưa có dịch vụ này') {
-                    setService(prev => ({
-                        ...prev,
+                console.log(res.data)
+                if (res.data === 'Khách hàng không có phiếu khảo sát đã tạo thành công' || res.data === 'Chưa có dịch vụ này') {
+                    setService({
                         ID_PKS: 0,
-                        ID_KH: props.idCustomer,
+                        ID_DV: service.ID_DV,
+                        ID_KH: customer.ID_KH,
+                        DIACHI_KH: "",
                         TENKHACHHANGDAIDIEN_CTPKS: "",
                         SODIENTHOAIKHACHHANGDAIDIEN_CTPKS: "",
                         ACCOUNTKHACHHANG_CTPKS: "",
@@ -383,16 +357,26 @@ function LixDialog(props) {
                         NHACUNGCAP_CTPKS: 0,
                         BO: 0,
                         DIEM_BO: 0,
+                        DIEMHAILONG_CTPKS: 0,
                         CAMNHANDICHVU_CTPKS: 0,
                         CANNHANPHUCVU_CTPKS: 0,
                         YKIENKHAC: "",
                         NGUOITAO_CTPKS: 0,
                         NGAYTAO_CTPKS: format(new Date(), 'yyyy-MM-dd'),
                         NGUOIUPDATE_CTPKS: 0,
+                        NGAYUPDATE_CTPKS: "",
                         IS_DELETED: 0,
-                    }))
+                        KHONG_SD: 0
+                    })
+                    setIsExist(true)
                 } else {
                     var a = res.data;
+                    if (a.KHONG_SD === 1) {
+                        setIsExist(true)
+                    } else {
+                        setIsExist(false)
+                    }
+
                     a['ID_KH'] = customer.ID_KH
                     setService(a)
                 }
@@ -403,20 +387,49 @@ function LixDialog(props) {
     useEffect(() => {
         if (props.idCustomer !== 0 && service.ID_DV !== 0) {
             callAPI()
-        } else {
-            if (service.ID_DV === 0) {
-                reloadData()
-            }
         }
+        if (service.ID_DV === 0) {
+            reloadData()
+        }
+
     }, [service.ID_DV])
 
-    // const handleMissCustomer = () => {
-    //     instance.post("/missCustomer_ByID_Customer", { id: props.idCustomer })
-    //         .then(res => { alertSuccess(res.data) })
-    //         .catch(err => {
-    //             alertError(err.response.data)
-    //         })
+
+    // const uploadAndReset = () => {
+    //     // Update/reset user image of account page
+    //     let Image = document.getElementById('uploadImg');
+    //     const fileInput = document.querySelector('.account-file-input');
+
+
+    //     if (Image) {
+    //         // const resetImage = Image.src;
+    //         fileInput.onchange = () => {
+    //             if (fileInput.files[0]) {
+    //                 Image.src = window.URL.createObjectURL(fileInput.files[0]);
+    //                 setImgFile(fileInput.files[0]);
+    //                 console.log(imgFile)
+    //             }
+    //         };
+
+    //     }
     // }
+
+
+
+
+
+    const handleOpenProofDialog = () => {
+        setOpenProof(true)
+    }
+
+    const handleCloseProof = () => {
+        setOpenProof(false)
+    }
+
+
+
+
+
     return (
         <Dialog
             open={props.open}
@@ -428,7 +441,7 @@ function LixDialog(props) {
             fullWidth={true}
         >
             <DialogTitle id="alert-dialog-title" sx={{ backgroundColor: '#0099ff', color: 'white', width: '900' }}>
-                <Typography>  Khảo sát LIX</Typography>
+                Khảo sát LIX
             </DialogTitle>
             <DialogContent>
                 <Box display={'flex'} flexDirection={'column'} padding={1}>
@@ -436,10 +449,13 @@ function LixDialog(props) {
                     <TextField disabled label="Số điện thoại (*)" sx={{ marginTop: 2 }} value={customer.SODIENTHOAI_KH} name={'SODIENTHOAI_KH'} onChange={(e) => { onChangeCustomer(e) }} />
                     <Card sx={{ marginTop: 2 }}>
                         <CardContent sx={{ display: 'flex', width: '900', flexDirection: 'column' }}>
+
+
                             <Typography gutterBottom variant="h5" component="div">
                                 Dịch vụ sử dụng
                             </Typography>
-                            <FormControl fullwidth sx={{ marginTop: 2 }}>
+
+                            <FormControl fullwidth sx={{ marginTop: 1 }}>
                                 <InputLabel>Loại dịch vụ</InputLabel>
                                 <Select
                                     value={idTypeService}
@@ -475,15 +491,13 @@ function LixDialog(props) {
                                 </Select>
                             </FormControl>
 
-                            {
-                                //     isExist && <FormControlLabel
-                                //     name={'KHONG_SD'}
-                                //     label="Chưa sử dụng dịch vụ này"
-                                //     {...label}
-                                //     size={'large'}
-                                //     control={<Checkbox checked={service.KHONG_SD} onChange={(e) => { onChangeNotUse(e) }} />}
-                                // />
-                            }
+                            {isExist && <FormControlLabel
+                                name={'KHONG_SD'}
+                                label="Chưa sử dụng dịch vụ này"
+                                {...label}
+                                size={'large'}
+                                control={<Checkbox checked={service.KHONG_SD} onChange={(e) => { onChangeNotUse(e) }} />}
+                            />}
 
 
 
@@ -655,12 +669,13 @@ function LixDialog(props) {
                             <TextField rows={4} label="ý kiến khác" multiline sx={{ marginTop: 2, display: service.KHONG_SD === 1 ? 'none' : '' }} value={service.YKIENKHAC} name={'YKIENKHAC'} onChange={(e) => { onChangeservice(e) }} disabled={service.ID_DV !== 0 ? false : true} />
 
                             <FormControl fullwidth sx={{ marginTop: 2 }}>
-                                <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm BO (Dành cho dịch vụ chưa sử dụng)</Button>
+                                <Button onClick={() => setOpen(true)}><AddRoundedIcon /> Thêm nhanh BO</Button>
                             </FormControl>
+
                             {Number(service.NHACUNGCAP_CTPKS) !== 1 ?
                                 <FormControlLabel
                                     name="BO"
-                                    label="Đánh giá BO dịch vụ đang khảo sát"
+                                    label="Phiếu BO"
                                     size={'large'}
                                     disabled={service.ID_DV !== 0 || service.KHONG_SD === 1 ? false : true}
                                     {...label}
@@ -686,12 +701,27 @@ function LixDialog(props) {
                                 </FormControl>
                                 : ""}
 
+
                         </CardContent>
                     </Card>
                 </Box>
             </DialogContent>
             <DialogActions>
-                {/* <Button variant={'outlined'} color={'warning'} onClick={handleMissCustomer}> Không gặp khách hàng </Button> */}
+                <Button
+                    variant="contained"
+                    component="label"
+                    onClick={handleOpenProofDialog}
+                >
+                    <FileUploadRoundedIcon /> Upload minh chứng
+                    {/* <input
+                        id="upload"
+                        className="account-file-input"
+                        type="file"
+                        hidden
+                        onChange={handleOpenProofDialog}
+                    /> */}
+                </Button>
+
                 <Button
                     disabled={service.ID_DV !== 0 || service.KHONG_SD === 1 ? false : true}
                     variant={'outlined'} color={'primary'} onClick={khaoSat} autoFocus>
@@ -704,14 +734,13 @@ function LixDialog(props) {
                     }
 
                 }>Huỷ</Button>
-
             </DialogActions>
             <ConfirmChange
                 open={open}
                 handleClose={closeDiaLog}
                 callAPI={callAPI}
                 reloadPage={reloadData}
-            // createBallot={createSurvey}
+                createBallot={khaoSat}
             />
             <Snackbar open={openAlertSuccess} autoHideDuration={6000} onClose={closeSuccess} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
                 <Alert onClose={closeSuccess} severity="success" sx={{ width: '100%' }}>
@@ -733,6 +762,8 @@ function LixDialog(props) {
                 callAPI={callAPI}
                 reloadApi={props.reloadApi}
             />
+            <ProofUploadDialog open={openProof} handleClose={handleCloseProof} idCustomer={props.idCustomer} isLixDialog={1}/>
+
         </Dialog>
     )
 }

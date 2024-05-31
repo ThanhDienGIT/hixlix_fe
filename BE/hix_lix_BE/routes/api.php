@@ -9,6 +9,7 @@ use App\Http\Controllers\NhanVienController;
 use App\Http\Controllers\DichVuController;
 use App\Http\Controllers\DonviController;
 use App\Http\Controllers\DonViHanhChinhController;
+use App\Http\Controllers\MinhChungController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,8 +112,17 @@ Route::group(['middleware' => ['api']], function () {
         Route::get('/getlocalitybydonvi', [DonviController::class, 'getlocalitybydonvi']);
 
 
-
-
+        Route::post('/add_proof', [MinhChungController::class, 'add_proof']);
+        Route::get('/get_proof_list/{id}', [MinhChungController::class, 'get_proof_list']);
+        Route::post('/delete_proof/{id}', [MinhChungController::class, 'delete_proof']);
+        Route::get('/download-image/{filename}', [MinhChungController::class, 'download']);
+        Route::post('/edit-proof/{id}', [MinhChungController::class, 'editproof']);
+        
+        Route::post('/change-pass', [NhanVienController::class, 'changepass']);
+        Route::get('/get-user-profile', [NhanVienController::class, 'get_user_profile']);
+        Route::post('/update-user-profile', [NhanVienController::class, 'update_user_profile']);
+        
+        
 
 
         Route::get('/getKHByID/{id}', [danhsachkhachhang::class, 'getKHByID']);
