@@ -49,7 +49,7 @@ function QuickBO(props) {
     const [loading, setLoading] = useState(false);
 
     const onChangeservice = (e) => {
-        console.log(e)
+
         const { value } = e.target;
 
         // setService(prevService => ({
@@ -60,8 +60,7 @@ function QuickBO(props) {
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
-        console.log(service)
-        console.log(serviceListSecond)
+
     };
 
     const onChangeservicePoint
@@ -114,9 +113,9 @@ function QuickBO(props) {
         else if (idTypeService === 0) {
             notyf.error("Vui lòng chọn loại dịch vụ")
         }
-        else if (service.NHACUNGCAP_CTPKS === 0) {
-            notyf.error("Vui lòng chọn nhà cung cấp cho dịch vụ muốn đánh giá BO")
-        }
+        // else if (service.NHACUNGCAP_CTPKS === 0) {
+        //     notyf.error("Vui lòng chọn nhà cung cấp cho dịch vụ muốn đánh giá BO")
+        // }
         else {
             const objectSend = {
                 TEN_DV: serviceListSecond,
@@ -165,7 +164,7 @@ function QuickBO(props) {
         CallAPIByidquality(props.idquality)
     }, [props.idquality]);
 
-    console.log(props.provider)
+
     return (
         <Dialog
             open={props.open}

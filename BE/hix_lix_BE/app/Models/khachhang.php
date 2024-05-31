@@ -33,6 +33,7 @@ class khachhang extends Model
         'ngaytao_kh',
         'nguoitao_kh',
         'ghichu_kh',
+        'chuagapduoc_kh',
         'trangthai_kh'
     ];
 
@@ -45,6 +46,4 @@ class khachhang extends Model
     {
         return $this->hasOne(phieukhaosat::class, 'id_kh', 'id_kh');
     }
-
-
 }
