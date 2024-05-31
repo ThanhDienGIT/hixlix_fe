@@ -200,7 +200,7 @@ function ProofUploadDialog(props) {
                     {
                         props.callApi()
                     }
-                    
+                    setFileArray([])
                     notyf.success(res.data.message)
                     setLoading(false)
                     props.handleClose()
@@ -223,6 +223,9 @@ function ProofUploadDialog(props) {
 
     console.log(uploadError)
 
+    useEffect(()=>{
+        setFileArray([])
+    },[props.open])
 
     return (
         <Dialog
