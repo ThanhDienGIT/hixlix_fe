@@ -35,10 +35,10 @@ function LixDialog(props) {
     // const [isErrorOther, setIsErrorOther] = useState(false)
 
     // const [statusBO, setStatusBO] = useState(false)
-    const alertError = (string) => {
-        setContenNotifi(string)
-        setOpenAlertError(true)
-    }
+    // const alertError = (string) => {
+    //     setContenNotifi(string)
+    //     setOpenAlertError(true)
+    // }
 
     const closeError = () => {
         setOpenAlertError(false)
@@ -235,7 +235,7 @@ function LixDialog(props) {
             alertSuccess(res.data)
         }).catch(err => {
             console.log(err)
-            alertError(err.response.data)
+          
         })
     }
 
@@ -544,7 +544,7 @@ function LixDialog(props) {
                                     <MenuItem selected value={0}>Chọn hình thước đóng cước</MenuItem>
                                     {typeOfPay && typeOfPay.map(ele => {
                                         return (
-                                            <MenuItem key={ele.ID} value={ele.TEN_HINH_THUC}>{ele.TEN_HINH_THUC}</MenuItem>
+                                            <MenuItem key={ele.ID_HTD} value={ele.TEN_HINHTHUCDONG}>{ele.TEN_HINHTHUCDONG}</MenuItem>
                                         )
                                     })}
 

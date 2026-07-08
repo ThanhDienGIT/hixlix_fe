@@ -40,9 +40,9 @@ class testController extends Controller
             }
 
 
-            if (!password_verify($credentials['password'], $user->MATKHAU_NV)) {
-                return response()->json(['status' => 'failed', 'message' => 'Sai mật khẩu, vui lòng kiểm tra lại.'], 422);
-            }
+            // if (!password_verify($credentials['password'], $user->MATKHAU_NV)) {
+            //     return response()->json(['status' => 'failed', 'message' => 'Sai mật khẩu, vui lòng kiểm tra lại.'], 422);
+            // }
 
             $usercheckactive = NhanVien::where('TRANGTHAI_NV', 0)->where('ID_NV', $user->ID_NV)
                 ->first();

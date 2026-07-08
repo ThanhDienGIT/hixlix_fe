@@ -61,11 +61,14 @@ const NavItem = ({ item, level }) => {
   const isSelected = openItem.findIndex((id) => id === item.id) > -1;
   // active menu item on page load
   useEffect(() => {
-    if (pathname.includes(item.url)) {
+  if (pathname.includes(item.url)) {
+    // Chỉ dispatch nếu item này CHƯA được đánh dấu active trong Redux
+    const isAlreadyActive = openItem.includes(item.id);
+    if (!isAlreadyActive) {
       dispatch(activeItem({ openItem: [item.id] }));
     }
-    // eslint-disable-next-line
-  }, [pathname]);
+  }
+}, [pathname, item.url, item.id, openItem, dispatch]);
 
   
 

@@ -39,7 +39,7 @@ function QuickBO2(props) {
         NHACUNGCAP_CTPKS: 0,
         DIEM_BO: 0
     })
-
+    const[quality, setQuality] = useState()
 
     const [idTypeService, setIdTypeService] = useState(1)
     const [serviceList, setServiceList] = useState([])
@@ -282,10 +282,11 @@ function QuickBO2(props) {
                     variant="contained"
                     onClick={handleBOUpdate}
                     autoFocus
+                    quality={quality}
                 >
                     <span>Cập nhật</span>
                 </LoadingButton>
-
+                            
                 <Button size={'small'} onClick={props.handleClose} variant='outlined' color="error">Quay lại</Button>
 
             </DialogActions>

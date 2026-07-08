@@ -6,7 +6,7 @@ import axios from "axios";
 const token = localStorage.getItem('access_token');
 
 const instance = axios.create({
-     baseURL: 'http://113.164.176.30:9393/api/',
+     baseURL: 'http://127.0.0.1:8000/api/',
     //baseURL: 'https://3aca-115-78-10-248.ngrok-free.app/api/',
     
     headers: {

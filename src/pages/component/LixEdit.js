@@ -199,6 +199,7 @@ function LixEdit(props) {
     const getTypeOfPay = async () => {
         await instance.get('getTypeOfPay')
             .then((res) => {
+                console.log('test -1-1-1-1', res.data)
                 setTypeOfPay(res.data)
             })
             .catch(err => console.log(err))
@@ -592,7 +593,7 @@ function LixEdit(props) {
                                     <MenuItem selected value={0}>Chọn hình thước đóng cước</MenuItem>
                                     {typeOfPay && typeOfPay.map(ele => {
                                         return (
-                                            <MenuItem key={ele.ID} value={ele.TEN_HINH_THUC}>{ele.TEN_HINH_THUC}</MenuItem>
+                                            <MenuItem key={ele.ID_HTD} value={ele.TEN_HINHTHUCDONG}>{ele.TEN_HINHTHUCDONG}</MenuItem>
                                         )
                                     })}
 

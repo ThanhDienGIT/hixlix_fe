@@ -1,0 +1,50 @@
+FROM php:8.1-fpm
+
+# Thiết lập thư mục làm việc bên trong container
+WORKDIR /var/www
+
+# Cài đặt các phần phụ thuộc hệ thống và các Extension PHP phổ biến cho Laravel
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    zip \
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    unzip \
+    git \
+    curl \
+    libzip-dev \
+    libonig-dev \
+    cron \
+    supervisor
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Cài đặt các extension PHP cần thiết
+RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install gd
+
+# Cài đặt Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy toàn bộ mã nguồn Backend vào container
+COPY . /var/www
+
+# Cài đặt các package từ composer.json (tối ưu hóa tự động nạp lớp)
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Cấp quyền ghi cho các thư mục lưu trữ cache của Laravel
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# --- Chuẩn bị sẵn Cron Job cho Laravel Schedule ---
+RUN echo "* * * * * cd /var/www && php artisan schedule:run >> /dev/null 2>&1" >> /etc/cron.d/laravel-cron
+RUN chmod 0644 /etc/cron.d/laravel-cron
+RUN crontab /etc/cron.d/laravel-cron
+
+EXPOSE 9000
+CMD ["php-fpm"]
