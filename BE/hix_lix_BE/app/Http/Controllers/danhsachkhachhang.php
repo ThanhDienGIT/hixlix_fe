@@ -970,7 +970,7 @@ class danhsachkhachhang extends Controller
                     }
 
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -1785,7 +1785,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2028,7 +2028,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2343,7 +2343,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2443,7 +2443,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2538,7 +2538,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2624,7 +2624,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2749,7 +2749,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2877,7 +2877,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -2992,7 +2992,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -3096,7 +3096,7 @@ class danhsachkhachhang extends Controller
                         }
                     }
 
-                    $total = $query->count(); // Tính tổng số bản ghi
+                    $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                     // Số lượng mục trên mỗi trang
                     $perPage = $count;
@@ -3434,7 +3434,7 @@ class danhsachkhachhang extends Controller
                     }
                 }
 
-                $total = $query->count(); // Tính tổng số bản ghi
+                $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                 // Số lượng mục trên mỗi trang
                 $perPage = $count;
@@ -3572,7 +3572,7 @@ class danhsachkhachhang extends Controller
                 }
 
 
-                $total = $query->count(); // Tính tổng số bản ghi
+                $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                 // Số lượng mục trên mỗi trang
                 $perPage = $count;
@@ -3765,7 +3765,7 @@ class danhsachkhachhang extends Controller
                 }
 
 
-                $total = $query->count(); // Tính tổng số bản ghi
+                $total = $query->count() ?? 0; // Tính tổng số bản ghi
 
                 // Số lượng mục trên mỗi trang
                 $perPage = $count;
