@@ -25,7 +25,7 @@ const AuthWrapper = ({ children }) => (
       }}
     >
       <Grid item xs={12} sx={{ ml: 3, mt: 3 }}>
-      <img src='https://itvnpt.vn/wp-content/uploads/2021/11/Logo-VNPT-TP-HCM-1.png' alt='logo' width={150} height={45} />
+      <img src='https://upload.wikimedia.org/wikipedia/vi/thumb/6/65/VNPT_Logo.svg/1920px-VNPT_Logo.svg.png' alt='logo' width={150} height={45} />
       </Grid>
       <Grid item xs={12}>
         <Grid
